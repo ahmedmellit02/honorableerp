@@ -11,7 +11,7 @@ const SalesChart = () => {
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground">
-            Ventes et revenus mensuels
+          Ventes et bénéfices mensuels
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -27,7 +27,7 @@ const SalesChart = () => {
     <Card className="shadow-card">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-foreground">
-          Ventes et revenus mensuels
+          Ventes et bénéfices mensuels
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -52,7 +52,7 @@ const SalesChart = () => {
               }}
               formatter={(value, name) => [
                 name === "sales" ? `${value} ventes` : `${Number(value).toLocaleString()} DH`,
-                name === "sales" ? "Nombre de ventes" : "Revenu"
+                name === "sales" ? "Nombre de ventes" : "Bénéfice"
               ]}
             />
             <Bar 
@@ -62,10 +62,10 @@ const SalesChart = () => {
               name="sales"
             />
             <Bar 
-              dataKey="revenue" 
+              dataKey="profit" 
               fill="hsl(var(--accent))" 
               radius={[4, 4, 0, 0]}
-              name="revenue"
+              name="profit"
             />
           </BarChart>
         </ResponsiveContainer>

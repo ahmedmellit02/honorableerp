@@ -14,12 +14,13 @@ import {
   MapPin,
   Target
 } from "lucide-react";
-import { useSales, useSalesMonthly, useSalesByType } from "@/hooks/useSales";
+import { useSales, useSalesMonthly, useSalesByType, useTopServicesCurrentMonth } from "@/hooks/useSales";
 
 const Dashboard = () => {
   const { data: sales = [], isLoading: salesLoading } = useSales();
   const { data: monthlyData = [], isLoading: monthlyLoading } = useSalesMonthly();
   const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
+  const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
 
   // Calculate metrics from real data
   const totalSales = sales.length;
@@ -50,7 +51,7 @@ const Dashboard = () => {
     item.type === "Organized Travel"
   )?.count || 0;
 
-  const isLoading = salesLoading || monthlyLoading || typeLoading;
+  const isLoading = salesLoading || monthlyLoading || typeLoading || topServicesLoading;
 
   if (isLoading) {
     return (
@@ -114,33 +115,26 @@ const Dashboard = () => {
           <BookingTypePieChart />
         </div>
 
-        {/* Service per Type */}
-        <h2 className="text-xl font-semibold text-foreground mb-4">Services par type</h2>
+        {/* Top 3 Services du mois courant */}
+        <h2 className="text-xl font-semibold text-foreground mb-4">Top 3 services du mois courant</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <MetricCard
-            title="Réservations de vol"
-            value={flightBookings.toString()}
-            change="Service le plus populaire"
-            changeType="neutral"
-            icon={Plane}
-            gradient="bg-gradient-ocean"
-          />
-          <MetricCard
-            title="Réservations d'hôtel"
-            value={hotelBookings.toString()}
-            change="Segment en croissance"
-            changeType="positive"
-            icon={Hotel}
-            gradient="bg-gradient-tropical"
-          />
-          <MetricCard
-            title="Circuits organisés"
-            value={organizedTravel.toString()}
-            change="Ventes à haute valeur"
-            changeType="positive"
-            icon={MapPin}
-            gradient="bg-gradient-sunset"
-          />
+          {topServices.length > 0 ? (
+            topServices.map((service, index) => (
+              <MetricCard
+                key={service.type}
+                title={service.type}
+                value={`${service.totalProfit.toLocaleString()} DH`}
+                change={`${service.count} ventes`}
+                changeType={index === 0 ? "positive" : "neutral"}
+                icon={index === 0 ? Target : index === 1 ? TrendingUp : DollarSign}
+                gradient={index === 0 ? "bg-gradient-ocean" : index === 1 ? "bg-gradient-tropical" : "bg-gradient-sunset"}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center text-muted-foreground py-8">
+              Aucune vente ce mois-ci
+            </div>
+          )}
         </div>
 
         {/* Agent Performance */}

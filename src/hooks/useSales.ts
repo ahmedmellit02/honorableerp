@@ -23,11 +23,19 @@ export const useSales = () => {
       }
       
       return data.map(sale => ({
-        ...sale,
-        departureDate: new Date(sale.departure_date),
-        createdAt: new Date(sale.created_at),
+        id: sale.id,
+        type: sale.type as Sale["type"],
+        clientName: sale.client_name,
+        phoneNumber: sale.phone_number,
+        pnr: sale.pnr,
         buyingPrice: Number(sale.buying_price),
         sellingPrice: Number(sale.selling_price),
+        system: sale.system as Sale["system"],
+        agent: sale.agent as Sale["agent"],
+        departureDate: new Date(sale.departure_date),
+        departureTime: sale.departure_time,
+        notes: sale.notes,
+        createdAt: new Date(sale.created_at),
         profit: Number(sale.profit)
       })) as Sale[];
     },
@@ -131,6 +139,61 @@ export const useSalesByType = () => {
         count: Number(item.count),
         revenue: Number(item.revenue),
         color: colors[index % colors.length]
+      }));
+    },
+    enabled: !!user,
+  });
+};
+
+export const useTopServicesCurrentMonth = () => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["top-services-current-month", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+      
+      const { data, error } = await supabase
+        .from("sales")
+        .select("type, profit")
+        .gte("created_at", `${currentMonth}-01`)
+        .lt("created_at", `${currentMonth === '2025-12' ? '2026-01' : currentMonth.slice(0, 4) + '-' + String(parseInt(currentMonth.slice(5)) + 1).padStart(2, '0')}-01`)
+        .order("profit", { ascending: false });
+      
+      if (error) {
+        console.error("Error fetching top services:", error);
+        throw error;
+      }
+      
+      // Group by type and sum profits
+      const groupedData = data.reduce((acc, sale) => {
+        if (!acc[sale.type]) {
+          acc[sale.type] = { totalProfit: 0, count: 0 };
+        }
+        acc[sale.type].totalProfit += Number(sale.profit);
+        acc[sale.type].count += 1;
+        return acc;
+      }, {} as Record<string, { totalProfit: number; count: number }>);
+      
+      // Convert to array and sort by total profit
+      const sortedServices = Object.entries(groupedData)
+        .map(([type, data]) => ({
+          type,
+          totalProfit: data.totalProfit,
+          count: data.count
+        }))
+        .sort((a, b) => b.totalProfit - a.totalProfit)
+        .slice(0, 3);
+      
+      const colors = ["#10B981", "#F59E0B", "#EF4444"];
+      
+      return sortedServices.map((item, index) => ({
+        type: item.type,
+        totalProfit: item.totalProfit,
+        count: item.count,
+        color: colors[index] || "#8B5CF6"
       }));
     },
     enabled: !!user,
