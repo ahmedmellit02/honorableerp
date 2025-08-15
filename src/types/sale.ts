@@ -1,12 +1,12 @@
 export interface Sale {
   id: string;
-  type: "Flight Booking" | "Hotel Booking" | "Voyage Organisé" | "Car Rental" | "Travel Insurance";
+  type: "Flight Confirmed" | "Boat Booking" | "Extra Baggage" | "Flight Changing" | "Flight On Hold" | "Hotel Booking" | "RW 1" | "RW 2" | "E-VISA" | "Organized Travel" | "Travel Insurance";
   clientName: string;
   phoneNumber: string;
   pnr?: string;
   buyingPrice: number;
   sellingPrice: number;
-  system: "TTP" | "AR";
+  system: "Divers" | "TTP" | "AR" | "CIH Hjira" | "CIH Mehdi" | "BP Ahmed" | "BP Hajj" | "BP Hajja";
   agent: "Ahmed" | "Mehdi" | "Achraf" | "Asri";
   departureDate: Date;
   departureTime: string;

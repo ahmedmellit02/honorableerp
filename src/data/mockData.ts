@@ -3,7 +3,7 @@ import { Sale } from "@/types/sale";
 export const mockSales: Sale[] = [
   {
     id: "1",
-    type: "Flight Booking",
+    type: "Flight Confirmed",
     clientName: "Hassan El Mansouri",
     phoneNumber: "+212600123456",
     pnr: "ABC123",
@@ -34,7 +34,7 @@ export const mockSales: Sale[] = [
   },
   {
     id: "3",
-    type: "Voyage Organisé",
+    type: "Organized Travel",
     clientName: "Omar Benali",
     phoneNumber: "+212600345678",
     buyingPrice: 8000,
@@ -49,7 +49,7 @@ export const mockSales: Sale[] = [
   },
   {
     id: "4",
-    type: "Flight Booking",
+    type: "Flight Confirmed",
     clientName: "Aicha Alami",
     phoneNumber: "+212600456789",
     pnr: "DEF456",
@@ -65,7 +65,7 @@ export const mockSales: Sale[] = [
   },
   {
     id: "5",
-    type: "Car Rental",
+    type: "Travel Insurance",
     clientName: "Youssef Tazi",
     phoneNumber: "+212600567890",
     buyingPrice: 800,
@@ -74,7 +74,7 @@ export const mockSales: Sale[] = [
     agent: "Ahmed",
     departureDate: new Date("2024-08-18"),
     departureTime: "12:00",
-    notes: "Rental for 3 days in Casablanca",
+    notes: "Travel insurance for 3 months",
     createdAt: new Date("2024-08-10"),
     profit: 300,
   },
@@ -99,9 +99,8 @@ export const monthlyData = [
 ];
 
 export const bookingTypeData = [
-  { type: "Flight Booking", count: 156, revenue: 298000, color: "#3B82F6" },
+  { type: "Flight Confirmed", count: 156, revenue: 298000, color: "#3B82F6" },
   { type: "Hotel Booking", count: 89, revenue: 145000, color: "#10B981" },
-  { type: "Voyage Organisé", count: 45, revenue: 387000, color: "#F59E0B" },
-  { type: "Car Rental", count: 67, revenue: 58000, color: "#8B5CF6" },
+  { type: "Organized Travel", count: 45, revenue: 387000, color: "#F59E0B" },
   { type: "Travel Insurance", count: 23, revenue: 12000, color: "#EF4444" },
 ];

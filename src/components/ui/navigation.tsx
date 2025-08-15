@@ -1,10 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, Plane } from "lucide-react";
+import { BarChart3, Plus, Plane, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const location = useLocation();
+  const { signOut, user } = useAuth();
 
   const navItems = [
     {
@@ -52,6 +54,18 @@ const Navigation = () => {
                 </Link>
               );
             })}
+            
+            <div className="flex items-center space-x-2 pl-4 border-l border-border">
+              <span className="text-sm text-muted-foreground">{user?.email}</span>
+              <Button
+                variant="ghost"
+                onClick={() => signOut()}
+                className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Déconnexion</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

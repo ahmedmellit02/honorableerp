@@ -18,7 +18,7 @@ const AddSale = () => {
   const { toast } = useToast();
   
   const [formData, setFormData] = useState<SaleFormData>({
-    type: "Flight Booking",
+    type: "Flight Confirmed",
     clientName: "",
     phoneNumber: "",
     pnr: "",
@@ -46,7 +46,7 @@ const AddSale = () => {
       newErrors.phoneNumber = "Veuillez entrer un numéro de téléphone valide";
     }
 
-    if (formData.type === "Flight Booking" && !formData.pnr?.trim()) {
+    if ((formData.type === "Flight Confirmed" || formData.type === "Flight On Hold") && !formData.pnr?.trim()) {
       newErrors.pnr = "Le PNR est requis pour les réservations de vol";
     }
 
@@ -215,7 +215,7 @@ const AddSale = () => {
               </div>
 
               {/* PNR Field (conditional) */}
-              {formData.type === "Flight Confirmed" && (
+              {(formData.type === "Flight Confirmed" || formData.type === "Flight On Hold") && (
                 <div className="space-y-2">
                   <Label htmlFor="pnr">PNR *</Label>
                   <Input
