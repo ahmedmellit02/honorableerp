@@ -1,8 +1,28 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { monthlyData } from "@/data/mockData";
+import { useSalesMonthly } from "@/hooks/useSales";
 
 const SalesChart = () => {
+  const { data: monthlyData = [], isLoading } = useSalesMonthly();
+
+  if (isLoading) {
+    return (
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-foreground">
+            Ventes et revenus mensuels
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="shadow-card">
       <CardHeader>
@@ -31,7 +51,7 @@ const SalesChart = () => {
                 color: "hsl(var(--foreground))"
               }}
               formatter={(value, name) => [
-                name === "sales" ? `${value} ventes` : `${value.toLocaleString()} DH`,
+                name === "sales" ? `${value} ventes` : `${Number(value).toLocaleString()} DH`,
                 name === "sales" ? "Nombre de ventes" : "Revenu"
               ]}
             />

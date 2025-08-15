@@ -1,19 +1,24 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { mockSales } from "@/data/mockData";
 import { format } from "date-fns";
 import { Plane, Hotel, MapPin, Car, Shield } from "lucide-react";
+import { useSales } from "@/hooks/useSales";
 
 const RecentSalesTable = () => {
+  const { data: sales = [], isLoading } = useSales();
+
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case "Flight Booking":
+      case "Flight Confirmed":
+      case "Flight On Hold":
+      case "Flight Changing":
         return <Plane className="h-4 w-4" />;
       case "Hotel Booking":
         return <Hotel className="h-4 w-4" />;
-      case "Voyage Organisé":
+      case "Organized Travel":
         return <MapPin className="h-4 w-4" />;
-      case "Car Rental":
+      case "Boat Booking":
         return <Car className="h-4 w-4" />;
       case "Travel Insurance":
         return <Shield className="h-4 w-4" />;
@@ -24,13 +29,15 @@ const RecentSalesTable = () => {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "Flight Booking":
+      case "Flight Confirmed":
+      case "Flight On Hold":
+      case "Flight Changing":
         return "bg-blue-100 text-blue-800 border-blue-200";
       case "Hotel Booking":
         return "bg-green-100 text-green-800 border-green-200";
-      case "Voyage Organisé":
+      case "Organized Travel":
         return "bg-orange-100 text-orange-800 border-orange-200";
-      case "Car Rental":
+      case "Boat Booking":
         return "bg-purple-100 text-purple-800 border-purple-200";
       case "Travel Insurance":
         return "bg-red-100 text-red-800 border-red-200";
@@ -39,13 +46,47 @@ const RecentSalesTable = () => {
     }
   };
 
-  const recentSales = mockSales.slice(0, 5);
+  const recentSales = sales.slice(0, 5);
+
+  if (isLoading) {
+    return (
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-foreground">
+            Ventes récentes
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center py-8">
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (recentSales.length === 0) {
+    return (
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-foreground">
+            Ventes récentes
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center py-8">
+            <p className="text-muted-foreground">Aucune vente enregistrée</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="shadow-card">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-foreground">
-          Recent Sales
+          Ventes récentes
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -63,10 +104,10 @@ const RecentSalesTable = () => {
                   Agent
                 </th>
                 <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
-                  Selling Price
+                  Prix de vente
                 </th>
                 <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
-                  Profit
+                  Bénéfice
                 </th>
                 <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                   Date
@@ -110,7 +151,7 @@ const RecentSalesTable = () => {
                   </td>
                   <td className="py-3 px-2">
                     <span className="text-sm text-muted-foreground">
-                      {format(sale.createdAt, "MMM dd")}
+                      {format(sale.createdAt, "dd MMM")}
                     </span>
                   </td>
                 </tr>

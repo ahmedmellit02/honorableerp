@@ -14,10 +14,82 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      sales: {
+        Row: {
+          agent: string
+          buying_price: number
+          client_name: string
+          created_at: string
+          departure_date: string
+          departure_time: string
+          id: string
+          notes: string | null
+          phone_number: string
+          pnr: string | null
+          profit: number | null
+          selling_price: number
+          system: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent: string
+          buying_price: number
+          client_name: string
+          created_at?: string
+          departure_date: string
+          departure_time: string
+          id?: string
+          notes?: string | null
+          phone_number: string
+          pnr?: string | null
+          profit?: number | null
+          selling_price: number
+          system: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent?: string
+          buying_price?: number
+          client_name?: string
+          created_at?: string
+          departure_date?: string
+          departure_time?: string
+          id?: string
+          notes?: string | null
+          phone_number?: string
+          pnr?: string | null
+          profit?: number | null
+          selling_price?: number
+          system?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      sales_by_type_aggregates: {
+        Row: {
+          count: number | null
+          revenue: number | null
+          type: string | null
+        }
+        Relationships: []
+      }
+      sales_monthly_aggregates: {
+        Row: {
+          month: string | null
+          profit: number | null
+          revenue: number | null
+          sales: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       create_demo_user: {

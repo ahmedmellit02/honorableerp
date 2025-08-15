@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +13,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SaleFormData } from "@/types/sale";
 import { CalendarIcon, Save, ArrowLeft } from "lucide-react";
+import { useAddSale } from "@/hooks/useSales";
 
 const AddSale = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const addSaleMutation = useAddSale();
   
   const [formData, setFormData] = useState<SaleFormData>({
     type: "Flight Confirmed",
@@ -70,19 +73,27 @@ const AddSale = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Here you would typically save to a database
-      console.log("Sale data:", formData);
-      
-      toast({
-        title: "Vente enregistrée avec succès !",
-        description: `${formData.type} pour ${formData.clientName} a été enregistré.`,
-      });
-      
-      navigate("/");
+      try {
+        await addSaleMutation.mutateAsync(formData);
+        
+        toast({
+          title: "Vente enregistrée avec succès !",
+          description: `${formData.type} pour ${formData.clientName} a été enregistré.`,
+        });
+        
+        navigate("/");
+      } catch (error) {
+        console.error("Error saving sale:", error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de l'enregistrement de la vente.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -345,10 +356,11 @@ const AddSale = () => {
               <div className="flex justify-end pt-6">
                 <Button 
                   type="submit" 
+                  disabled={addSaleMutation.isPending}
                   className="flex items-center gap-2 bg-gradient-ocean hover:bg-primary-hover"
                 >
                   <Save className="h-4 w-4" />
-                  Enregistrer la vente
+                  {addSaleMutation.isPending ? "Enregistrement..." : "Enregistrer la vente"}
                 </Button>
               </div>
             </form>

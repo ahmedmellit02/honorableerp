@@ -1,3 +1,4 @@
+
 import MetricCard from "@/components/dashboard/MetricCard";
 import SalesChart from "@/components/dashboard/SalesChart";
 import BookingTypePieChart from "@/components/dashboard/BookingTypePieChart";
@@ -13,22 +14,56 @@ import {
   MapPin,
   Target
 } from "lucide-react";
-import { mockSales, agentStats, bookingTypeData } from "@/data/mockData";
+import { useSales, useSalesMonthly, useSalesByType } from "@/hooks/useSales";
 
 const Dashboard = () => {
-  // Calculate metrics
-  const totalSales = mockSales.length;
-  const totalRevenue = mockSales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
-  const totalProfit = mockSales.reduce((sum, sale) => sum + sale.profit, 0);
-  const avgSaleValue = totalRevenue / totalSales;
+  const { data: sales = [], isLoading: salesLoading } = useSales();
+  const { data: monthlyData = [], isLoading: monthlyLoading } = useSalesMonthly();
+  const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
 
-  const flightBookings = bookingTypeData.find(b => b.type === "Flight Booking")?.count || 0;
-  const hotelBookings = bookingTypeData.find(b => b.type === "Hotel Booking")?.count || 0;
-  const voyageBookings = bookingTypeData.find(b => b.type === "Voyage Organisé")?.count || 0;
+  // Calculate metrics from real data
+  const totalSales = sales.length;
+  const totalRevenue = sales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
+  const totalProfit = sales.reduce((sum, sale) => sum + sale.profit, 0);
+  const avgSaleValue = totalSales > 0 ? totalRevenue / totalSales : 0;
 
-  const topAgent = Object.entries(agentStats).reduce((a, b) => 
-    agentStats[a[0] as keyof typeof agentStats].revenue > agentStats[b[0] as keyof typeof agentStats].revenue ? a : b
-  );
+  // Calculate agent stats from real data
+  const agentStats = sales.reduce((acc, sale) => {
+    if (!acc[sale.agent]) {
+      acc[sale.agent] = { sales: 0, revenue: 0 };
+    }
+    acc[sale.agent].sales += 1;
+    acc[sale.agent].revenue += sale.sellingPrice;
+    return acc;
+  }, {} as Record<string, { sales: number; revenue: number }>);
+
+  // Get service counts by type
+  const flightBookings = typeData.find(item => 
+    item.type === "Flight Confirmed" || item.type === "Flight On Hold"
+  )?.count || 0;
+  
+  const hotelBookings = typeData.find(item => 
+    item.type === "Hotel Booking"
+  )?.count || 0;
+  
+  const organizedTravel = typeData.find(item => 
+    item.type === "Organized Travel"
+  )?.count || 0;
+
+  const isLoading = salesLoading || monthlyLoading || typeLoading;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,32 +85,24 @@ const Dashboard = () => {
           <MetricCard
             title="Ventes totales"
             value={totalSales.toString()}
-            // change="+12% par rapport au mois dernier"
-            // changeType="positive"
             icon={TrendingUp}
             gradient="bg-gradient-ocean"
           />
           <MetricCard
             title="Revenu total"
             value={`${totalRevenue.toLocaleString()} DH`}
-            // change="+8.2% par rapport au mois dernier"
-            // changeType="positive"
             icon={DollarSign}
             gradient="bg-gradient-tropical"
           />
           <MetricCard
             title="Bénéfice total"
             value={`${totalProfit.toLocaleString()} DH`}
-            // change="+15.3% par rapport au mois dernier"
-            // changeType="positive"
             icon={Target}
             gradient="bg-gradient-sunset"
           />
           <MetricCard
             title="Valeur moyenne"
             value={`${Math.round(avgSaleValue).toLocaleString()} DH`}
-            // change="+5.1% par rapport au mois dernier"
-            // changeType="positive"
             icon={Calendar}
             gradient="bg-gradient-ocean"
           />
@@ -90,7 +117,6 @@ const Dashboard = () => {
         {/* Service per Type */}
         <h2 className="text-xl font-semibold text-foreground mb-4">Services par type</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          
           <MetricCard
             title="Réservations de vol"
             value={flightBookings.toString()}
@@ -109,7 +135,7 @@ const Dashboard = () => {
           />
           <MetricCard
             title="Circuits organisés"
-            value={voyageBookings.toString()}
+            value={organizedTravel.toString()}
             change="Ventes à haute valeur"
             changeType="positive"
             icon={MapPin}
@@ -118,22 +144,24 @@ const Dashboard = () => {
         </div>
 
         {/* Agent Performance */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-foreground mb-4">Performance des agents</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {Object.entries(agentStats).map(([agent, stats]) => (
-              <MetricCard
-                key={agent}
-                title={agent}
-                value={`${stats.revenue.toLocaleString()} DH`}
-                change={`${stats.sales} ventes • ${Math.round((stats.revenue / stats.target) * 100)}% de l'objectif`}
-                changeType={stats.revenue >= stats.target ? "positive" : "neutral"}
-                icon={Users}
-                gradient={agent === topAgent[0] ? "bg-gradient-sunset" : "bg-gradient-ocean"}
-              />
-            ))}
+        {Object.keys(agentStats).length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-foreground mb-4">Performance des agents</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Object.entries(agentStats).map(([agent, stats]) => (
+                <MetricCard
+                  key={agent}
+                  title={agent}
+                  value={`${stats.revenue.toLocaleString()} DH`}
+                  change={`${stats.sales} ventes`}
+                  changeType="neutral"
+                  icon={Users}
+                  gradient="bg-gradient-ocean"
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Recent Sales Table */}
         <RecentSalesTable />
