@@ -3,9 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/ui/navigation";
 import { format } from "date-fns";
-import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft } from "lucide-react";
+import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft, Download } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
 import { Link } from "react-router-dom";
+import * as XLSX from 'xlsx';
 
 const AllSales = () => {
   const { data: sales = [], isLoading } = useSales();
@@ -34,6 +35,34 @@ const AllSales = () => {
     }
   };
 
+  const downloadExcel = () => {
+    if (sales.length === 0) return;
+
+    const excelData = sales.map(sale => ({
+      'ID': sale.numericId,
+      'Type': sale.type,
+      'Client': sale.clientName,
+      'Téléphone': sale.phoneNumber,
+      'PNR': sale.pnr || '',
+      'Agent': sale.agent,
+      'Système': sale.system,
+      'Prix d\'achat (DH)': sale.buyingPrice,
+      'Prix de vente (DH)': sale.sellingPrice,
+      'Bénéfice (DH)': sale.profit,
+      'Date de départ': format(sale.departureDate, 'dd/MM/yyyy'),
+      'Heure de départ': sale.departureTime,
+      'Notes': sale.notes || '',
+      'Date de création': format(sale.createdAt, 'dd/MM/yyyy HH:mm')
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Ventes');
+    
+    const fileName = `toutes_ventes_${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -53,21 +82,27 @@ const AllSales = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8 flex items-center gap-4">
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/" className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Retour
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Toutes les ventes
-            </h1>
-            <p className="text-muted-foreground">
-              {sales.length} vente{sales.length > 1 ? 's' : ''} au total
-            </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/" className="flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Retour
+              </Link>
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Toutes les ventes
+              </h1>
+              <p className="text-muted-foreground">
+                {sales.length} vente{sales.length > 1 ? 's' : ''} au total
+              </p>
+            </div>
           </div>
+          <Button variant="outline" onClick={downloadExcel} disabled={sales.length === 0}>
+            <Download className="h-4 w-4 mr-2" />
+            Télécharger Excel
+          </Button>
         </div>
 
         <Card className="shadow-card">

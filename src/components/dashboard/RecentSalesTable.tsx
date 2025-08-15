@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ExternalLink } from "lucide-react";
+import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ExternalLink, Download } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
 import { Link } from "react-router-dom";
+import * as XLSX from 'xlsx';
 
 const RecentSalesTable = () => {
   const { data: sales = [], isLoading } = useSales();
@@ -60,6 +61,34 @@ const RecentSalesTable = () => {
 
   const recentSales = sales.slice(0, 5);
 
+  const downloadExcel = () => {
+    if (sales.length === 0) return;
+
+    const excelData = sales.map(sale => ({
+      'ID': sale.numericId,
+      'Type': sale.type,
+      'Client': sale.clientName,
+      'Téléphone': sale.phoneNumber,
+      'PNR': sale.pnr || '',
+      'Agent': sale.agent,
+      'Système': sale.system,
+      'Prix d\'achat (DH)': sale.buyingPrice,
+      'Prix de vente (DH)': sale.sellingPrice,
+      'Bénéfice (DH)': sale.profit,
+      'Date de départ': format(sale.departureDate, 'dd/MM/yyyy'),
+      'Heure de départ': sale.departureTime,
+      'Notes': sale.notes || '',
+      'Date de création': format(sale.createdAt, 'dd/MM/yyyy HH:mm')
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Ventes');
+    
+    const fileName = `ventes_${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
   if (isLoading) {
     return (
       <Card className="shadow-card">
@@ -100,12 +129,18 @@ const RecentSalesTable = () => {
         <CardTitle className="text-lg font-semibold text-foreground">
           Ventes récentes
         </CardTitle>
-        <Button variant="outline" size="sm" asChild>
-          <Link to="/all-sales" className="flex items-center gap-2">
-            Voir tout
-            <ExternalLink className="h-4 w-4" />
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={downloadExcel}>
+            <Download className="h-4 w-4 mr-2" />
+            Excel
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/all-sales" className="flex items-center gap-2">
+              Voir tout
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
