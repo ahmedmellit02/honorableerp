@@ -1,9 +1,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon } from "lucide-react";
+import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ExternalLink } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
+import { Link } from "react-router-dom";
 
 const RecentSalesTable = () => {
   const { data: sales = [], isLoading } = useSales();
@@ -94,16 +96,25 @@ const RecentSalesTable = () => {
 
   return (
     <Card className="shadow-card">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg font-semibold text-foreground">
           Ventes récentes
         </CardTitle>
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/all-sales" className="flex items-center gap-2">
+            Voir tout
+            <ExternalLink className="h-4 w-4" />
+          </Link>
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
+                <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                  ID
+                </th>
                 <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                   Type
                 </th>
@@ -127,6 +138,11 @@ const RecentSalesTable = () => {
             <tbody>
               {recentSales.map((sale) => (
                 <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/50">
+                  <td className="py-3 px-2">
+                    <span className="text-xs font-mono text-muted-foreground">
+                      {sale.id.slice(0, 8)}...
+                    </span>
+                  </td>
                   <td className="py-3 px-2">
                     <Badge 
                       variant="outline" 
