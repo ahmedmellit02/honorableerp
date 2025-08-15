@@ -8,12 +8,12 @@ const Navigation = () => {
 
   const navItems = [
     {
-      label: "Dashboard",
+      label: "Tableau de bord",
       href: "/",
       icon: BarChart3,
     },
     {
-      label: "Add Sale",
+      label: "Ajouter une vente", 
       href: "/add-sale", 
       icon: Plus,
     },
@@ -28,7 +28,7 @@ const Navigation = () => {
               <div className="p-2 bg-gradient-ocean rounded-lg">
                 <Plane className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-foreground">TravelCRM</span>
+              <span className="text-xl font-bold text-foreground">HonorableCRM</span>
             </Link>
           </div>
           

@@ -37,33 +37,33 @@ const AddSale = () => {
     const newErrors: Partial<SaleFormData> = {};
 
     if (!formData.clientName.trim()) {
-      newErrors.clientName = "Client name is required";
+      newErrors.clientName = "Le nom du client est requis";
     }
 
     if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = "Phone number is required";
+      newErrors.phoneNumber = "Le numéro de téléphone est requis";
     } else if (!/^\+?[0-9]{10,15}$/.test(formData.phoneNumber.replace(/\s/g, ""))) {
-      newErrors.phoneNumber = "Please enter a valid phone number";
+      newErrors.phoneNumber = "Veuillez entrer un numéro de téléphone valide";
     }
 
     if (formData.type === "Flight Booking" && !formData.pnr?.trim()) {
-      newErrors.pnr = "PNR is required for flight bookings";
+      newErrors.pnr = "Le PNR est requis pour les réservations de vol";
     }
 
     if (Number(formData.buyingPrice) <= 0) {
-      newErrors.buyingPrice = "Buying price must be greater than 0";
+      newErrors.buyingPrice = "Le prix d'achat doit être supérieur à 0";
     }
 
     if (Number(formData.sellingPrice) <= 0) {
-      newErrors.sellingPrice = "Selling price must be greater than 0";
+      newErrors.sellingPrice = "Le prix de vente doit être supérieur à 0";
     }
 
     if (Number(formData.sellingPrice) <= Number(formData.buyingPrice)) {
-      newErrors.sellingPrice = "Selling price must be higher than buying price";
+      newErrors.sellingPrice = "Le prix de vente doit être supérieur au prix d'achat";
     }
 
     if (!formData.departureTime) {
-      newErrors.departureTime = "Departure time is required";
+      newErrors.departureTime = "L'heure de départ est requise";
     }
 
     setErrors(newErrors);
@@ -78,8 +78,8 @@ const AddSale = () => {
       console.log("Sale data:", formData);
       
       toast({
-        title: "Sale Added Successfully!",
-        description: `${formData.type} for ${formData.clientName} has been recorded.`,
+        title: "Vente enregistrée avec succès !",
+        description: `${formData.type} pour ${formData.clientName} a été enregistré.`,
       });
       
       navigate("/");
@@ -105,10 +105,10 @@ const AddSale = () => {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-2">
-              Add New Sale
+              Ajouter une nouvelle vente
             </h1>
             <p className="text-muted-foreground">
-              Record a new booking or travel service sale
+              Enregistrer une nouvelle vente
             </p>
           </div>
           <Button
@@ -117,14 +117,14 @@ const AddSale = () => {
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
+            Retour au tableau de bord
           </Button>
         </div>
 
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-foreground">
-              Sale Information
+              Informations sur la vente
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -132,7 +132,7 @@ const AddSale = () => {
               {/* First Row - Type and System */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="type">Service Type</Label>
+                  <Label htmlFor="type">Type de service</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(value: SaleFormData["type"]) => 
@@ -143,17 +143,23 @@ const AddSale = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Flight Booking">Flight Booking</SelectItem>
-                      <SelectItem value="Hotel Booking">Hotel Booking</SelectItem>
-                      <SelectItem value="Voyage Organisé">Voyage Organisé</SelectItem>
-                      <SelectItem value="Car Rental">Car Rental</SelectItem>
-                      <SelectItem value="Travel Insurance">Travel Insurance</SelectItem>
+                      <SelectItem value="Flight Confirmed">Vol confirmé</SelectItem>
+                      <SelectItem value="Boat Booking">Réservation maritime</SelectItem>
+                      <SelectItem value="Extra Baggage">Bagage supplémentaire</SelectItem>
+                      <SelectItem value="Flight Changing">Modification de vol</SelectItem>
+                      <SelectItem value="Flight On Hold">Réservation aérienne</SelectItem>
+                      <SelectItem value="Hotel Booking">Réservation hôtelière</SelectItem>
+                      <SelectItem value="RW 1">RW (annulation)</SelectItem>
+                      <SelectItem value="RW 2">RW (réservation)</SelectItem>
+                      <SelectItem value="E-VISA">VISA électronique</SelectItem>
+                      <SelectItem value="Organized Travel">Voyage organisé</SelectItem>
+                      <SelectItem value="Travel Insurance">Assurance voyage</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="system">System</Label>
+                  <Label htmlFor="system">Système</Label>
                   <Select
                     value={formData.system}
                     onValueChange={(value: SaleFormData["system"]) => 
@@ -164,8 +170,14 @@ const AddSale = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="TTP">TTP</SelectItem>
-                      <SelectItem value="AR">AR</SelectItem>
+                      <SelectItem value="Divers">Divers</SelectItem>
+                      <SelectItem value="TTP">Top Travel Trip (TTP)</SelectItem>
+                      <SelectItem value="AR">Accelaero (AR)</SelectItem>
+                      <SelectItem value="CIH Hjira">CIH Hjira</SelectItem>
+                      <SelectItem value="CIH Mehdi">CIH Mehdi</SelectItem>
+                      <SelectItem value="BP Ahmed">BP Ahmed</SelectItem>
+                      <SelectItem value="BP Hajj">BP Hajj</SelectItem>
+                      <SelectItem value="BP Hajja">BP Hajja</SelectItem>                      
                     </SelectContent>
                   </Select>
                 </div>
@@ -174,12 +186,12 @@ const AddSale = () => {
               {/* Client Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="clientName">Client Name *</Label>
+                  <Label htmlFor="clientName">Nom du client *</Label>
                   <Input
                     id="clientName"
                     value={formData.clientName}
                     onChange={(e) => handleInputChange("clientName", e.target.value)}
-                    placeholder="Enter client's full name"
+                    placeholder="Entrez le nom complet du client"
                     className={errors.clientName ? "border-destructive" : ""}
                   />
                   {errors.clientName && (
@@ -188,7 +200,7 @@ const AddSale = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phoneNumber">Phone Number *</Label>
+                  <Label htmlFor="phoneNumber">Numéro de téléphone *</Label>
                   <Input
                     id="phoneNumber"
                     value={formData.phoneNumber}
@@ -203,14 +215,14 @@ const AddSale = () => {
               </div>
 
               {/* PNR Field (conditional) */}
-              {formData.type === "Flight Booking" && (
+              {formData.type === "Flight Confirmed" && (
                 <div className="space-y-2">
                   <Label htmlFor="pnr">PNR *</Label>
                   <Input
                     id="pnr"
                     value={formData.pnr || ""}
                     onChange={(e) => handleInputChange("pnr", e.target.value)}
-                    placeholder="Enter PNR code"
+                    placeholder="Entrez le code PNR"
                     className={errors.pnr ? "border-destructive" : ""}
                   />
                   {errors.pnr && (
@@ -222,7 +234,7 @@ const AddSale = () => {
               {/* Pricing */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="buyingPrice">Buying Price (DH) *</Label>
+                  <Label htmlFor="buyingPrice">Prix d'achat (DH) *</Label>
                   <Input
                     id="buyingPrice"
                     type="number"
@@ -239,7 +251,7 @@ const AddSale = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="sellingPrice">Selling Price (DH) *</Label>
+                  <Label htmlFor="sellingPrice">Prix de vente (DH) *</Label>
                   <Input
                     id="sellingPrice"
                     type="number"
@@ -256,7 +268,7 @@ const AddSale = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Profit (DH)</Label>
+                  <Label>Bénéfice (DH)</Label>
                   <div className="h-10 px-3 py-2 border border-border rounded-md bg-muted flex items-center">
                     <span className={`text-sm font-medium ${profit > 0 ? "text-success" : "text-muted-foreground"}`}>
                       {profit > 0 ? `+${profit.toLocaleString()}` : "0"}
@@ -268,7 +280,7 @@ const AddSale = () => {
               {/* Agent and Departure Details */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="agent">Assigned Agent</Label>
+                  <Label htmlFor="agent">Agent assigné</Label>
                   <Select
                     value={formData.agent}
                     onValueChange={(value: SaleFormData["agent"]) => 
@@ -288,14 +300,14 @@ const AddSale = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Departure Date *</Label>
+                  <Label>Date de départ *</Label>
                   <div className="relative">
                     <DatePicker
                       selected={formData.departureDate}
                       onChange={(date: Date | null) => handleInputChange("departureDate", date || new Date())}
                       className="w-full h-10 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                       dateFormat="dd/MM/yyyy"
-                      placeholderText="Select departure date"
+                      placeholderText="Sélectionnez la date de départ"
                       minDate={new Date()}
                     />
                     <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -303,7 +315,7 @@ const AddSale = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="departureTime">Departure Time *</Label>
+                  <Label htmlFor="departureTime">Heure de départ *</Label>
                   <Input
                     id="departureTime"
                     type="time"
@@ -319,12 +331,12 @@ const AddSale = () => {
 
               {/* Notes */}
               <div className="space-y-2">
-                <Label htmlFor="notes">Additional Notes</Label>
+                <Label htmlFor="notes">Notes supplémentaires</Label>
                 <Textarea
                   id="notes"
                   value={formData.notes || ""}
                   onChange={(e) => handleInputChange("notes", e.target.value)}
-                  placeholder="Enter any additional details or special requirements..."
+                  placeholder="Entrez des détails supplémentaires ou des exigences particulières..."
                   rows={4}
                 />
               </div>
@@ -336,7 +348,7 @@ const AddSale = () => {
                   className="flex items-center gap-2 bg-gradient-ocean hover:bg-primary-hover"
                 >
                   <Save className="h-4 w-4" />
-                  Save Sale
+                  Enregistrer la vente
                 </Button>
               </div>
             </form>

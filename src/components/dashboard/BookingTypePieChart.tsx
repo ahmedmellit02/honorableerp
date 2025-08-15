@@ -9,8 +9,8 @@ const BookingTypePieChart = () => {
       return (
         <div className="bg-card border border-border rounded-lg p-3 shadow-card">
           <p className="text-sm font-medium text-foreground">{data.type}</p>
-          <p className="text-sm text-muted-foreground">Count: {data.count}</p>
-          <p className="text-sm text-muted-foreground">Revenue: {data.revenue.toLocaleString()} DH</p>
+          <p className="text-sm text-muted-foreground">Nombre: {data.count}</p>
+          <p className="text-sm text-muted-foreground">Revenu: {data.revenue.toLocaleString()} DH</p>
         </div>
       );
     }
@@ -21,7 +21,7 @@ const BookingTypePieChart = () => {
     <Card className="shadow-card">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-foreground">
-          Bookings by Type
+          Ventes par type
         </CardTitle>
       </CardHeader>
       <CardContent>
