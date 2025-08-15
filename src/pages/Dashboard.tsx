@@ -31,12 +31,12 @@ const Dashboard = () => {
   // Calculate agent stats from real data
   const agentStats = sales.reduce((acc, sale) => {
     if (!acc[sale.agent]) {
-      acc[sale.agent] = { sales: 0, revenue: 0 };
+      acc[sale.agent] = { sales: 0, profit: 0 };
     }
     acc[sale.agent].sales += 1;
-    acc[sale.agent].revenue += sale.sellingPrice;
+    acc[sale.agent].profit += sale.profit;
     return acc;
-  }, {} as Record<string, { sales: number; revenue: number }>);
+  }, {} as Record<string, { sales: number; profit: number }>);
 
   // Get service counts by type
   const flightBookings = typeData.find(item => 
@@ -146,7 +146,7 @@ const Dashboard = () => {
                 <MetricCard
                   key={agent}
                   title={agent}
-                  value={`${stats.revenue.toLocaleString()} DH`}
+                  value={`${stats.profit.toLocaleString()} DH`}
                   change={`${stats.sales} ventes`}
                   changeType="neutral"
                   icon={Users}
