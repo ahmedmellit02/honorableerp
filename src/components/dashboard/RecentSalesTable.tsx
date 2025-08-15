@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { Plane, Hotel, MapPin, Car, Shield } from "lucide-react";
+import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
 
 const RecentSalesTable = () => {
@@ -19,32 +19,42 @@ const RecentSalesTable = () => {
       case "Organized Travel":
         return <MapPin className="h-4 w-4" />;
       case "Boat Booking":
-        return <Car className="h-4 w-4" />;
+        return <SailboatIcon className="h-4 w-4" />;
       case "Travel Insurance":
         return <Shield className="h-4 w-4" />;
+      case "Extra Baggage":
+        return <LuggageIcon className="h-4 w-4" />;
+      case "RW 1":
+      case "RW 2":
+        return <Undo2Icon className="h-4 w-4" />;
       default:
         return null;
     }
   };
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case "Flight Confirmed":
-      case "Flight On Hold":
-      case "Flight Changing":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "Hotel Booking":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "Organized Travel":
-        return "bg-orange-100 text-orange-800 border-orange-200";
-      case "Boat Booking":
-        return "bg-purple-100 text-purple-800 border-purple-200";
-      case "Travel Insurance":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
+  // const getTypeColor = (type: string) => {
+  //   switch (type) {
+  //     case "Flight Confirmed":
+  //     case "Flight On Hold":
+  //     case "Flight Changing":
+  //       return "bg-blue-100 text-blue-800 border-blue-200";
+  //     case "Hotel Booking":
+  //       return "bg-green-100 text-green-800 border-green-200";
+  //     case "Organized Travel":
+  //       return "bg-orange-100 text-orange-800 border-orange-200";
+  //     case "Boat Booking":
+  //       return "bg-purple-100 text-purple-800 border-purple-200";
+  //     case "Travel Insurance":
+  //       return "bg-red-100 text-red-800 border-red-200";
+  //     case "RW 1":
+  //     case "RW 2":
+  //       return "bg-red-100 text-red-800 border-red-200";
+  //     case "Extra Baggage":
+  //       return "bg-green-100 text-green-800 border-green-200";
+  //     default:
+  //       return "bg-gray-100 text-gray-800 border-gray-200";
+  //   }
+  // };
 
   const recentSales = sales.slice(0, 5);
 
@@ -120,7 +130,7 @@ const RecentSalesTable = () => {
                   <td className="py-3 px-2">
                     <Badge 
                       variant="outline" 
-                      className={`${getTypeColor(sale.type)} flex items-center gap-1 w-fit`}
+                      className={`flex items-center gap-1 w-fit`}
                     >
                       {getTypeIcon(sale.type)}
                       <span className="text-xs">{sale.type}</span>

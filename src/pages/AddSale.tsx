@@ -53,10 +53,6 @@ const AddSale = () => {
       newErrors.pnr = "Le PNR est requis pour les réservations de vol";
     }
 
-    if (Number(formData.buyingPrice) <= 0) {
-      newErrors.buyingPrice = "Le prix d'achat doit être supérieur à 0";
-    }
-
     if (Number(formData.sellingPrice) <= 0) {
       newErrors.sellingPrice = "Le prix de vente doit être supérieur à 0";
     }
