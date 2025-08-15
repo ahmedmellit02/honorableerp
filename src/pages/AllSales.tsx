@@ -122,8 +122,8 @@ const AllSales = () => {
                     {sales.map((sale) => (
                       <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/50">
                         <td className="py-3 px-2">
-                          <span className="text-xs font-mono text-muted-foreground">
-                            {sale.id.slice(0, 8)}...
+                          <span className="text-sm font-medium text-foreground">
+                            #{sale.numericId}
                           </span>
                         </td>
                         <td className="py-3 px-2">

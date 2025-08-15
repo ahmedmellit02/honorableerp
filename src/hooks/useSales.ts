@@ -24,6 +24,7 @@ export const useSales = () => {
       
       return data.map(sale => ({
         id: sale.id,
+        numericId: sale.numeric_id,
         type: sale.type as Sale["type"],
         clientName: sale.client_name,
         phoneNumber: sale.phone_number,

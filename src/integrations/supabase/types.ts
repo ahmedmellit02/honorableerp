@@ -24,6 +24,7 @@ export type Database = {
           departure_time: string
           id: string
           notes: string | null
+          numeric_id: number
           phone_number: string
           pnr: string | null
           profit: number | null
@@ -42,6 +43,7 @@ export type Database = {
           departure_time: string
           id?: string
           notes?: string | null
+          numeric_id?: number
           phone_number: string
           pnr?: string | null
           profit?: number | null
@@ -60,6 +62,7 @@ export type Database = {
           departure_time?: string
           id?: string
           notes?: string | null
+          numeric_id?: number
           phone_number?: string
           pnr?: string | null
           profit?: number | null

@@ -1,5 +1,6 @@
 export interface Sale {
   id: string;
+  numericId: number;
   type: "Flight Confirmed" | "Boat Booking" | "Extra Baggage" | "Flight Changing" | "Flight On Hold" | "Hotel Booking" | "RW 1" | "RW 2" | "E-VISA" | "Organized Travel" | "Travel Insurance";
   clientName: string;
   phoneNumber: string;
