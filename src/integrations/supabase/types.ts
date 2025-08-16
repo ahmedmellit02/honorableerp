@@ -18,6 +18,9 @@ export type Database = {
         Row: {
           agent: string
           buying_price: number
+          cashed_in: boolean | null
+          cashed_in_at: string | null
+          cashed_in_by: string | null
           client_name: string
           created_at: string
           departure_date: string
@@ -37,6 +40,9 @@ export type Database = {
         Insert: {
           agent: string
           buying_price: number
+          cashed_in?: boolean | null
+          cashed_in_at?: string | null
+          cashed_in_by?: string | null
           client_name: string
           created_at?: string
           departure_date: string
@@ -56,6 +62,9 @@ export type Database = {
         Update: {
           agent?: string
           buying_price?: number
+          cashed_in?: boolean | null
+          cashed_in_at?: string | null
+          cashed_in_by?: string | null
           client_name?: string
           created_at?: string
           departure_date?: string
@@ -70,6 +79,24 @@ export type Database = {
           system?: string
           type?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
         Relationships: []
@@ -95,13 +122,21 @@ export type Database = {
       }
     }
     Functions: {
+      cash_in_sale: {
+        Args: { sale_id: string }
+        Returns: undefined
+      }
       create_demo_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      get_user_role: {
+        Args: { user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "agent" | "cashier"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -228,6 +263,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["agent", "cashier"],
+    },
   },
 } as const
