@@ -3,6 +3,7 @@ import MetricCard from "@/components/dashboard/MetricCard";
 import SalesChart from "@/components/dashboard/SalesChart";
 import BookingTypePieChart from "@/components/dashboard/BookingTypePieChart";
 import RecentSalesTable from "@/components/dashboard/RecentSalesTable";
+import RoleAssignment from "@/components/RoleAssignment";
 import Navigation from "@/components/ui/navigation";
 import { 
   DollarSign, 
@@ -156,6 +157,11 @@ const Dashboard = () => {
             </div>
           </div>
         )}
+
+        {/* Role Assignment */}
+        <div className="mb-8">
+          <RoleAssignment />
+        </div>
 
         {/* Recent Sales Table */}
         <RecentSalesTable />
