@@ -55,22 +55,34 @@ export const useAddSale = () => {
     mutationFn: async (saleData: SaleFormData) => {
       if (!user) throw new Error("User not authenticated");
 
+      // Prepare the basic sale data
+      const saleInsertData: any = {
+        user_id: user.id,
+        type: saleData.type,
+        client_name: saleData.clientName,
+        phone_number: saleData.phoneNumber,
+        buying_price: Number(saleData.buyingPrice),
+        selling_price: Number(saleData.sellingPrice),
+        system: saleData.system,
+        agent: saleData.agent,
+        notes: saleData.notes || null,
+      };
+
+      // Only add flight-specific fields for "Flight Confirmed" sales
+      if (saleData.type === "Flight Confirmed") {
+        saleInsertData.pnr = saleData.pnr || null;
+        saleInsertData.departure_date = saleData.departureDate.toISOString().split('T')[0];
+        saleInsertData.departure_time = saleData.departureTime;
+      } else {
+        // For other types, set default values or null
+        saleInsertData.pnr = null;
+        saleInsertData.departure_date = new Date().toISOString().split('T')[0]; // Default to today
+        saleInsertData.departure_time = "00:00:00"; // Default time
+      }
+
       const { data, error } = await supabase
         .from("sales")
-        .insert({
-          user_id: user.id,
-          type: saleData.type,
-          client_name: saleData.clientName,
-          phone_number: saleData.phoneNumber,
-          pnr: saleData.pnr || null,
-          buying_price: Number(saleData.buyingPrice),
-          selling_price: Number(saleData.sellingPrice),
-          system: saleData.system,
-          agent: saleData.agent,
-          departure_date: saleData.departureDate.toISOString().split('T')[0],
-          departure_time: saleData.departureTime,
-          notes: saleData.notes || null,
-        })
+        .insert(saleInsertData)
         .select()
         .single();
 
