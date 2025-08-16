@@ -37,7 +37,10 @@ export const useSales = () => {
         departureTime: sale.departure_time,
         notes: sale.notes,
         createdAt: new Date(sale.created_at),
-        profit: Number(sale.profit)
+        profit: Number(sale.profit),
+        cashedIn: sale.cashed_in || false,
+        cashedInAt: sale.cashed_in_at ? new Date(sale.cashed_in_at) : undefined,
+        cashedInBy: sale.cashed_in_by,
       })) as Sale[];
     },
     enabled: !!user,

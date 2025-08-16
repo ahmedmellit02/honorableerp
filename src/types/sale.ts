@@ -14,6 +14,9 @@ export interface Sale {
   notes?: string;
   createdAt: Date;
   profit: number;
+  cashedIn: boolean;
+  cashedInAt?: Date;
+  cashedInBy?: string;
 }
 
 export interface SaleFormData {

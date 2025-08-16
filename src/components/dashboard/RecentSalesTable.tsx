@@ -3,13 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ExternalLink, Download } from "lucide-react";
+import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ExternalLink, Download, Euro, CheckCircle } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
+import { useUserRole, useCashInSale } from "@/hooks/useUserRole";
+import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import * as XLSX from 'xlsx';
 
 const RecentSalesTable = () => {
   const { data: sales = [], isLoading } = useSales();
+  const { data: userRole } = useUserRole();
+  const cashInMutation = useCashInSale();
+  const { toast } = useToast();
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -60,6 +65,22 @@ const RecentSalesTable = () => {
   // };
 
   const recentSales = sales.slice(0, 5);
+
+  const handleCashIn = async (saleId: string) => {
+    try {
+      await cashInMutation.mutateAsync(saleId);
+      toast({
+        title: "Encaissement réussi",
+        description: "La vente a été marquée comme encaissée.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'encaisser cette vente.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const downloadExcel = () => {
     if (sales.length === 0) return;
@@ -168,6 +189,11 @@ const RecentSalesTable = () => {
                 <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                   Date
                 </th>
+                {userRole === 'cashier' && (
+                  <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                    Encaissement
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -215,6 +241,27 @@ const RecentSalesTable = () => {
                       {format(sale.createdAt, "dd MMM")}
                     </span>
                   </td>
+                  {userRole === 'cashier' && (
+                    <td className="py-3 px-2">
+                      {sale.cashedIn ? (
+                        <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit">
+                          <CheckCircle className="h-3 w-3" />
+                          Encaissé
+                        </Badge>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCashIn(sale.id)}
+                          disabled={cashInMutation.isPending}
+                          className="text-xs hover:bg-success hover:text-white hover:border-success"
+                        >
+                          <Euro className="h-3 w-3 mr-1" />
+                          Encaisser
+                        </Button>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
