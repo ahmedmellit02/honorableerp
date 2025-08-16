@@ -35,6 +35,14 @@ const Navigation = () => {
     },
   ];
 
+  // Filter out "Ajouter une vente" for restricted user
+  const filteredNavItems = navItems.filter(item => {
+    if (item.href === "/add-sale" && user?.email === "mohammedmellit@chorafaa.com") {
+      return false;
+    }
+    return true;
+  });
+
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -101,7 +109,7 @@ const Navigation = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            {navItems.map((item) => {
+            {filteredNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.href;
               
