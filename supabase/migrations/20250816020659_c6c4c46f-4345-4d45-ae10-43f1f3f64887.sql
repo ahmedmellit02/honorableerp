@@ -1,0 +1,34 @@
+-- Update RLS policy to allow updates for user roles
+DROP POLICY IF EXISTS "Users can update their own role" ON public.user_roles;
+CREATE POLICY "Users can update their own role" 
+ON public.user_roles 
+FOR UPDATE 
+USING (auth.uid() = user_id);
+
+-- Create a function to initialize default user roles after signup
+CREATE OR REPLACE FUNCTION public.handle_new_user_role()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+    -- Assign cashier role to mohammedelasri@chorafaa.com
+    IF NEW.email = 'mohammedelasri@chorafaa.com' THEN
+        INSERT INTO public.user_roles (user_id, role)
+        VALUES (NEW.id, 'cashier');
+    ELSE
+        -- Default role for all other users
+        INSERT INTO public.user_roles (user_id, role)
+        VALUES (NEW.id, 'agent');
+    END IF;
+    
+    RETURN NEW;
+END;
+$$;
+
+-- Create trigger to automatically assign roles when users are created
+DROP TRIGGER IF EXISTS on_auth_user_created_assign_role ON auth.users;
+CREATE TRIGGER on_auth_user_created_assign_role
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user_role();
