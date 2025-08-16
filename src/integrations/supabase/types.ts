@@ -122,6 +122,13 @@ export type Database = {
       }
     }
     Functions: {
+      assign_role_by_email: {
+        Args: {
+          user_email: string
+          user_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: undefined
+      }
       cash_in_sale: {
         Args: { sale_id: string }
         Returns: undefined
