@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,30 @@ import "react-datepicker/dist/react-datepicker.css";
 import { SaleFormData } from "@/types/sale";
 import { CalendarIcon, Save, ArrowLeft } from "lucide-react";
 import { useAddSale } from "@/hooks/useSales";
+import { useAuth } from "@/hooks/useAuth";
 
 const AddSale = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const addSaleMutation = useAddSale();
+  const { user } = useAuth();
+  
+  // Get agent based on user email
+  const getAgentFromEmail = (email: string | undefined): SaleFormData["agent"] => {
+    if (!email) return "Ahmed";
+    
+    const emailToAgent: Record<string, SaleFormData["agent"]> = {
+      "mohammedelasri@chorafaa.com": "Asri",
+      "achrafelouahidy@chorafaa.com": "Achraf",
+      "mehdimellit@chorafaa.com": "Mehdi",
+      "ahmedmellit@chorafaa.com": "Ahmed"
+    };
+    
+    return emailToAgent[email] || "Ahmed";
+  };
+
+  // Check if user should have access
+  const isRestrictedUser = user?.email === "mohammedmellit@chorafaa.com";
   
   const [formData, setFormData] = useState<SaleFormData>({
     type: "Flight Confirmed",
@@ -28,11 +47,19 @@ const AddSale = () => {
     buyingPrice: 0,
     sellingPrice: 0,
     system: "TTP",
-    agent: "Ahmed",
+    agent: getAgentFromEmail(user?.email),
     departureDate: new Date(),
     departureTime: "",
     notes: "",
   });
+
+  // Update agent when user changes
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      agent: getAgentFromEmail(user?.email)
+    }));
+  }, [user?.email]);
 
   const [errors, setErrors] = useState<Partial<SaleFormData>>({});
 
@@ -49,8 +76,8 @@ const AddSale = () => {
       newErrors.phoneNumber = "Veuillez entrer un numéro de téléphone valide";
     }
 
-    if ((formData.type === "Flight Confirmed" || formData.type === "Flight On Hold") && !formData.pnr?.trim()) {
-      newErrors.pnr = "Le PNR est requis pour les réservations de vol";
+    if (formData.type === "Flight Confirmed" && !formData.pnr?.trim()) {
+      newErrors.pnr = "Le PNR est requis pour les vols confirmés";
     }
 
     if (Number(formData.sellingPrice) <= 0) {
@@ -61,8 +88,8 @@ const AddSale = () => {
       newErrors.sellingPrice = "Le prix de vente doit être supérieur au prix d'achat";
     }
 
-    if (!formData.departureTime) {
-      newErrors.departureTime = "L'heure de départ est requise";
+    if (formData.type === "Flight Confirmed" && !formData.departureTime) {
+      newErrors.departureTime = "L'heure de départ est requise pour les vols confirmés";
     }
 
     setErrors(newErrors);
@@ -102,6 +129,29 @@ const AddSale = () => {
   };
 
   const profit = Number(formData.sellingPrice) - Number(formData.buyingPrice);
+
+  // Redirect restricted users
+  if (isRestrictedUser) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground mb-4">
+              Accès restreint
+            </h1>
+            <p className="text-muted-foreground mb-6">
+              Vous n'avez pas l'autorisation d'ajouter des ventes.
+            </p>
+            <Button onClick={() => navigate("/")} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Retour au tableau de bord
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -221,21 +271,54 @@ const AddSale = () => {
                 </div>
               </div>
 
-              {/* PNR Field (conditional) */}
-              {(formData.type === "Flight Confirmed" || formData.type === "Flight On Hold") && (
-                <div className="space-y-2">
-                  <Label htmlFor="pnr">PNR *</Label>
-                  <Input
-                    id="pnr"
-                    value={formData.pnr || ""}
-                    onChange={(e) => handleInputChange("pnr", e.target.value)}
-                    placeholder="Entrez le code PNR"
-                    className={errors.pnr ? "border-destructive" : ""}
-                  />
-                  {errors.pnr && (
-                    <p className="text-sm text-destructive">{errors.pnr}</p>
-                  )}
-                </div>
+              {/* Flight Information Fields (only for vol confirmé) */}
+              {formData.type === "Flight Confirmed" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="pnr">PNR *</Label>
+                    <Input
+                      id="pnr"
+                      value={formData.pnr || ""}
+                      onChange={(e) => handleInputChange("pnr", e.target.value)}
+                      placeholder="Entrez le code PNR"
+                      className={errors.pnr ? "border-destructive" : ""}
+                    />
+                    {errors.pnr && (
+                      <p className="text-sm text-destructive">{errors.pnr}</p>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Date de départ *</Label>
+                      <div className="relative">
+                        <DatePicker
+                          selected={formData.departureDate}
+                          onChange={(date: Date | null) => handleInputChange("departureDate", date || new Date())}
+                          className="w-full h-10 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                          dateFormat="dd/MM/yyyy"
+                          placeholderText="Sélectionnez la date de départ"
+                          minDate={new Date()}
+                        />
+                        <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="departureTime">Heure de départ *</Label>
+                      <Input
+                        id="departureTime"
+                        type="time"
+                        value={formData.departureTime}
+                        onChange={(e) => handleInputChange("departureTime", e.target.value)}
+                        className={errors.departureTime ? "border-destructive" : ""}
+                      />
+                      {errors.departureTime && (
+                        <p className="text-sm text-destructive">{errors.departureTime}</p>
+                      )}
+                    </div>
+                  </div>
+                </>
               )}
 
               {/* Pricing */}
@@ -284,56 +367,15 @@ const AddSale = () => {
                 </div>
               </div>
 
-              {/* Agent and Departure Details */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="agent">Agent assigné</Label>
-                  <Select
-                    value={formData.agent}
-                    onValueChange={(value: SaleFormData["agent"]) => 
-                      handleInputChange("agent", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Ahmed">Ahmed</SelectItem>
-                      <SelectItem value="Mehdi">Mehdi</SelectItem>
-                      <SelectItem value="Achraf">Achraf</SelectItem>
-                      <SelectItem value="Asri">Asri</SelectItem>
-                    </SelectContent>
-                  </Select>
+              {/* Agent Assignment (auto-assigned based on user email) */}
+              <div className="space-y-2">
+                <Label>Agent assigné</Label>
+                <div className="h-10 px-3 py-2 border border-border rounded-md bg-muted flex items-center">
+                  <span className="text-sm">{formData.agent}</span>
                 </div>
-
-                <div className="space-y-2">
-                  <Label>Date de départ *</Label>
-                  <div className="relative">
-                    <DatePicker
-                      selected={formData.departureDate}
-                      onChange={(date: Date | null) => handleInputChange("departureDate", date || new Date())}
-                      className="w-full h-10 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                      dateFormat="dd/MM/yyyy"
-                      placeholderText="Sélectionnez la date de départ"
-                      minDate={new Date()}
-                    />
-                    <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="departureTime">Heure de départ *</Label>
-                  <Input
-                    id="departureTime"
-                    type="time"
-                    value={formData.departureTime}
-                    onChange={(e) => handleInputChange("departureTime", e.target.value)}
-                    className={errors.departureTime ? "border-destructive" : ""}
-                  />
-                  {errors.departureTime && (
-                    <p className="text-sm text-destructive">{errors.departureTime}</p>
-                  )}
-                </div>
+                <p className="text-xs text-muted-foreground">
+                  Agent automatiquement assigné selon votre compte
+                </p>
               </div>
 
               {/* Notes */}
