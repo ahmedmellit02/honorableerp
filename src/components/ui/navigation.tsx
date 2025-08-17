@@ -203,7 +203,6 @@ const Navigation = () => {
                 className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
               >
                 <LogOut className="h-4 w-4" />
-                <span>Déconnexion</span>
               </Button>
             </div>
           </div>

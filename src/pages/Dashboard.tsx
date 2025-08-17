@@ -214,7 +214,7 @@ const Dashboard = () => {
         {/* Agent Performance */}
         {Object.keys(agentStats).length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Performance des agents</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">Performance des agents au mois courant</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {Object.entries(agentStats).map(([agent, stats]) => {
                 const profitPercentage = totalProfit > 0 ? ((stats.profit / totalProfit) * 100).toFixed(1) : 0;
