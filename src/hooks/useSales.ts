@@ -110,9 +110,7 @@ export const useSalesMonthly = () => {
       if (!user) return [];
       
       const { data, error } = await supabase
-        .from("sales_monthly_aggregates")
-        .select("*")
-        .order("month", { ascending: true });
+        .rpc("get_sales_monthly_aggregates");
       
       if (error) {
         console.error("Error fetching monthly sales:", error);
@@ -139,9 +137,7 @@ export const useSalesByType = () => {
       if (!user) return [];
       
       const { data, error } = await supabase
-        .from("sales_by_type_aggregates")
-        .select("*")
-        .order("count", { ascending: false });
+        .rpc("get_sales_by_type_aggregates");
       
       if (error) {
         console.error("Error fetching sales by type:", error);

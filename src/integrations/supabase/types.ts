@@ -136,23 +136,7 @@ export type Database = {
       }
     }
     Views: {
-      sales_by_type_aggregates: {
-        Row: {
-          count: number | null
-          revenue: number | null
-          type: string | null
-        }
-        Relationships: []
-      }
-      sales_monthly_aggregates: {
-        Row: {
-          month: string | null
-          profit: number | null
-          revenue: number | null
-          sales: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       assign_role_by_email: {
@@ -175,6 +159,23 @@ export type Database = {
         Returns: {
           current_balance: number
           system: string
+        }[]
+      }
+      get_sales_by_type_aggregates: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          count: number
+          revenue: number
+          type: string
+        }[]
+      }
+      get_sales_monthly_aggregates: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          month: string
+          profit: number
+          revenue: number
+          sales: number
         }[]
       }
       get_system_balance: {
