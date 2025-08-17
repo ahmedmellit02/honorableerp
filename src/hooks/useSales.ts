@@ -35,6 +35,7 @@ export const useSales = () => {
         agent: sale.agent as Sale["agent"],
         departureDate: new Date(sale.departure_date),
         departureTime: sale.departure_time,
+        destination: sale.destination,
         notes: sale.notes,
         createdAt: new Date(sale.created_at),
         profit: Number(sale.profit),
@@ -66,6 +67,7 @@ export const useAddSale = () => {
         system: saleData.system,
         agent: saleData.agent,
         notes: saleData.notes || null,
+        destination: saleData.destination || null,
       };
 
       // Only add flight-specific fields for "Flight Confirmed" sales
