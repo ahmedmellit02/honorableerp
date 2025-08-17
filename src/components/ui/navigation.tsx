@@ -135,8 +135,6 @@ const Navigation = () => {
             })}
             
             <div className="flex items-center space-x-2 pl-4 border-l border-border">
-              <span className="text-sm text-muted-foreground">{user?.email}</span>
-              
               <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                 <DialogTrigger asChild>
                   <Button
