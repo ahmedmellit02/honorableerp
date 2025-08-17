@@ -200,17 +200,20 @@ const Dashboard = () => {
         <h2 className="text-xl font-semibold text-foreground mb-4">Top 3 services du mois courant</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {topServices.length > 0 ? (
-            topServices.map((service, index) => (
-              <MetricCard
-                key={service.type}
-                title={service.type}
-                value={`${service.totalProfit.toLocaleString()} DH`}
-                change={`${service.count} ventes`}
-                changeType={index === 0 ? "positive" : "neutral"}
-                icon={index === 0 ? Target : index === 1 ? TrendingUp : DollarSign}
-                gradient={index === 0 ? "bg-gradient-ocean" : index === 1 ? "bg-gradient-tropical" : "bg-gradient-sunset"}
-              />
-            ))
+            topServices.map((service, index) => {
+              const profitPercentage = totalProfit > 0 ? ((service.totalProfit / totalProfit) * 100).toFixed(1) : 0;
+              return (
+                <MetricCard
+                  key={service.type}
+                  title={service.type}
+                  value={`${profitPercentage}%`}
+                  change={`${service.count} ventes`}
+                  changeType={index === 0 ? "positive" : "neutral"}
+                  icon={index === 0 ? Target : index === 1 ? TrendingUp : DollarSign}
+                  gradient={index === 0 ? "bg-gradient-ocean" : index === 1 ? "bg-gradient-tropical" : "bg-gradient-sunset"}
+                />
+              );
+            })
           ) : (
             <div className="col-span-full text-center text-muted-foreground py-8">
               Aucune vente ce mois-ci
