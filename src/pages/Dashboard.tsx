@@ -24,11 +24,19 @@ const Dashboard = () => {
   const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
 
-  // Calculate metrics from real data
+  // Calculate total metrics from real data
   const totalSales = sales.length;
   const totalRevenue = sales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
   const totalProfit = sales.reduce((sum, sale) => sum + sale.profit, 0);
   const avgSaleValue = totalSales > 0 ? totalRevenue / totalSales : 0;
+
+  // Calculate daily metrics (today's sales only)
+  const today = new Date().toDateString();
+  const todaySales = sales.filter(sale => sale.createdAt.toDateString() === today);
+  const dailySalesCount = todaySales.length;
+  const dailyRevenue = todaySales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
+  const dailyProfit = todaySales.reduce((sum, sale) => sum + sale.profit, 0);
+  const dailyAvgSaleValue = dailySalesCount > 0 ? dailyRevenue / dailySalesCount : 0;
 
   // Calculate agent stats from real data
   const agentStats = sales.reduce((acc, sale) => {
@@ -83,32 +91,66 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricCard
-            title="Ventes totales"
-            value={totalSales.toString()}
-            icon={TrendingUp}
-            gradient="bg-gradient-ocean"
-          />
-          <MetricCard
-            title="Revenu total"
-            value={`${totalRevenue.toLocaleString()} DH`}
-            icon={DollarSign}
-            gradient="bg-gradient-tropical"
-          />
-          <MetricCard
-            title="Bénéfice total"
-            value={`${totalProfit.toLocaleString()} DH`}
-            icon={Target}
-            gradient="bg-gradient-sunset"
-          />
-          <MetricCard
-            title="Valeur moyenne"
-            value={`${Math.round(avgSaleValue).toLocaleString()} DH`}
-            icon={Calendar}
-            gradient="bg-gradient-ocean"
-          />
+        {/* Total Metrics Grid */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques totales</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <MetricCard
+              title="Ventes totales"
+              value={totalSales.toString()}
+              icon={TrendingUp}
+              gradient="bg-gradient-ocean"
+            />
+            <MetricCard
+              title="Revenu total"
+              value={`${totalRevenue.toLocaleString()} DH`}
+              icon={DollarSign}
+              gradient="bg-gradient-tropical"
+            />
+            <MetricCard
+              title="Bénéfice total"
+              value={`${totalProfit.toLocaleString()} DH`}
+              icon={Target}
+              gradient="bg-gradient-sunset"
+            />
+            <MetricCard
+              title="Valeur moyenne"
+              value={`${Math.round(avgSaleValue).toLocaleString()} DH`}
+              icon={Calendar}
+              gradient="bg-gradient-ocean"
+            />
+          </div>
+        </div>
+
+        {/* Daily Metrics Grid */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques du jour</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <MetricCard
+              title="Ventes aujourd'hui"
+              value={dailySalesCount.toString()}
+              icon={TrendingUp}
+              gradient="bg-gradient-tropical"
+            />
+            <MetricCard
+              title="Revenu du jour"
+              value={`${dailyRevenue.toLocaleString()} DH`}
+              icon={DollarSign}
+              gradient="bg-gradient-sunset"
+            />
+            <MetricCard
+              title="Bénéfice du jour"
+              value={`${dailyProfit.toLocaleString()} DH`}
+              icon={Target}
+              gradient="bg-gradient-ocean"
+            />
+            <MetricCard
+              title="Valeur moyenne du jour"
+              value={`${Math.round(dailyAvgSaleValue).toLocaleString()} DH`}
+              icon={Calendar}
+              gradient="bg-gradient-tropical"
+            />
+          </div>
         </div>
 
         {/* Balance Section */}
