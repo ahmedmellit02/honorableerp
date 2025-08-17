@@ -99,6 +99,10 @@ export const useAddSale = () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
       queryClient.invalidateQueries({ queryKey: ["sales-daily"] });
       queryClient.invalidateQueries({ queryKey: ["sales-by-type"] });
+      // Force refetch of all sales-related queries
+      queryClient.refetchQueries({ queryKey: ["sales"] });
+      queryClient.refetchQueries({ queryKey: ["sales-daily"] });
+      queryClient.refetchQueries({ queryKey: ["sales-by-type"] });
     },
   });
 };
