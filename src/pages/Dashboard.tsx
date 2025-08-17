@@ -24,10 +24,21 @@ const Dashboard = () => {
   const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
 
-  // Calculate total metrics from real data
-  const totalSales = sales.length;
-  const totalRevenue = sales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
-  const totalProfit = sales.reduce((sum, sale) => sum + sale.profit, 0);
+  // Get current month's start and end dates
+  const now = new Date();
+  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+  // Filter sales for current month
+  const currentMonthSales = sales.filter(sale => {
+    const saleDate = new Date(sale.createdAt);
+    return saleDate >= currentMonthStart && saleDate <= currentMonthEnd;
+  });
+
+  // Calculate monthly metrics from current month data
+  const totalSales = currentMonthSales.length;
+  const totalRevenue = currentMonthSales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
+  const totalProfit = currentMonthSales.reduce((sum, sale) => sum + sale.profit, 0);
   const avgSaleValue = totalSales > 0 ? totalRevenue / totalSales : 0;
 
   // Calculate daily metrics (today's sales only)
@@ -38,8 +49,8 @@ const Dashboard = () => {
   const dailyProfit = todaySales.reduce((sum, sale) => sum + sale.profit, 0);
   const dailyAvgSaleValue = dailySalesCount > 0 ? dailyRevenue / dailySalesCount : 0;
 
-  // Calculate agent stats from real data
-  const agentStats = sales.reduce((acc, sale) => {
+  // Calculate agent stats from current month data
+  const agentStats = currentMonthSales.reduce((acc, sale) => {
     if (!acc[sale.agent]) {
       acc[sale.agent] = { sales: 0, profit: 0 };
     }
@@ -91,9 +102,9 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Total Metrics Grid */}
+        {/* Monthly Metrics Grid */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques totales</h2>
+          <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques du mois</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <MetricCard
               title="Ventes totales"
