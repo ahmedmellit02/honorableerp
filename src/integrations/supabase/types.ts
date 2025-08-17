@@ -58,6 +58,7 @@ export type Database = {
           created_at: string
           departure_date: string
           departure_time: string
+          destination: string | null
           id: string
           notes: string | null
           numeric_id: number
@@ -80,6 +81,7 @@ export type Database = {
           created_at?: string
           departure_date: string
           departure_time: string
+          destination?: string | null
           id?: string
           notes?: string | null
           numeric_id?: number
@@ -102,6 +104,7 @@ export type Database = {
           created_at?: string
           departure_date?: string
           departure_time?: string
+          destination?: string | null
           id?: string
           notes?: string | null
           numeric_id?: number
