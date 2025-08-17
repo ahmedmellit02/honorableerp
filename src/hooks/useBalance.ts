@@ -27,8 +27,7 @@ export const useSystemBalances = () => {
       if (!user) return [];
       
       const { data, error } = await supabase
-        .from("system_balances")
-        .select("*");
+        .rpc("get_all_system_balances");
       
       if (error) {
         console.error("Error fetching system balances:", error);

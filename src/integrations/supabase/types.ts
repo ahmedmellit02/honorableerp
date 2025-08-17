@@ -153,13 +153,6 @@ export type Database = {
         }
         Relationships: []
       }
-      system_balances: {
-        Row: {
-          current_balance: number | null
-          system: string | null
-        }
-        Relationships: []
-      }
     }
     Functions: {
       assign_role_by_email: {
@@ -176,6 +169,13 @@ export type Database = {
       create_demo_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      get_all_system_balances: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          current_balance: number
+          system: string
+        }[]
       }
       get_system_balance: {
         Args: { system_name: string }
