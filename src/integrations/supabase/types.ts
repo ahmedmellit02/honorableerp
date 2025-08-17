@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      balance_records: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          system: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          system: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          system?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       sales: {
         Row: {
           agent: string
@@ -120,6 +153,13 @@ export type Database = {
         }
         Relationships: []
       }
+      system_balances: {
+        Row: {
+          current_balance: number | null
+          system: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       assign_role_by_email: {
@@ -136,6 +176,10 @@ export type Database = {
       create_demo_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      get_system_balance: {
+        Args: { system_name: string }
+        Returns: number
       }
       get_user_role: {
         Args: { user_id: string }

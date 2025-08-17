@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, Plane, LogOut, Settings } from "lucide-react";
+import { BarChart3, Plus, Plane, LogOut, Settings, Wallet } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -33,6 +33,11 @@ const Navigation = () => {
       href: "/add-sale", 
       icon: Plus,
     },
+    ...(user?.email === 'mohammedelasri@chorafaa.com' ? [{
+      label: "Contrôle du solde",
+      href: "/balance-control", 
+      icon: Wallet,
+    }] : []),
   ];
 
   // Filter out "Ajouter une vente" for restricted user

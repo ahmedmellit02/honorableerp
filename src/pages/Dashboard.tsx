@@ -15,12 +15,14 @@ import {
   Target
 } from "lucide-react";
 import { useSales, useSalesMonthly, useSalesByType, useTopServicesCurrentMonth } from "@/hooks/useSales";
+import { useSystemBalances } from "@/hooks/useBalance";
 
 const Dashboard = () => {
   const { data: sales = [], isLoading: salesLoading } = useSales();
   const { data: monthlyData = [], isLoading: monthlyLoading } = useSalesMonthly();
   const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
   const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
+  const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
 
   // Calculate metrics from real data
   const totalSales = sales.length;
@@ -51,7 +53,7 @@ const Dashboard = () => {
     item.type === "Organized Travel"
   )?.count || 0;
 
-  const isLoading = salesLoading || monthlyLoading || typeLoading || topServicesLoading;
+  const isLoading = salesLoading || monthlyLoading || typeLoading || topServicesLoading || balanceLoading;
 
   if (isLoading) {
     return (
@@ -107,6 +109,25 @@ const Dashboard = () => {
             icon={Calendar}
             gradient="bg-gradient-ocean"
           />
+        </div>
+
+        {/* Balance Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-foreground mb-4">Solde Théorique</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {systemBalances.map((balance) => (
+              <MetricCard
+                key={balance.system}
+                title={balance.system}
+                value={`${new Intl.NumberFormat('fr-FR', {
+                  style: 'currency',
+                  currency: 'MAD'
+                }).format(balance.current_balance)}`}
+                icon={DollarSign}
+                gradient="bg-gradient-ocean"
+              />
+            ))}
+          </div>
         </div>
 
         {/* Charts */}
