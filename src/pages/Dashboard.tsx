@@ -16,8 +16,10 @@ import {
 } from "lucide-react";
 import { useSales, useSalesDaily, useSalesByType, useTopServicesCurrentMonth } from "@/hooks/useSales";
 import { useSystemBalances } from "@/hooks/useBalance";
+import { useAuth } from "@/hooks/useAuth";
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const { data: sales = [], isLoading: salesLoading } = useSales();
   const { data: dailyData = [], isLoading: dailyLoading } = useSalesDaily();
   const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
@@ -74,6 +76,9 @@ const Dashboard = () => {
 
   const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading;
 
+  // Check if user can see monthly statistics
+  const canSeeMonthlyStats = user?.email === 'mohammedmellit@chorafaa.com' || user?.email === 'mohammedalasri@chorafaa.com';
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -102,36 +107,38 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Monthly Metrics Grid */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques du mois</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MetricCard
-              title="Ventes totales"
-              value={totalSales.toString()}
-              icon={TrendingUp}
-              gradient="bg-gradient-ocean"
-            />
-            <MetricCard
-              title="Revenu total"
-              value={`${totalRevenue.toLocaleString()} DH`}
-              icon={DollarSign}
-              gradient="bg-gradient-tropical"
-            />
-            <MetricCard
-              title="Bénéfice total"
-              value={`${totalProfit.toLocaleString()} DH`}
-              icon={Target}
-              gradient="bg-gradient-sunset"
-            />
-            <MetricCard
-              title="Valeur moyenne"
-              value={`${Math.round(avgSaleValue).toLocaleString()} DH`}
-              icon={Calendar}
-              gradient="bg-gradient-ocean"
-            />
+        {/* Monthly Metrics Grid - Only for specific users */}
+        {canSeeMonthlyStats && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques du mois</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <MetricCard
+                title="Ventes totales"
+                value={totalSales.toString()}
+                icon={TrendingUp}
+                gradient="bg-gradient-ocean"
+              />
+              <MetricCard
+                title="Revenu total"
+                value={`${totalRevenue.toLocaleString()} DH`}
+                icon={DollarSign}
+                gradient="bg-gradient-tropical"
+              />
+              <MetricCard
+                title="Bénéfice total"
+                value={`${totalProfit.toLocaleString()} DH`}
+                icon={Target}
+                gradient="bg-gradient-sunset"
+              />
+              <MetricCard
+                title="Valeur moyenne"
+                value={`${Math.round(avgSaleValue).toLocaleString()} DH`}
+                icon={Calendar}
+                gradient="bg-gradient-ocean"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Daily Metrics Grid */}
         <div className="mb-8">
