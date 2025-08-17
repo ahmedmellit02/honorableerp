@@ -77,7 +77,7 @@ const Dashboard = () => {
   const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading;
 
   // Check if user can see monthly statistics
-  const canSeeMonthlyStats = user?.email === 'mohammedmellit@chorafaa.com' || user?.email === 'mohammedalasri@chorafaa.com';
+  const canSeeMonthlyStats = user?.email === 'mohammedmellit@chorafaa.com' || user?.email === 'mohammedalasri@chorafaa.com' || user?.email === 'mohammedelasri@chorafaa.com';
 
   if (isLoading) {
     return (
