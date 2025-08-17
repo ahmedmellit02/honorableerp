@@ -231,12 +231,12 @@ const RecentSalesTable = () => {
                   </td>
                   <td className="py-3 px-2">
                     <span className="text-sm font-medium text-foreground">
-                      {sale.sellingPrice.toLocaleString()} DH
+                      {sale.sellingPrice.toLocaleString()}
                     </span>
                   </td>
                   <td className="py-3 px-2">
                     <span className="text-sm font-medium text-success">
-                      +{sale.profit.toLocaleString()} DH
+                      +{sale.profit.toLocaleString()}
                     </span>
                   </td>
                   <td className="py-3 px-2">
