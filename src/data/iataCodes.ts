@@ -54,7 +54,7 @@ export const iataCodes: IATACode[] = [
   { code: "YEG", city: "Edmonton", country: "Canada", airport: "Edmonton International Airport" },
   { code: "YEK", city: "Eskimo Point", country: "Canada", airport: "Arviat Airport" },
   { code: "CMN", city: "Casablanca", country: "Morocco", airport: "Mohammed V International Airport" },
-  { code: "RAB", city: "Rabat", country: "Morocco", airport: "Rabat-Salé Airport" },
+  { code: "RBA", city: "Rabat", country: "Morocco", airport: "Rabat-Salé Airport" },
   { code: "FEZ", city: "Fes", country: "Morocco", airport: "Fès–Saïs Airport" },
   { code: "TNG", city: "Tangier", country: "Morocco", airport: "Ibn Battouta Airport" },
   { code: "AGA", city: "Agadir", country: "Morocco", airport: "Agadir–Al Massira Airport" },
