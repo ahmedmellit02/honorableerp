@@ -72,6 +72,7 @@ const AllSales = () => {
       'Bénéfice (DH)': sale.profit,
       'Date de départ': format(sale.departureDate, 'dd/MM/yyyy'),
       'Heure de départ': sale.departureTime,
+      'Destination': sale.destination || '',
       'Notes': sale.notes || '',
       'Date de création': format(sale.createdAt, 'dd/MM/yyyy HH:mm')
     }));
@@ -170,6 +171,9 @@ const AllSales = () => {
                         Date de départ
                       </th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                        Destination
+                      </th>
+                      <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                         Date de création
                       </th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
@@ -244,6 +248,11 @@ const AllSales = () => {
                               {sale.departureTime}
                             </div>
                           </div>
+                        </td>
+                        <td className="py-3 px-2">
+                          <span className="text-sm text-foreground">
+                            {sale.destination || '-'}
+                          </span>
                         </td>
                         <td className="py-3 px-2">
                           <span className="text-sm text-muted-foreground">
