@@ -11,6 +11,7 @@ export interface Sale {
   agent: "Ahmed" | "Mehdi" | "Achraf" | "Asri";
   departureDate: Date;
   departureTime: string;
+  destination?: string;
   notes?: string;
   createdAt: Date;
   profit: number;
@@ -30,5 +31,6 @@ export interface SaleFormData {
   agent: Sale["agent"];
   departureDate: Date;
   departureTime: string;
+  destination?: string;
   notes?: string;
 }

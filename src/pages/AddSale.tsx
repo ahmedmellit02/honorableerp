@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Autocomplete } from "@/components/ui/autocomplete";
 import { useToast } from "@/hooks/use-toast";
 import Navigation from "@/components/ui/navigation";
 import DatePicker from "react-datepicker";
@@ -15,6 +16,7 @@ import { SaleFormData } from "@/types/sale";
 import { CalendarIcon, Save, ArrowLeft } from "lucide-react";
 import { useAddSale } from "@/hooks/useSales";
 import { useAuth } from "@/hooks/useAuth";
+import { iataCodes } from "@/data/iataCodes";
 
 const AddSale = () => {
   const navigate = useNavigate();
@@ -50,6 +52,7 @@ const AddSale = () => {
     agent: getAgentFromEmail(user?.email),
     departureDate: new Date(),
     departureTime: "",
+    destination: "",
     notes: "",
   });
 
@@ -129,6 +132,13 @@ const AddSale = () => {
   };
 
   const profit = Number(formData.sellingPrice) - Number(formData.buyingPrice);
+
+  // Convert IATA codes to autocomplete options
+  const iataOptions = iataCodes.map(code => ({
+    value: code.code,
+    label: `${code.city}, ${code.country}`,
+    description: code.airport
+  }));
 
   // Redirect restricted users
   if (isRestrictedUser) {
@@ -317,6 +327,21 @@ const AddSale = () => {
                         <p className="text-sm text-destructive">{errors.departureTime}</p>
                       )}
                     </div>
+                  </div>
+                  
+                  {/* Destination Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="destination">Destination</Label>
+                    <Autocomplete
+                      options={iataOptions}
+                      value={formData.destination || ""}
+                      onChange={(value) => handleInputChange("destination", value)}
+                      placeholder="Tapez le code IATA (ex: CMN)"
+                      maxResults={8}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Tapez le code IATA ou le nom de la ville pour rechercher
+                    </p>
                   </div>
                 </>
               )}
