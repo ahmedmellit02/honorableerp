@@ -41,7 +41,7 @@ const Dashboard = () => {
   const totalSales = currentMonthSales.length;
   const totalRevenue = currentMonthSales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
   const totalProfit = currentMonthSales.reduce((sum, sale) => sum + sale.profit, 0);
-  const avgSaleValue = totalSales > 0 ? totalRevenue / totalSales : 0;
+  const avgProfitPerSale = totalSales > 0 ? totalProfit / totalSales : 0;
 
   // Calculate daily metrics (today's sales only)
   const today = new Date().toDateString();
@@ -49,7 +49,7 @@ const Dashboard = () => {
   const dailySalesCount = todaySales.length;
   const dailyRevenue = todaySales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
   const dailyProfit = todaySales.reduce((sum, sale) => sum + sale.profit, 0);
-  const dailyAvgSaleValue = dailySalesCount > 0 ? dailyRevenue / dailySalesCount : 0;
+  const dailyAvgProfitPerSale = dailySalesCount > 0 ? dailyProfit / dailySalesCount : 0;
 
   // Calculate agent stats from current month data
   const agentStats = currentMonthSales.reduce((acc, sale) => {
@@ -131,8 +131,8 @@ const Dashboard = () => {
                 gradient="bg-gradient-sunset"
               />
               <MetricCard
-                title="Valeur moyenne"
-                value={`${Math.round(avgSaleValue).toLocaleString()} DH`}
+                title="Valeur moyenne (bénéfice)"
+                value={`${Math.round(avgProfitPerSale).toLocaleString()} DH`}
                 icon={Calendar}
                 gradient="bg-gradient-ocean"
               />
@@ -163,8 +163,8 @@ const Dashboard = () => {
               gradient="bg-gradient-ocean"
             />
             <MetricCard
-              title="Valeur moyenne du jour"
-              value={`${Math.round(dailyAvgSaleValue).toLocaleString()} DH`}
+              title="Valeur moyenne du jour (bénéfice)"
+              value={`${Math.round(dailyAvgProfitPerSale).toLocaleString()} DH`}
               icon={Calendar}
               gradient="bg-gradient-tropical"
             />
