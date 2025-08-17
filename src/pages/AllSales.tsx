@@ -172,6 +172,9 @@ const AllSales = () => {
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                         Date de création
                       </th>
+                      <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                        Statut
+                      </th>
                       {userRole === 'cashier' && (
                         <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                           Encaissement
@@ -247,14 +250,22 @@ const AllSales = () => {
                             {format(sale.createdAt, "dd/MM/yyyy HH:mm")}
                           </span>
                         </td>
+                        <td className="py-3 px-2">
+                          {sale.cashedIn ? (
+                            <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit">
+                              <CheckCircle className="h-3 w-3" />
+                              Encaissé
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="flex items-center gap-1 text-destructive border-destructive w-fit">
+                              <Euro className="h-3 w-3" />
+                              Non encaissé
+                            </Badge>
+                          )}
+                        </td>
                         {userRole === 'cashier' && (
                           <td className="py-3 px-2">
-                            {sale.cashedIn ? (
-                              <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit">
-                                <CheckCircle className="h-3 w-3" />
-                                Encaissé
-                              </Badge>
-                            ) : (
+                            {!sale.cashedIn && (
                               <Button
                                 size="sm"
                                 variant="outline"
