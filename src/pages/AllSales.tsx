@@ -226,17 +226,17 @@ const AllSales = () => {
                         </td>
                         <td className="py-3 px-2">
                           <span className="text-sm text-foreground">
-                            {sale.buyingPrice.toLocaleString()} DH
+                            {sale.buyingPrice.toLocaleString()}
                           </span>
                         </td>
                         <td className="py-3 px-2">
                           <span className="text-sm font-medium text-foreground">
-                            {sale.sellingPrice.toLocaleString()} DH
+                            {sale.sellingPrice.toLocaleString()}
                           </span>
                         </td>
                         <td className="py-3 px-2">
                           <span className={`text-sm font-medium ${sale.profit >= 0 ? 'text-success' : 'text-destructive'}`}>
-                            {sale.profit >= 0 ? '+' : ''}{sale.profit.toLocaleString()} DH
+                            {sale.profit >= 0 ? '+' : ''}{sale.profit.toLocaleString()}
                           </span>
                         </td>
                         <td className="py-3 px-2">
