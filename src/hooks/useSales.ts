@@ -95,30 +95,34 @@ export const useAddSale = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
-      queryClient.invalidateQueries({ queryKey: ["sales-monthly"] });
+      queryClient.invalidateQueries({ queryKey: ["sales-daily"] });
       queryClient.invalidateQueries({ queryKey: ["sales-by-type"] });
     },
   });
 };
 
-export const useSalesMonthly = () => {
+export const useSalesDaily = () => {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["sales-monthly", user?.id],
+    queryKey: ["sales-daily", user?.id],
     queryFn: async () => {
       if (!user) return [];
       
       const { data, error } = await supabase
-        .rpc("get_sales_monthly_aggregates");
+        .rpc("get_sales_daily_aggregates");
       
       if (error) {
-        console.error("Error fetching monthly sales:", error);
+        console.error("Error fetching daily sales:", error);
         throw error;
       }
       
       return data.map(item => ({
-        month: new Date(item.month).toLocaleDateString('fr-FR', { month: 'short' }),
+        day: new Date(item.day).toLocaleDateString('fr-FR', { 
+          day: '2-digit', 
+          month: 'short',
+          year: 'numeric'
+        }),
         sales: Number(item.sales),
         revenue: Number(item.revenue),
         profit: Number(item.profit)

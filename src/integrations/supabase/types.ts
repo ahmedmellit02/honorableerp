@@ -169,6 +169,15 @@ export type Database = {
           type: string
         }[]
       }
+      get_sales_daily_aggregates: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          day: string
+          profit: number
+          revenue: number
+          sales: number
+        }[]
+      }
       get_sales_monthly_aggregates: {
         Args: Record<PropertyKey, never>
         Returns: {

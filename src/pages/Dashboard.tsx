@@ -14,12 +14,12 @@ import {
   MapPin,
   Target
 } from "lucide-react";
-import { useSales, useSalesMonthly, useSalesByType, useTopServicesCurrentMonth } from "@/hooks/useSales";
+import { useSales, useSalesDaily, useSalesByType, useTopServicesCurrentMonth } from "@/hooks/useSales";
 import { useSystemBalances } from "@/hooks/useBalance";
 
 const Dashboard = () => {
   const { data: sales = [], isLoading: salesLoading } = useSales();
-  const { data: monthlyData = [], isLoading: monthlyLoading } = useSalesMonthly();
+  const { data: dailyData = [], isLoading: dailyLoading } = useSalesDaily();
   const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
   const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
@@ -53,7 +53,7 @@ const Dashboard = () => {
     item.type === "Organized Travel"
   )?.count || 0;
 
-  const isLoading = salesLoading || monthlyLoading || typeLoading || topServicesLoading || balanceLoading;
+  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading;
 
   if (isLoading) {
     return (
