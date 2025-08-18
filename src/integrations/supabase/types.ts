@@ -168,6 +168,7 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: {
           count: number
+          profit: number
           revenue: number
           type: string
         }[]

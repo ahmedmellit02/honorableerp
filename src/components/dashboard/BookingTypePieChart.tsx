@@ -13,7 +13,7 @@ const BookingTypePieChart = () => {
         <div className="bg-card border border-border rounded-lg p-3 shadow-card">
           <p className="text-sm font-medium text-foreground">{data.type}</p>
           <p className="text-sm text-muted-foreground">Nombre: {data.count}</p>
-          <p className="text-sm text-muted-foreground">Revenu: {Number(data.revenue).toLocaleString()} DH</p>
+          <p className="text-sm text-muted-foreground">Bénéfice: {Number(data.profit).toLocaleString()} DH</p>
         </div>
       );
     }

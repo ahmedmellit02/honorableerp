@@ -160,6 +160,7 @@ export const useSalesByType = () => {
         type: item.type,
         count: Number(item.count),
         revenue: Number(item.revenue),
+        profit: Number(item.profit),
         color: colors[index % colors.length]
       }));
     },
