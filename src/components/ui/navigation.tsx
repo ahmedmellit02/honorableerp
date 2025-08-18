@@ -40,9 +40,9 @@ const Navigation = () => {
     }] : []),
   ];
 
-  // Filter out "Ajouter une vente" for restricted user
+  // Filter out "Ajouter une vente" for restricted users
   const filteredNavItems = navItems.filter(item => {
-    if (item.href === "/add-sale" && user?.email === "mohammedmellit@chorafaa.com") {
+    if (item.href === "/add-sale" && (user?.email === "mohammedmellit@chorafaa.com" || user?.email === "honorablevoyage@gmail.com")) {
       return false;
     }
     return true;
