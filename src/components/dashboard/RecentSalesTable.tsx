@@ -156,7 +156,7 @@ const RecentSalesTable = () => {
             Excel
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/all-sales" className="flex items-center gap-2">
+            <Link to="/sales" className="flex items-center gap-2">
               Voir tout
               <ExternalLink className="h-4 w-4" />
             </Link>
