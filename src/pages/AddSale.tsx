@@ -29,9 +29,9 @@ const AddSale = () => {
     if (!email) return "Ahmed";
     
     const emailToAgent: Record<string, SaleFormData["agent"]> = {
-      "mohammedelasri@chorafaa.com": "Asri",
-      "achrafelouahidy@chorafaa.com": "Achraf",
-      "mehdimellit@chorafaa.com": "Mehdi",
+      "m.elasri73@gmail.com": "Asri",
+      "achraf.elouahidy@gmail.com": "Achraf",
+      "mohammedmellit@chorafaa.com": "Mehdi",
       "ahmedmellit@chorafaa.com": "Ahmed"
     };
     
