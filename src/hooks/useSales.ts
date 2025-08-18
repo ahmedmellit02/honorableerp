@@ -154,14 +154,20 @@ export const useSalesByType = () => {
         throw error;
       }
       
-      const colors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4"];
+      // Extended color palette to ensure each service gets a unique color
+      const colors = [
+        "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4",
+        "#F97316", "#84CC16", "#EC4899", "#6366F1", "#14B8A6", "#F43F5E",
+        "#8B4513", "#FF6347", "#4682B4", "#32CD32", "#FF69B4", "#CD853F",
+        "#9370DB", "#20B2AA", "#FF7F50", "#6495ED", "#DC143C", "#00CED1"
+      ];
       
       return data.map((item, index) => ({
         type: item.type,
         count: Number(item.count),
         revenue: Number(item.revenue),
         profit: Number(item.profit),
-        color: colors[index % colors.length]
+        color: colors[index] || `hsl(${(index * 137.5) % 360}, 70%, 50%)` // Fallback for more than 24 services
       }));
     },
     enabled: !!user,
