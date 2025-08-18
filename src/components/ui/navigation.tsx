@@ -33,7 +33,7 @@ const Navigation = () => {
       href: "/add-sale", 
       icon: Plus,
     },
-    ...(user?.email === 'mohammedelasri@chorafaa.com' ? [{
+    ...(user?.email === 'm.elasri73@gmail.com' ? [{
       label: "Contrôle du solde",
       href: "/balance-control", 
       icon: Wallet,
