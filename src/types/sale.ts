@@ -7,7 +7,7 @@ export interface Sale {
   pnr?: string;
   buyingPrice: number;
   sellingPrice: number;
-  system: "Divers" | "TTP" | "AR" | "CIH Hjira" | "CIH Mehdi" | "BP Ahmed" | "BP Hajj" | "BP Hajja";
+  system: "Divers" | "TTP" | "AR" | "Carte";
   agent: "Ahmed" | "Mehdi" | "Achraf" | "Asri";
   departureDate: Date;
   departureTime: string;

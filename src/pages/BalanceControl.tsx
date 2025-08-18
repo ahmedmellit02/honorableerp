@@ -145,6 +145,7 @@ const BalanceControl = () => {
                       <SelectContent>
                         <SelectItem value="Top Travel Trip (TTP)">Top Travel Trip (TTP)</SelectItem>
                         <SelectItem value="Accelaero (AR)">Accelaero (AR)</SelectItem>
+                        <SelectItem value="Carte">Carte</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
