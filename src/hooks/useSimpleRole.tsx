@@ -39,7 +39,7 @@ export const useSimpleRole = () => {
 
   // Permission checks based on role
   const canViewDashboard = (): boolean => {
-    return userRole === 'manager' || userRole === 'cashier' || userRole === 'super_agent';
+    return userRole === 'manager' || userRole === 'cashier' || userRole === 'super_agent' || userRole === 'agent';
   };
 
   const canAddSale = (): boolean => {
