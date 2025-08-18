@@ -5,14 +5,15 @@ import Navigation from "@/components/ui/navigation";
 import { format } from "date-fns";
 import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft, Download, Euro, CheckCircle } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
-import { useUserRole, useCashInSale } from "@/hooks/useUserRole";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
+import { useCashInSale } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import * as XLSX from 'xlsx';
 
 const AllSales = () => {
   const { data: sales = [], isLoading } = useSales();
-  const { data: userRole } = useUserRole();
+  const { userRole, canCashIn } = useSimpleRole();
   const cashInMutation = useCashInSale();
   const { toast } = useToast();
 

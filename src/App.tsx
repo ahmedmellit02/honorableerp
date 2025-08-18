@@ -34,7 +34,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Dashboard />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/add-sale" element={<AddSale />} />
-      <Route path="/all-sales" element={<AllSales />} />
+      <Route path="/sales" element={<AllSales />} />
       <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
       <Route path="/balance-control" element={<BalanceControl />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -16,6 +16,7 @@ import { SaleFormData } from "@/types/sale";
 import { CalendarIcon, Save, ArrowLeft } from "lucide-react";
 import { useAddSale } from "@/hooks/useSales";
 import { useAuth } from "@/hooks/useAuth";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { iataCodes } from "@/data/iataCodes";
 
 const AddSale = () => {
@@ -23,6 +24,7 @@ const AddSale = () => {
   const { toast } = useToast();
   const addSaleMutation = useAddSale();
   const { user } = useAuth();
+  const { canAddSale } = useSimpleRole();
   
   // Get agent based on user email
   const getAgentFromEmail = (email: string | undefined): SaleFormData["agent"] => {
@@ -143,8 +145,8 @@ const AddSale = () => {
     description: code.airport
   }));
 
-  // Redirect restricted users
-  if (isRestrictedUser) {
+  // Check access permissions
+  if (!canAddSale()) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />

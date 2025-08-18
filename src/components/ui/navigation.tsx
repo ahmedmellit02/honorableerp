@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Plus, Plane, LogOut, Settings, Wallet, TrendingUp } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { usePermissions } from "@/hooks/usePermissions";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 const Navigation = () => {
   const location = useLocation();
   const { signOut, user } = useAuth();
-  const { hasPermission, canAccessAddSale, canAccessBalanceControl, isSupplier } = usePermissions();
+  const { userRole, canViewDashboard, canAddSale, canControlBalance, loading } = useSimpleRole();
   const { toast } = useToast();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [passwordData, setPasswordData] = useState({
@@ -24,50 +24,7 @@ const Navigation = () => {
   });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  // Base navigation items based on permissions
-  const getNavItems = () => {
-    const items = [];
-
-    // Dashboard access
-    if (hasPermission('view_dashboard')) {
-      items.push({
-        label: "Tableau de bord",
-        href: "/",
-        icon: BarChart3,
-      });
-    }
-
-    // Add sale access
-    if (canAccessAddSale()) {
-      items.push({
-        label: "Ajouter une vente", 
-        href: "/add-sale", 
-        icon: Plus,
-      });
-    }
-
-    // All sales view (for everyone except suppliers)
-    if (!isSupplier()) {
-      items.push({
-        label: "Toutes les ventes",
-        href: "/sales",
-        icon: TrendingUp,
-      });
-    }
-
-    // Balance control access
-    if (canAccessBalanceControl()) {
-      items.push({
-        label: "Contrôle du solde",
-        href: "/balance-control", 
-        icon: Wallet,
-      });
-    }
-
-    return items;
-  };
-
-  const navItems = getNavItems();
+  console.log('Navigation render:', { userRole, loading, user: user?.email });
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,6 +77,62 @@ const Navigation = () => {
       setIsChangingPassword(false);
     }
   };
+
+  if (!user || loading) {
+    return (
+      <nav className="bg-card border-b border-border shadow-card">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 bg-gradient-ocean rounded-lg">
+                  <Plane className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-xl font-bold text-foreground">HonorableCRM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
+  // Build navigation items based on role
+  const navItems = [];
+
+  // Dashboard access for managers, cashiers, and super agents
+  if (canViewDashboard()) {
+    navItems.push({
+      label: "Tableau de bord",
+      href: "/",
+      icon: BarChart3,
+    });
+  }
+
+  // Add sale access for cashiers and super agents
+  if (canAddSale()) {
+    navItems.push({
+      label: "Ajouter une vente", 
+      href: "/add-sale", 
+      icon: Plus,
+    });
+  }
+
+  // All users can see sales (different levels of access will be handled in the sales page)
+  navItems.push({
+    label: "Toutes les ventes",
+    href: "/sales",
+    icon: TrendingUp,
+  });
+
+  // Balance control only for cashiers
+  if (canControlBalance()) {
+    navItems.push({
+      label: "Contrôle du solde",
+      href: "/balance-control", 
+      icon: Wallet,
+    });
+  }
 
   return (
     <nav className="bg-card border-b border-border shadow-card">

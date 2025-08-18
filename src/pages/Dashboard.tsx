@@ -1,12 +1,10 @@
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import MetricCard from "@/components/dashboard/MetricCard";
 import SalesChart from "@/components/dashboard/SalesChart";
 import BookingTypePieChart from "@/components/dashboard/BookingTypePieChart";
 import RecentSalesTable from "@/components/dashboard/RecentSalesTable";
 import Navigation from "@/components/ui/navigation";
-import { usePermissions } from "@/hooks/usePermissions";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -23,20 +21,14 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const { hasPermission, isSupplier, userRole } = usePermissions();
+  const { userRole, canViewMonthlyStats, canViewDashboard, loading: roleLoading } = useSimpleRole();
   const { data: sales = [], isLoading: salesLoading } = useSales();
   const { data: dailyData = [], isLoading: dailyLoading } = useSalesDaily();
   const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
   const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
 
-  // Redirect suppliers to their specialized dashboard
-  useEffect(() => {
-    if (isSupplier()) {
-      navigate("/supplier-dashboard");
-    }
-  }, [isSupplier, navigate]);
+  console.log('Dashboard render:', { userRole, canViewDashboard: canViewDashboard() });
 
   // Get current month's start and end dates
   const now = new Date();
@@ -86,11 +78,11 @@ const Dashboard = () => {
     item.type === "Organized Travel"
   )?.count || 0;
 
-  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading;
+  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading || roleLoading;
 
-  // Check permissions for different dashboard sections
-  const canSeeMonthlyStats = hasPermission('view_monthly_stats');
-  const canSeeDashboard = hasPermission('view_dashboard');
+  // Check permissions for different dashboard sections  
+  const showMonthlyStats = canViewMonthlyStats();
+  const showDashboard = canViewDashboard();
 
   if (isLoading) {
     return (
@@ -121,7 +113,7 @@ const Dashboard = () => {
         </div>
 
         {/* Monthly Metrics Grid - Only for specific users */}
-        {canSeeMonthlyStats && (
+        {showMonthlyStats && (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques du mois</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
