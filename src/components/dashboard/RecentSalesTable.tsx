@@ -98,7 +98,9 @@ const RecentSalesTable = () => {
       'Bénéfice (DH)': sale.profit,
       'Date de départ': format(sale.departureDate, 'dd/MM/yyyy'),
       'Heure de départ': sale.departureTime,
-      'Notes': sale.notes || '',
+      'De': sale.fromAirport || '',
+      'À': sale.toAirport || '',
+      'Enregistrement': sale.hasRegistration ? 'Oui' : 'Non',
       'Date de création': format(sale.createdAt, 'dd/MM/yyyy HH:mm')
     }));
 

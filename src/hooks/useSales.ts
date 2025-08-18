@@ -35,8 +35,12 @@ export const useSales = () => {
         agent: sale.agent as Sale["agent"],
         departureDate: new Date(sale.departure_date),
         departureTime: sale.departure_time,
+        fromAirport: (sale as any).from_airport || null,
+        toAirport: (sale as any).to_airport || null,
+        hasRegistration: (sale as any).has_registration || false,
+        rwDate: (sale as any).rw_date ? new Date((sale as any).rw_date) : undefined,
+        rwTime: (sale as any).rw_time || null,
         destination: sale.destination,
-        notes: sale.notes,
         createdAt: new Date(sale.created_at),
         profit: Number(sale.profit),
         cashedIn: sale.cashed_in || false,
@@ -66,15 +70,23 @@ export const useAddSale = () => {
         selling_price: Number(saleData.sellingPrice),
         system: saleData.system,
         agent: saleData.agent,
-        notes: saleData.notes || null,
         destination: saleData.destination || null,
       };
 
-      // Only add flight-specific fields for "Flight Confirmed" sales
+      // Add type-specific fields
       if (saleData.type === "Flight Confirmed") {
         saleInsertData.pnr = saleData.pnr || null;
         saleInsertData.departure_date = saleData.departureDate.toISOString().split('T')[0];
         saleInsertData.departure_time = saleData.departureTime;
+        saleInsertData.from_airport = saleData.fromAirport || null;
+        saleInsertData.to_airport = saleData.toAirport || null;
+        saleInsertData.has_registration = saleData.hasRegistration || false;
+      } else if (saleData.type === "RW 1") {
+        saleInsertData.pnr = null;
+        saleInsertData.departure_date = new Date().toISOString().split('T')[0]; // Default to today
+        saleInsertData.departure_time = "00:00:00"; // Default time
+        saleInsertData.rw_date = saleData.rwDate ? saleData.rwDate.toISOString().split('T')[0] : null;
+        saleInsertData.rw_time = saleData.rwTime || null;
       } else {
         // For other types, set default values or null
         saleInsertData.pnr = null;
