@@ -31,6 +31,9 @@ const AddSale = () => {
     const emailToAgent: Record<string, SaleFormData["agent"]> = {
       "m.elasri73@gmail.com": "Asri",
       "achraf.elouahidy@gmail.com": "Achraf",
+      "achrafalarabi284@gmail.com": "Achraf",
+      "sanaeadam16@gmail.com": "Sanae",
+      "mehdimellit@gmail.com": "Mehdi",
       "mohammedmellit@chorafaa.com": "Mehdi",
       "ahmedmellit@chorafaa.com": "Ahmed"
     };

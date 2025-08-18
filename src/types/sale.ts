@@ -8,7 +8,7 @@ export interface Sale {
   buyingPrice: number;
   sellingPrice: number;
   system: "Divers" | "TTP" | "AR" | "Carte";
-  agent: "Ahmed" | "Mehdi" | "Achraf" | "Asri";
+  agent: "Ahmed" | "Mehdi" | "Achraf" | "Asri" | "Sanae";
   departureDate: Date;
   departureTime: string;
   destination?: string;
