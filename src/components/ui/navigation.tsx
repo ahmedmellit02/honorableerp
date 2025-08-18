@@ -118,12 +118,6 @@ const Navigation = () => {
     });
   }
 
-  // All users can see sales (different levels of access will be handled in the sales page)
-  navItems.push({
-    label: "Toutes les ventes",
-    href: "/sales",
-    icon: TrendingUp,
-  });
 
   // Balance control only for cashiers
   if (canControlBalance()) {
