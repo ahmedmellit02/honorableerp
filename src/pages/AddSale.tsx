@@ -24,7 +24,7 @@ const AddSale = () => {
   const { toast } = useToast();
   const addSaleMutation = useAddSale();
   const { user } = useAuth();
-  const { canAddSale } = useSimpleRole();
+  const { canAddSale, userRole } = useSimpleRole();
   
   // Get agent based on user email
   const getAgentFromEmail = (email: string | undefined): SaleFormData["agent"] => {
@@ -146,7 +146,7 @@ const AddSale = () => {
   }));
 
   // Check access permissions
-  if (!canAddSale()) {
+  if (!canAddSale() && userRole !== 'agent') {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />

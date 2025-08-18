@@ -109,8 +109,8 @@ const Navigation = () => {
     });
   }
 
-  // Add sale access for cashiers and super agents
-  if (canAddSale()) {
+  // Add sale access for cashiers, super agents, and agents
+  if (canAddSale() || userRole === 'agent') {
     navItems.push({
       label: "Ajouter une vente", 
       href: "/add-sale", 
