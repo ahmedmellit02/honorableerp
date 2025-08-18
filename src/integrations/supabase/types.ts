@@ -199,6 +199,10 @@ export type Database = {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      user_has_permission: {
+        Args: { permission_name: string; user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role:
