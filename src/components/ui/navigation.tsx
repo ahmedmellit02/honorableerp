@@ -1,8 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, Plane, LogOut, Settings, Wallet } from "lucide-react";
+import { BarChart3, Plus, Plane, LogOut, Settings, Wallet, TrendingUp } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 const Navigation = () => {
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const { hasPermission, canAccessAddSale, canAccessBalanceControl, isSupplier } = usePermissions();
   const { toast } = useToast();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [passwordData, setPasswordData] = useState({
@@ -22,31 +24,50 @@ const Navigation = () => {
   });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  const navItems = [
-    {
-      label: "Tableau de bord",
-      href: "/",
-      icon: BarChart3,
-    },
-    {
-      label: "Ajouter une vente", 
-      href: "/add-sale", 
-      icon: Plus,
-    },
-    ...(user?.email === 'm.elasri73@gmail.com' ? [{
-      label: "Contrôle du solde",
-      href: "/balance-control", 
-      icon: Wallet,
-    }] : []),
-  ];
+  // Base navigation items based on permissions
+  const getNavItems = () => {
+    const items = [];
 
-  // Filter out "Ajouter une vente" for restricted users
-  const filteredNavItems = navItems.filter(item => {
-    if (item.href === "/add-sale" && (user?.email === "mohammedmellit@chorafaa.com" || user?.email === "honorablevoyage@gmail.com")) {
-      return false;
+    // Dashboard access
+    if (hasPermission('view_dashboard')) {
+      items.push({
+        label: "Tableau de bord",
+        href: "/",
+        icon: BarChart3,
+      });
     }
-    return true;
-  });
+
+    // Add sale access
+    if (canAccessAddSale()) {
+      items.push({
+        label: "Ajouter une vente", 
+        href: "/add-sale", 
+        icon: Plus,
+      });
+    }
+
+    // All sales view (for everyone except suppliers)
+    if (!isSupplier()) {
+      items.push({
+        label: "Toutes les ventes",
+        href: "/sales",
+        icon: TrendingUp,
+      });
+    }
+
+    // Balance control access
+    if (canAccessBalanceControl()) {
+      items.push({
+        label: "Contrôle du solde",
+        href: "/balance-control", 
+        icon: Wallet,
+      });
+    }
+
+    return items;
+  };
+
+  const navItems = getNavItems();
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +135,7 @@ const Navigation = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            {filteredNavItems.map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.href;
               

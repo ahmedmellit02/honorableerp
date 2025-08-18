@@ -10,6 +10,7 @@ import AllSales from "./pages/AllSales";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import BalanceControl from "./pages/BalanceControl";
+import SupplierDashboard from "./pages/SupplierDashboard";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const AppRoutes = () => {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/add-sale" element={<AddSale />} />
       <Route path="/all-sales" element={<AllSales />} />
+      <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
       <Route path="/balance-control" element={<BalanceControl />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />

@@ -1,9 +1,12 @@
 
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import MetricCard from "@/components/dashboard/MetricCard";
 import SalesChart from "@/components/dashboard/SalesChart";
 import BookingTypePieChart from "@/components/dashboard/BookingTypePieChart";
 import RecentSalesTable from "@/components/dashboard/RecentSalesTable";
 import Navigation from "@/components/ui/navigation";
+import { usePermissions } from "@/hooks/usePermissions";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -20,11 +23,20 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { hasPermission, isSupplier, userRole } = usePermissions();
   const { data: sales = [], isLoading: salesLoading } = useSales();
   const { data: dailyData = [], isLoading: dailyLoading } = useSalesDaily();
   const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
   const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
+
+  // Redirect suppliers to their specialized dashboard
+  useEffect(() => {
+    if (isSupplier()) {
+      navigate("/supplier-dashboard");
+    }
+  }, [isSupplier, navigate]);
 
   // Get current month's start and end dates
   const now = new Date();
@@ -76,8 +88,9 @@ const Dashboard = () => {
 
   const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading;
 
-  // Check if user can see monthly statistics
-  const canSeeMonthlyStats = user?.email === 'mohammedmellit@chorafaa.com' || user?.email === 'mohammedalasri@chorafaa.com' || user?.email === 'mohammedelasri@chorafaa.com' || user?.email === 'ahmedmellit@chorafaa.com' || user?.email === 'mehdimellit@chorafaa.com';
+  // Check permissions for different dashboard sections
+  const canSeeMonthlyStats = hasPermission('view_monthly_stats');
+  const canSeeDashboard = hasPermission('view_dashboard');
 
   if (isLoading) {
     return (
