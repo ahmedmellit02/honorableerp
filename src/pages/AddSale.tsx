@@ -240,11 +240,7 @@ const AddSale = () => {
                       <SelectItem value="Divers">Divers</SelectItem>
                       <SelectItem value="TTP">Top Travel Trip (TTP)</SelectItem>
                       <SelectItem value="AR">Accelaero (AR)</SelectItem>
-                      <SelectItem value="CIH Hjira">CIH Hjira</SelectItem>
-                      <SelectItem value="CIH Mehdi">CIH Mehdi</SelectItem>
-                      <SelectItem value="BP Ahmed">BP Ahmed</SelectItem>
-                      <SelectItem value="BP Hajj">BP Hajj</SelectItem>
-                      <SelectItem value="BP Hajja">BP Hajja</SelectItem>                      
+                      <SelectItem value="Carte">Carte</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
