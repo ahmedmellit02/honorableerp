@@ -103,7 +103,7 @@ const FacturationTable = () => {
             Excel
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/sales" className="flex items-center gap-2">
+            <Link to="/facturation" className="flex items-center gap-2">
               Voir tout
               <ExternalLink className="h-4 w-4" />
             </Link>
@@ -141,13 +141,8 @@ const FacturationTable = () => {
                 return (
                   <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/50">
                     <td className="py-3 px-2">
-                      <div>
-                        <div className="text-sm font-medium text-foreground">
-                          {sale.clientName}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {sale.phoneNumber}
-                        </div>
+                      <div className="text-sm font-medium text-foreground">
+                        {sale.clientName}
                       </div>
                     </td>
                     <td className="py-3 px-2">

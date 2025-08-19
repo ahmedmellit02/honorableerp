@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
 import AddSale from "./pages/AddSale";
 import AllSales from "./pages/AllSales";
+import Facturation from "./pages/Facturation";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import BalanceControl from "./pages/BalanceControl";
@@ -35,6 +36,7 @@ const AppRoutes = () => {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/add-sale" element={<AddSale />} />
       <Route path="/sales" element={<AllSales />} />
+      <Route path="/facturation" element={<Facturation />} />
       <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
       <Route path="/balance-control" element={<BalanceControl />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
