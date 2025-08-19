@@ -107,6 +107,37 @@ const Dashboard = () => {
           </p>
         </div>
 
+        {/* Daily Metrics Grid */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques du jour</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <MetricCard
+              title="Ventes aujourd'hui"
+              value={dailySalesCount.toString()}
+              icon={TrendingUp}
+              gradient="bg-gradient-tropical"
+            />
+            <MetricCard
+              title="Revenu du jour"
+              value={`${dailyRevenue.toLocaleString()} DH`}
+              icon={DollarSign}
+              gradient="bg-gradient-sunset"
+            />
+            <MetricCard
+              title="Bénéfice du jour"
+              value={`${dailyProfit.toLocaleString()} DH`}
+              icon={Target}
+              gradient="bg-gradient-ocean"
+            />
+            <MetricCard
+              title="Valeur moyenne du jour (bénéfice)"
+              value={`${Math.round(dailyAvgProfitPerSale).toLocaleString()} DH`}
+              icon={Calendar}
+              gradient="bg-gradient-tropical"
+            />
+          </div>
+        </div>
+
         {/* Monthly Metrics Grid - Only for specific users */}
         {canSeeMonthlyStats && (
           <div className="mb-8">
@@ -139,37 +170,6 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-
-        {/* Daily Metrics Grid */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques du jour</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MetricCard
-              title="Ventes aujourd'hui"
-              value={dailySalesCount.toString()}
-              icon={TrendingUp}
-              gradient="bg-gradient-tropical"
-            />
-            <MetricCard
-              title="Revenu du jour"
-              value={`${dailyRevenue.toLocaleString()} DH`}
-              icon={DollarSign}
-              gradient="bg-gradient-sunset"
-            />
-            <MetricCard
-              title="Bénéfice du jour"
-              value={`${dailyProfit.toLocaleString()} DH`}
-              icon={Target}
-              gradient="bg-gradient-ocean"
-            />
-            <MetricCard
-              title="Valeur moyenne du jour (bénéfice)"
-              value={`${Math.round(dailyAvgProfitPerSale).toLocaleString()} DH`}
-              icon={Calendar}
-              gradient="bg-gradient-tropical"
-            />
-          </div>
-        </div>
 
         {/* Balance Section */}
         <div className="mb-8">
