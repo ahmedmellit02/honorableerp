@@ -3,6 +3,7 @@ import MetricCard from "@/components/dashboard/MetricCard";
 import SalesChart from "@/components/dashboard/SalesChart";
 import BookingTypePieChart from "@/components/dashboard/BookingTypePieChart";
 import RecentSalesTable from "@/components/dashboard/RecentSalesTable";
+import FacturationTable from "@/components/dashboard/FacturationTable";
 import Navigation from "@/components/ui/navigation";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { 
@@ -251,6 +252,13 @@ const Dashboard = () => {
 
         {/* Recent Sales Table */}
         <RecentSalesTable />
+
+        {/* Facturation Table - Only for Manager, Cashier, and Super Agent */}
+        {(userRole === 'manager' || userRole === 'cashier' || userRole === 'super_agent') && (
+          <div className="mt-8">
+            <FacturationTable />
+          </div>
+        )}
       </div>
     </div>
   );
