@@ -253,9 +253,14 @@ const RecentSalesTable = () => {
                     </span>
                   </td>
                   <td className="py-3 px-2">
-                    <span className="text-sm text-muted-foreground">
-                      {format(sale.createdAt, "dd MMM")}
-                    </span>
+                    <div className="text-sm">
+                      <div className="text-foreground font-medium">
+                        {format(sale.departureDate, "dd MMM yyyy")}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {sale.departureTime}
+                      </div>
+                    </div>
                   </td>
                   <td className="py-3 px-2">
                     {sale.cashedIn ? (
