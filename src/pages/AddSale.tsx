@@ -377,7 +377,7 @@ const AddSale = () => {
                       onCheckedChange={(checked) => handleInputChange("hasRegistration", checked)}
                     />
                     <Label htmlFor="hasRegistration" className="text-sm font-normal">
-                      Le client a fait l'enregistrement
+                      Le client doit faire un enregistrement enligne ?
                     </Label>
                   </div>
                 </>
