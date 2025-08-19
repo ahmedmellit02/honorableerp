@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationBell } from "@/components/ui/notifications";
-import { NotificationTester } from "@/components/ui/notification-tester";
 
 const Navigation = () => {
   const location = useLocation();
@@ -165,7 +164,6 @@ const Navigation = () => {
             })}
             
             <div className="flex items-center space-x-2 pl-4 border-l border-border">
-              <NotificationTester />
               <NotificationBell />
               
               <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>

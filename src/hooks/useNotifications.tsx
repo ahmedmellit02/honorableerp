@@ -26,8 +26,7 @@ export function useNotifications() {
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('user_id', user.id)
-        .gte('created_at', new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()) // Last 2 days
+        .gte('trigger_time', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) // Only show notifications from last 24h
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -49,8 +48,8 @@ export function useUnreadNotificationsCount() {
       const { count, error } = await supabase
         .from('notifications')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false);
+        .eq('is_read', false)
+        .gte('trigger_time', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()); // Only count notifications from last 24h
       
       if (error) throw error;
       return count || 0;
@@ -73,8 +72,8 @@ export function useMarkNotificationRead() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
-      queryClient.invalidateQueries({ queryKey: ['unread-notifications-count', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unread-notifications-count'] });
     },
   });
 }
