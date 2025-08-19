@@ -59,14 +59,18 @@ export type Database = {
           departure_date: string
           departure_time: string
           destination: string | null
+          from_airport: string | null
+          has_registration: boolean | null
           id: string
-          notes: string | null
           numeric_id: number
           phone_number: string
           pnr: string | null
           profit: number | null
+          rw_date: string | null
+          rw_time: string | null
           selling_price: number
           system: string
+          to_airport: string | null
           type: string
           updated_at: string
           user_id: string
@@ -82,14 +86,18 @@ export type Database = {
           departure_date: string
           departure_time: string
           destination?: string | null
+          from_airport?: string | null
+          has_registration?: boolean | null
           id?: string
-          notes?: string | null
           numeric_id?: number
           phone_number: string
           pnr?: string | null
           profit?: number | null
+          rw_date?: string | null
+          rw_time?: string | null
           selling_price: number
           system: string
+          to_airport?: string | null
           type: string
           updated_at?: string
           user_id: string
@@ -105,14 +113,18 @@ export type Database = {
           departure_date?: string
           departure_time?: string
           destination?: string | null
+          from_airport?: string | null
+          has_registration?: boolean | null
           id?: string
-          notes?: string | null
           numeric_id?: number
           phone_number?: string
           pnr?: string | null
           profit?: number | null
+          rw_date?: string | null
+          rw_time?: string | null
           selling_price?: number
           system?: string
+          to_airport?: string | null
           type?: string
           updated_at?: string
           user_id?: string
