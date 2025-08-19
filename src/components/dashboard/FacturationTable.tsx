@@ -40,7 +40,7 @@ const FacturationTable = () => {
       'ID': sale.numericId,
       'Client': sale.clientName,
       'Prix d\'achat (DH)': sale.buyingPrice,
-      'Prix de vente (DH)': sale.sellingPrice,
+      'Prix de vente (DH)': sale.buyingPrice + calculateFees(sale.fromAirport, sale.toAirport),
       'Fees (DH)': calculateFees(sale.fromAirport, sale.toAirport),
       'Date': format(sale.createdAt, 'dd/MM/yyyy'),
       'De': sale.fromAirport || '',
@@ -152,7 +152,7 @@ const FacturationTable = () => {
                     </td>
                     <td className="py-3 px-2">
                       <span className="text-sm font-medium text-foreground">
-                        {sale.sellingPrice.toLocaleString()} DH
+                        {(sale.buyingPrice + fees).toLocaleString()} DH
                       </span>
                     </td>
                     <td className="py-3 px-2">
