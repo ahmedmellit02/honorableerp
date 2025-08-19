@@ -57,7 +57,7 @@ const Auth = () => {
             <Plane className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            Agence de Voyage
+            VOYAGESUITE - HonorableCRM
           </h1>
           <p className="text-muted-foreground">
             Gérez vos ventes et réservations
@@ -133,16 +133,9 @@ const Auth = () => {
             </form>
 
             <div className="mt-6 text-center">
-              <Button
-                variant="ghost"
-                onClick={() => setIsSignUp(!isSignUp)}
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                {isSignUp ? "Déjà un compte ? Se connecter" : "Pas de compte ? S'inscrire"}
-              </Button>
               {!isSignUp && (
                 <p className="text-xs text-muted-foreground mt-2">
-                  Mot de passe commun: chorafaa123
+                  Mot de passe commun: 12345@
                 </p>
               )}
             </div>
