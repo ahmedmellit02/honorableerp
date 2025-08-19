@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { LogIn, Eye, EyeOff, Plane } from "lucide-react";
+import { LogIn, Eye, EyeOff, Plane, UserPlus } from "lucide-react";
 
 const Auth = () => {
   const { toast } = useToast();
-  const { signIn } = useAuth();
+  const { signIn, signUp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -22,15 +23,23 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      await signIn(loginData.email, loginData.password);
-      toast({
-        title: "Connexion réussie !",
-        description: "Bienvenue dans votre tableau de bord.",
-      });
+      if (isSignUp) {
+        await signUp(loginData.email, loginData.password);
+        toast({
+          title: "Inscription réussie !",
+          description: "Votre compte a été créé avec succès.",
+        });
+      } else {
+        await signIn(loginData.email, loginData.password);
+        toast({
+          title: "Connexion réussie !",
+          description: "Bienvenue dans votre tableau de bord.",
+        });
+      }
     } catch (error: any) {
       toast({
-        title: "Erreur de connexion",
-        description: error.message || "Email ou mot de passe incorrect.",
+        title: isSignUp ? "Erreur d'inscription" : "Erreur de connexion",
+        description: error.message || (isSignUp ? "Impossible de créer le compte." : "Email ou mot de passe incorrect."),
         variant: "destructive",
       });
     } finally {
@@ -58,7 +67,7 @@ const Auth = () => {
         <Card className="shadow-elegant">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-center text-foreground">
-              Connexion
+              {isSignUp ? "Inscription" : "Connexion"}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -112,24 +121,30 @@ const Auth = () => {
                 {isLoading ? (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Connexion...
+                    {isSignUp ? "Inscription..." : "Connexion..."}
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <LogIn className="h-4 w-4" />
-                    Se connecter
+                    {isSignUp ? <UserPlus className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+                    {isSignUp ? "S'inscrire" : "Se connecter"}
                   </div>
                 )}
               </Button>
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                Comptes autorisés uniquement
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Mot de passe commun: chorafaa123
-              </p>
+              <Button
+                variant="ghost"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                {isSignUp ? "Déjà un compte ? Se connecter" : "Pas de compte ? S'inscrire"}
+              </Button>
+              {!isSignUp && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Mot de passe commun: chorafaa123
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

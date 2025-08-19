@@ -7,12 +7,19 @@ export interface Sale {
   pnr?: string;
   buyingPrice: number;
   sellingPrice: number;
-  system: "Divers" | "TTP" | "AR" | "CIH Hjira" | "CIH Mehdi" | "BP Ahmed" | "BP Hajj" | "BP Hajja";
-  agent: "Ahmed" | "Mehdi" | "Achraf" | "Asri";
+  system: "Divers" | "TTP" | "AR" | "Carte";
+  agent: "Ahmed" | "Mehdi" | "Achraf" | "Asri" | "Sanae";
   departureDate: Date;
   departureTime: string;
+  // Flight Confirmed specific fields
+  fromAirport?: string;
+  toAirport?: string;
+  hasRegistration?: boolean;
+  // RW 1 specific fields  
+  rwDate?: Date;
+  rwTime?: string;
+  // Legacy field for backward compatibility
   destination?: string;
-  notes?: string;
   createdAt: Date;
   profit: number;
   cashedIn: boolean;
@@ -31,6 +38,13 @@ export interface SaleFormData {
   agent: Sale["agent"];
   departureDate: Date;
   departureTime: string;
+  // Flight Confirmed specific fields
+  fromAirport?: string;
+  toAirport?: string;
+  hasRegistration?: boolean;
+  // RW 1 specific fields
+  rwDate?: Date;
+  rwTime?: string;
+  // Legacy field for backward compatibility
   destination?: string;
-  notes?: string;
 }

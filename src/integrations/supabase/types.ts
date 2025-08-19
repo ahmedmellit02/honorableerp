@@ -47,6 +47,53 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          client_name: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+          sale_id: string
+          trigger_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_name: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          notification_type: string
+          sale_id: string
+          trigger_time: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_name?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          sale_id?: string
+          trigger_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sales: {
         Row: {
           agent: string
@@ -59,14 +106,18 @@ export type Database = {
           departure_date: string
           departure_time: string
           destination: string | null
+          from_airport: string | null
+          has_registration: boolean | null
           id: string
-          notes: string | null
           numeric_id: number
           phone_number: string
           pnr: string | null
           profit: number | null
+          rw_date: string | null
+          rw_time: string | null
           selling_price: number
           system: string
+          to_airport: string | null
           type: string
           updated_at: string
           user_id: string
@@ -82,14 +133,18 @@ export type Database = {
           departure_date: string
           departure_time: string
           destination?: string | null
+          from_airport?: string | null
+          has_registration?: boolean | null
           id?: string
-          notes?: string | null
           numeric_id?: number
           phone_number: string
           pnr?: string | null
           profit?: number | null
+          rw_date?: string | null
+          rw_time?: string | null
           selling_price: number
           system: string
+          to_airport?: string | null
           type: string
           updated_at?: string
           user_id: string
@@ -105,14 +160,18 @@ export type Database = {
           departure_date?: string
           departure_time?: string
           destination?: string | null
+          from_airport?: string | null
+          has_registration?: boolean | null
           id?: string
-          notes?: string | null
           numeric_id?: number
           phone_number?: string
           pnr?: string | null
           profit?: number | null
+          rw_date?: string | null
+          rw_time?: string | null
           selling_price?: number
           system?: string
+          to_airport?: string | null
           type?: string
           updated_at?: string
           user_id?: string
@@ -154,6 +213,10 @@ export type Database = {
         Returns: undefined
       }
       create_demo_user: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      generate_notifications: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
@@ -199,9 +262,23 @@ export type Database = {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      mark_notification_read: {
+        Args: { notification_id: string }
+        Returns: undefined
+      }
+      user_has_permission: {
+        Args: { permission_name: string; user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      app_role: "agent" | "cashier"
+      app_role:
+        | "agent"
+        | "cashier"
+        | "manager"
+        | "super_agent"
+        | "supplier_accelaero"
+        | "supplier_ttp"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -329,7 +406,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["agent", "cashier"],
+      app_role: [
+        "agent",
+        "cashier",
+        "manager",
+        "super_agent",
+        "supplier_accelaero",
+        "supplier_ttp",
+      ],
     },
   },
 } as const

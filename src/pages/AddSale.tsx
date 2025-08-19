@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Autocomplete } from "@/components/ui/autocomplete";
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +16,7 @@ import { SaleFormData } from "@/types/sale";
 import { CalendarIcon, Save, ArrowLeft } from "lucide-react";
 import { useAddSale } from "@/hooks/useSales";
 import { useAuth } from "@/hooks/useAuth";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { iataCodes } from "@/data/iataCodes";
 
 const AddSale = () => {
@@ -23,15 +24,19 @@ const AddSale = () => {
   const { toast } = useToast();
   const addSaleMutation = useAddSale();
   const { user } = useAuth();
+  const { canAddSale, userRole } = useSimpleRole();
   
   // Get agent based on user email
   const getAgentFromEmail = (email: string | undefined): SaleFormData["agent"] => {
     if (!email) return "Ahmed";
     
     const emailToAgent: Record<string, SaleFormData["agent"]> = {
-      "mohammedelasri@chorafaa.com": "Asri",
-      "achrafelouahidy@chorafaa.com": "Achraf",
-      "mehdimellit@chorafaa.com": "Mehdi",
+      "m.elasri73@gmail.com": "Asri",
+      "achraf.elouahidy@gmail.com": "Achraf",
+      "achrafalarabi284@gmail.com": "Achraf",
+      "sanaeadam16@gmail.com": "Sanae",
+      "mehdimellit@gmail.com": "Mehdi",
+      "mohammedmellit@chorafaa.com": "Mehdi",
       "ahmedmellit@chorafaa.com": "Ahmed"
     };
     
@@ -52,8 +57,12 @@ const AddSale = () => {
     agent: getAgentFromEmail(user?.email),
     departureDate: new Date(),
     departureTime: "",
+    fromAirport: "",
+    toAirport: "",
+    hasRegistration: false,
+    rwDate: new Date(),
+    rwTime: "",
     destination: "",
-    notes: "",
   });
 
   // Update agent when user changes
@@ -93,6 +102,10 @@ const AddSale = () => {
 
     if (formData.type === "Flight Confirmed" && !formData.departureTime) {
       newErrors.departureTime = "L'heure de départ est requise pour les vols confirmés";
+    }
+
+    if (formData.type === "RW 1" && !formData.rwTime) {
+      newErrors.rwTime = "L'heure est requise pour RW 1";
     }
 
     setErrors(newErrors);
@@ -140,8 +153,8 @@ const AddSale = () => {
     description: code.airport
   }));
 
-  // Redirect restricted users
-  if (isRestrictedUser) {
+  // Check access permissions
+  if (!canAddSale() && userRole !== 'agent') {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
@@ -240,11 +253,7 @@ const AddSale = () => {
                       <SelectItem value="Divers">Divers</SelectItem>
                       <SelectItem value="TTP">Top Travel Trip (TTP)</SelectItem>
                       <SelectItem value="AR">Accelaero (AR)</SelectItem>
-                      <SelectItem value="CIH Hjira">CIH Hjira</SelectItem>
-                      <SelectItem value="CIH Mehdi">CIH Mehdi</SelectItem>
-                      <SelectItem value="BP Ahmed">BP Ahmed</SelectItem>
-                      <SelectItem value="BP Hajj">BP Hajj</SelectItem>
-                      <SelectItem value="BP Hajja">BP Hajja</SelectItem>                      
+                      <SelectItem value="Carte">Carte</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -329,21 +338,82 @@ const AddSale = () => {
                     </div>
                   </div>
                   
-                  {/* Destination Field */}
-                  <div className="space-y-2">
-                    <Label htmlFor="destination">Destination</Label>
-                    <Autocomplete
-                      options={iataOptions}
-                      value={formData.destination || ""}
-                      onChange={(value) => handleInputChange("destination", value)}
-                      placeholder="Tapez le code IATA (ex: CMN)"
-                      maxResults={8}
+                  {/* From and To Airport Fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="fromAirport">De *</Label>
+                      <Autocomplete
+                        options={iataOptions}
+                        value={formData.fromAirport || ""}
+                        onChange={(value) => handleInputChange("fromAirport", value)}
+                        placeholder="Aéroport de départ (ex: CMN)"
+                        maxResults={8}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Code IATA de l'aéroport de départ
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="toAirport">À *</Label>
+                      <Autocomplete
+                        options={iataOptions}
+                        value={formData.toAirport || ""}
+                        onChange={(value) => handleInputChange("toAirport", value)}
+                        placeholder="Aéroport d'arrivée (ex: CDG)"
+                        maxResults={8}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Code IATA de l'aéroport d'arrivée
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Registration Checkbox */}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="hasRegistration"
+                      checked={formData.hasRegistration || false}
+                      onCheckedChange={(checked) => handleInputChange("hasRegistration", checked)}
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Tapez le code IATA ou le nom de la ville pour rechercher
-                    </p>
+                    <Label htmlFor="hasRegistration" className="text-sm font-normal">
+                      Le client a fait l'enregistrement
+                    </Label>
                   </div>
                 </>
+              )}
+
+              {/* RW 1 Specific Fields */}
+              {formData.type === "RW 1" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>Date *</Label>
+                    <div className="relative">
+                      <DatePicker
+                        selected={formData.rwDate}
+                        onChange={(date: Date | null) => handleInputChange("rwDate", date || new Date())}
+                        className="w-full h-10 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="Sélectionnez la date"
+                      />
+                      <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="rwTime">Heure *</Label>
+                    <Input
+                      id="rwTime"
+                      type="time"
+                      value={formData.rwTime || ""}
+                      onChange={(e) => handleInputChange("rwTime", e.target.value)}
+                      className={errors.rwTime ? "border-destructive" : ""}
+                    />
+                    {errors.rwTime && (
+                      <p className="text-sm text-destructive">{errors.rwTime}</p>
+                    )}
+                  </div>
+                </div>
               )}
 
               {/* Pricing */}
@@ -401,18 +471,6 @@ const AddSale = () => {
                 <p className="text-xs text-muted-foreground">
                   Agent automatiquement assigné selon votre compte
                 </p>
-              </div>
-
-              {/* Notes */}
-              <div className="space-y-2">
-                <Label htmlFor="notes">Notes supplémentaires</Label>
-                <Textarea
-                  id="notes"
-                  value={formData.notes || ""}
-                  onChange={(e) => handleInputChange("notes", e.target.value)}
-                  placeholder="Entrez des détails supplémentaires ou des exigences particulières..."
-                  rows={4}
-                />
               </div>
 
               {/* Submit Button */}

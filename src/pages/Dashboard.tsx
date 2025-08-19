@@ -3,7 +3,9 @@ import MetricCard from "@/components/dashboard/MetricCard";
 import SalesChart from "@/components/dashboard/SalesChart";
 import BookingTypePieChart from "@/components/dashboard/BookingTypePieChart";
 import RecentSalesTable from "@/components/dashboard/RecentSalesTable";
+import FacturationTable from "@/components/dashboard/FacturationTable";
 import Navigation from "@/components/ui/navigation";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -20,11 +22,14 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { userRole, canViewMonthlyStats, canViewDashboard, loading: roleLoading } = useSimpleRole();
   const { data: sales = [], isLoading: salesLoading } = useSales();
   const { data: dailyData = [], isLoading: dailyLoading } = useSalesDaily();
   const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
   const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
+
+  console.log('Dashboard render:', { userRole, canViewDashboard: canViewDashboard() });
 
   // Get current month's start and end dates
   const now = new Date();
@@ -74,10 +79,11 @@ const Dashboard = () => {
     item.type === "Organized Travel"
   )?.count || 0;
 
-  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading;
+  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading || roleLoading;
 
-  // Check if user can see monthly statistics
-  const canSeeMonthlyStats = user?.email === 'mohammedmellit@chorafaa.com' || user?.email === 'mohammedalasri@chorafaa.com' || user?.email === 'mohammedelasri@chorafaa.com' || user?.email === 'ahmedmellit@chorafaa.com' || user?.email === 'mehdimellit@chorafaa.com';
+  // Check permissions for different dashboard sections  
+  const showMonthlyStats = canViewMonthlyStats();
+  const showDashboard = canViewDashboard();
 
   if (isLoading) {
     return (
@@ -139,7 +145,7 @@ const Dashboard = () => {
         </div>
 
         {/* Monthly Metrics Grid - Only for specific users */}
-        {canSeeMonthlyStats && (
+        {showMonthlyStats && (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-foreground mb-4">Statistiques du mois</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -174,7 +180,7 @@ const Dashboard = () => {
         {/* Balance Section */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-foreground mb-4">Solde Théorique</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {systemBalances.map((balance) => (
               <MetricCard
                 key={balance.system}
@@ -225,7 +231,7 @@ const Dashboard = () => {
         {Object.keys(agentStats).length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-foreground mb-4">Performance des agents au mois courant</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {Object.entries(agentStats).map(([agent, stats]) => {
                 const profitPercentage = totalProfit > 0 ? ((stats.profit / totalProfit) * 100).toFixed(1) : 0;
                 return (
@@ -246,6 +252,13 @@ const Dashboard = () => {
 
         {/* Recent Sales Table */}
         <RecentSalesTable />
+
+        {/* Facturation Table - Only for Manager, Cashier, and Super Agent */}
+        {(userRole === 'manager' || userRole === 'cashier' || userRole === 'super_agent') && (
+          <div className="mt-8">
+            <FacturationTable />
+          </div>
+        )}
       </div>
     </div>
   );

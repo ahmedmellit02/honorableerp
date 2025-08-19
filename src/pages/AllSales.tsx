@@ -5,14 +5,15 @@ import Navigation from "@/components/ui/navigation";
 import { format } from "date-fns";
 import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft, Download, Euro, CheckCircle } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
-import { useUserRole, useCashInSale } from "@/hooks/useUserRole";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
+import { useCashInSale } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import * as XLSX from 'xlsx';
 
 const AllSales = () => {
   const { data: sales = [], isLoading } = useSales();
-  const { data: userRole } = useUserRole();
+  const { userRole, canCashIn } = useSimpleRole();
   const cashInMutation = useCashInSale();
   const { toast } = useToast();
 
@@ -73,7 +74,9 @@ const AllSales = () => {
       'Date de départ': format(sale.departureDate, 'dd/MM/yyyy'),
       'Heure de départ': sale.departureTime,
       'Destination': sale.destination || '',
-      'Notes': sale.notes || '',
+      'De': sale.fromAirport || '',
+      'À': sale.toAirport || '',
+      'Enregistrement': sale.hasRegistration ? 'Oui' : 'Non',
       'Date de création': format(sale.createdAt, 'dd/MM/yyyy HH:mm')
     }));
 
@@ -170,9 +173,9 @@ const AllSales = () => {
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                         Date de départ
                       </th>
-                      <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
-                        Destination
-                      </th>
+                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                         Détails
+                       </th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                         Date de création
                       </th>
@@ -249,11 +252,15 @@ const AllSales = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-2">
-                          <span className="text-sm text-foreground">
-                            {sale.destination || '-'}
-                          </span>
-                        </td>
+                         <td className="py-3 px-2">
+                           <span className="text-sm text-foreground">
+                             {sale.type === "Flight Confirmed" && sale.fromAirport && sale.toAirport 
+                               ? `${sale.fromAirport} → ${sale.toAirport}${sale.hasRegistration ? " • Enreg." : ""}`
+                               : sale.type === "RW 1" && sale.rwDate && sale.rwTime 
+                               ? `${sale.rwDate.toLocaleDateString()} à ${sale.rwTime}`
+                               : sale.destination || "-"}
+                           </span>
+                         </td>
                         <td className="py-3 px-2">
                           <span className="text-sm text-muted-foreground">
                             {format(sale.createdAt, "dd/MM/yyyy HH:mm")}

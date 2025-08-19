@@ -7,9 +7,11 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
 import AddSale from "./pages/AddSale";
 import AllSales from "./pages/AllSales";
+import Facturation from "./pages/Facturation";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import BalanceControl from "./pages/BalanceControl";
+import SupplierDashboard from "./pages/SupplierDashboard";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +35,9 @@ const AppRoutes = () => {
       <Route path="/" element={<Dashboard />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/add-sale" element={<AddSale />} />
-      <Route path="/all-sales" element={<AllSales />} />
+      <Route path="/sales" element={<AllSales />} />
+      <Route path="/facturation" element={<Facturation />} />
+      <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
       <Route path="/balance-control" element={<BalanceControl />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />

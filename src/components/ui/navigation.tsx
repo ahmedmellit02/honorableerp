@@ -1,18 +1,21 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, Plane, LogOut, Settings, Wallet } from "lucide-react";
+import { BarChart3, Plus, Plane, LogOut, Settings, Wallet, TrendingUp } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { NotificationBell } from "@/components/ui/notifications";
 
 const Navigation = () => {
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const { userRole, canViewDashboard, canAddSale, canControlBalance, loading } = useSimpleRole();
   const { toast } = useToast();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [passwordData, setPasswordData] = useState({
@@ -22,31 +25,7 @@ const Navigation = () => {
   });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  const navItems = [
-    {
-      label: "Tableau de bord",
-      href: "/",
-      icon: BarChart3,
-    },
-    {
-      label: "Ajouter une vente", 
-      href: "/add-sale", 
-      icon: Plus,
-    },
-    ...(user?.email === 'mohammedelasri@chorafaa.com' ? [{
-      label: "Contrôle du solde",
-      href: "/balance-control", 
-      icon: Wallet,
-    }] : []),
-  ];
-
-  // Filter out "Ajouter une vente" for restricted user
-  const filteredNavItems = navItems.filter(item => {
-    if (item.href === "/add-sale" && user?.email === "mohammedmellit@chorafaa.com") {
-      return false;
-    }
-    return true;
-  });
+  console.log('Navigation render:', { userRole, loading, user: user?.email });
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,6 +79,56 @@ const Navigation = () => {
     }
   };
 
+  if (!user || loading) {
+    return (
+      <nav className="bg-card border-b border-border shadow-card">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 bg-gradient-ocean rounded-lg">
+                  <Plane className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-xl font-bold text-foreground">HonorableCRM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
+  // Build navigation items based on role
+  const navItems = [];
+
+  // Dashboard access for managers, cashiers, and super agents
+  if (canViewDashboard()) {
+    navItems.push({
+      label: "Tableau de bord",
+      href: "/",
+      icon: BarChart3,
+    });
+  }
+
+  // Add sale access for cashiers, super agents, and agents
+  if (canAddSale() || userRole === 'agent') {
+    navItems.push({
+      label: "Ajouter une vente", 
+      href: "/add-sale", 
+      icon: Plus,
+    });
+  }
+
+
+  // Balance control only for cashiers
+  if (canControlBalance()) {
+    navItems.push({
+      label: "Contrôle du solde",
+      href: "/balance-control", 
+      icon: Wallet,
+    });
+  }
+
   return (
     <nav className="bg-card border-b border-border shadow-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -114,7 +143,7 @@ const Navigation = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            {filteredNavItems.map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.href;
               
@@ -135,6 +164,8 @@ const Navigation = () => {
             })}
             
             <div className="flex items-center space-x-2 pl-4 border-l border-border">
+              <NotificationBell />
+              
               <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                 <DialogTrigger asChild>
                   <Button

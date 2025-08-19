@@ -98,7 +98,9 @@ const RecentSalesTable = () => {
       'Bénéfice (DH)': sale.profit,
       'Date de départ': format(sale.departureDate, 'dd/MM/yyyy'),
       'Heure de départ': sale.departureTime,
-      'Notes': sale.notes || '',
+      'De': sale.fromAirport || '',
+      'À': sale.toAirport || '',
+      'Enregistrement': sale.hasRegistration ? 'Oui' : 'Non',
       'Date de création': format(sale.createdAt, 'dd/MM/yyyy HH:mm')
     }));
 
@@ -156,7 +158,7 @@ const RecentSalesTable = () => {
             Excel
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/all-sales" className="flex items-center gap-2">
+            <Link to="/sales" className="flex items-center gap-2">
               Voir tout
               <ExternalLink className="h-4 w-4" />
             </Link>
@@ -216,16 +218,27 @@ const RecentSalesTable = () => {
                       <span className="text-xs">{sale.type}</span>
                     </Badge>
                   </td>
-                  <td className="py-3 px-2">
-                    <div>
-                      <div className="text-sm font-medium text-foreground">
-                        {sale.clientName}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {sale.phoneNumber}
-                      </div>
-                    </div>
-                  </td>
+                   <td className="py-3 px-2">
+                     <div>
+                       <div className="text-sm font-medium text-foreground">
+                         {sale.clientName}
+                       </div>
+                       <div className="text-xs text-muted-foreground">
+                         {sale.phoneNumber}
+                       </div>
+                       {sale.type === "Flight Confirmed" && sale.fromAirport && sale.toAirport && (
+                         <div className="text-xs text-muted-foreground">
+                           {sale.fromAirport} → {sale.toAirport}
+                           {sale.hasRegistration && " • Enregistrement"}
+                         </div>
+                       )}
+                       {sale.type === "RW 1" && sale.rwDate && sale.rwTime && (
+                         <div className="text-xs text-muted-foreground">
+                           RW: {sale.rwDate.toLocaleDateString()} à {sale.rwTime}
+                         </div>
+                       )}
+                     </div>
+                   </td>
                   <td className="py-3 px-2">
                     <span className="text-sm text-foreground">{sale.agent}</span>
                   </td>
