@@ -47,6 +47,53 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          client_name: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+          sale_id: string
+          trigger_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_name: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          notification_type: string
+          sale_id: string
+          trigger_time: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_name?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          sale_id?: string
+          trigger_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sales: {
         Row: {
           agent: string
@@ -169,6 +216,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      generate_notifications: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       get_all_system_balances: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -210,6 +261,10 @@ export type Database = {
       get_user_role: {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      mark_notification_read: {
+        Args: { notification_id: string }
+        Returns: undefined
       }
       user_has_permission: {
         Args: { permission_name: string; user_id: string }
