@@ -173,9 +173,9 @@ const AllSales = () => {
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                         Date de départ
                       </th>
-                      <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
-                        Destination
-                      </th>
+                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                         Détails
+                       </th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                         Date de création
                       </th>
@@ -252,11 +252,15 @@ const AllSales = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-2">
-                          <span className="text-sm text-foreground">
-                            {sale.destination || '-'}
-                          </span>
-                        </td>
+                         <td className="py-3 px-2">
+                           <span className="text-sm text-foreground">
+                             {sale.type === "Flight Confirmed" && sale.fromAirport && sale.toAirport 
+                               ? `${sale.fromAirport} → ${sale.toAirport}${sale.hasRegistration ? " • Enreg." : ""}`
+                               : sale.type === "RW 1" && sale.rwDate && sale.rwTime 
+                               ? `${sale.rwDate.toLocaleDateString()} à ${sale.rwTime}`
+                               : sale.destination || "-"}
+                           </span>
+                         </td>
                         <td className="py-3 px-2">
                           <span className="text-sm text-muted-foreground">
                             {format(sale.createdAt, "dd/MM/yyyy HH:mm")}

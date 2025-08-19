@@ -218,16 +218,27 @@ const RecentSalesTable = () => {
                       <span className="text-xs">{sale.type}</span>
                     </Badge>
                   </td>
-                  <td className="py-3 px-2">
-                    <div>
-                      <div className="text-sm font-medium text-foreground">
-                        {sale.clientName}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {sale.phoneNumber}
-                      </div>
-                    </div>
-                  </td>
+                   <td className="py-3 px-2">
+                     <div>
+                       <div className="text-sm font-medium text-foreground">
+                         {sale.clientName}
+                       </div>
+                       <div className="text-xs text-muted-foreground">
+                         {sale.phoneNumber}
+                       </div>
+                       {sale.type === "Flight Confirmed" && sale.fromAirport && sale.toAirport && (
+                         <div className="text-xs text-muted-foreground">
+                           {sale.fromAirport} → {sale.toAirport}
+                           {sale.hasRegistration && " • Enregistrement"}
+                         </div>
+                       )}
+                       {sale.type === "RW 1" && sale.rwDate && sale.rwTime && (
+                         <div className="text-xs text-muted-foreground">
+                           RW: {sale.rwDate.toLocaleDateString()} à {sale.rwTime}
+                         </div>
+                       )}
+                     </div>
+                   </td>
                   <td className="py-3 px-2">
                     <span className="text-sm text-foreground">{sale.agent}</span>
                   </td>
