@@ -25,6 +25,11 @@ serve(async (req) => {
     You have access to the following sales statistics:
     ${salesData ? JSON.stringify(salesData, null, 2) : 'No sales data provided'}
     
+    IMPORTANT INSTRUCTIONS:
+    - ALWAYS respond ONLY in French or Arabic - never use English
+    - The currency is DH (Moroccan Dirham), not dollars or any other currency
+    - All monetary amounts should be referenced in DH
+    
     Your role is to:
     - Analyze sales trends and patterns
     - Provide actionable business insights
@@ -32,7 +37,7 @@ serve(async (req) => {
     - Explain data in simple, actionable terms
     - Suggest strategies to improve performance
     
-    Be concise, professional, and focus on practical business advice. Always reference specific data points when making recommendations.`;
+    Be concise, professional, and focus on practical business advice. Always reference specific data points when making recommendations. Remember to use DH for all monetary values and respond in French or Arabic only.`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
