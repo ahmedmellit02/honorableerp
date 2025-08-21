@@ -75,7 +75,7 @@ const BalanceControl = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-16">
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-8">
