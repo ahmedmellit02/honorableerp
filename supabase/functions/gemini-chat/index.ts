@@ -18,12 +18,17 @@ serve(async (req) => {
       throw new Error('GEMINI_API_KEY is not set');
     }
 
-    const { message, salesData } = await req.json();
+    const { message, salesData, conversationHistory = [] } = await req.json();
 
     const systemPrompt = `You are a business analyst assistant helping a manager understand their travel agency's sales data. 
     
     You have access to the following sales statistics:
     ${salesData ? JSON.stringify(salesData, null, 2) : 'No sales data provided'}
+    
+    ${conversationHistory.length > 0 ? `
+    Recent conversation context:
+    ${conversationHistory.map((msg, index) => `${msg.role === 'user' ? 'Manager' : 'Assistant'}: ${msg.content}`).join('\n')}
+    ` : ''}
     
     IMPORTANT INSTRUCTIONS:
     - ALWAYS respond ONLY in French or Arabic - never use English
@@ -31,6 +36,7 @@ serve(async (req) => {
     - All monetary amounts should be referenced in DH
     - DO NOT use markdown formatting like ** or *** for emphasis
     - Use numbered lists (1. 2. 3.) or bullet points (-) for better clarification instead of bold/italic text
+    - Remember the conversation context and provide relevant follow-up responses
     
     Your role is to:
     - Analyze sales trends and patterns
@@ -38,6 +44,7 @@ serve(async (req) => {
     - Help identify opportunities for growth
     - Explain data in simple, actionable terms
     - Suggest strategies to improve performance
+    - Continue coherent conversations based on previous context
     
     Be concise, professional, and focus on practical business advice. Always reference specific data points when making recommendations. Remember to use DH for all monetary values and respond in French or Arabic only.`;
 
