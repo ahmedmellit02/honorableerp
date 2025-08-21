@@ -29,6 +29,8 @@ serve(async (req) => {
     - ALWAYS respond ONLY in French or Arabic - never use English
     - The currency is DH (Moroccan Dirham), not dollars or any other currency
     - All monetary amounts should be referenced in DH
+    - DO NOT use markdown formatting like ** or *** for emphasis
+    - Use numbered lists (1. 2. 3.) or bullet points (-) for better clarification instead of bold/italic text
     
     Your role is to:
     - Analyze sales trends and patterns
