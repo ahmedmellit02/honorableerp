@@ -16,32 +16,39 @@ const FacturationTable = () => {
     .filter(airport => airport.country === "Morocco")
     .map(airport => airport.code);
 
-  // Filter only Flight Confirmed sales
-  const flightConfirmedSales = sales.filter(sale => sale.type === "Flight Confirmed");
+  // Filter AR and TTP sales (all service types)
+  const facturationSales = sales.filter(sale => sale.system === "AR" || sale.system === "TTP");
   
   // Take the first 5 for display
-  const recentFlightSales = flightConfirmedSales.slice(0, 5);
+  const recentFacturationSales = facturationSales.slice(0, 5);
 
-  // Calculate fees based on airports
-  const calculateFees = (fromAirport?: string, toAirport?: string) => {
-    if (!fromAirport || !toAirport) return 40; // Default to international if airports unknown
+  // Calculate fees based on service type and airports
+  const calculateFees = (saleType: string, fromAirport?: string, toAirport?: string) => {
+    // For Flight Confirmed, use airport-based logic
+    if (saleType === "Flight Confirmed") {
+      if (!fromAirport || !toAirport) return 40; // Default to international if airports unknown
+      
+      const isFromMorocco = moroccanAirports.includes(fromAirport);
+      const isToMorocco = moroccanAirports.includes(toAirport);
+      
+      // If both airports are in Morocco, 20 DH, otherwise 40 DH
+      return (isFromMorocco && isToMorocco) ? 20 : 40;
+    }
     
-    const isFromMorocco = moroccanAirports.includes(fromAirport);
-    const isToMorocco = moroccanAirports.includes(toAirport);
-    
-    // If both airports are in Morocco, 20 DH, otherwise 40 DH
-    return (isFromMorocco && isToMorocco) ? 20 : 40;
+    // For all other services, fixed 20 DH fee
+    return 20;
   };
 
   const downloadExcel = () => {
-    if (flightConfirmedSales.length === 0) return;
+    if (facturationSales.length === 0) return;
 
-    const excelData = flightConfirmedSales.map(sale => ({
+    const excelData = facturationSales.map(sale => ({
       'ID': sale.numericId,
       'Client': sale.clientName,
+      'Service': sale.type,
       'Prix d\'achat (DH)': sale.buyingPrice,
-      'Prix de vente (DH)': sale.buyingPrice + calculateFees(sale.fromAirport, sale.toAirport),
-      'Fees (DH)': calculateFees(sale.fromAirport, sale.toAirport),
+      'Prix de vente (DH)': sale.buyingPrice + calculateFees(sale.type, sale.fromAirport, sale.toAirport),
+      'Fees (DH)': calculateFees(sale.type, sale.fromAirport, sale.toAirport),
       'Date': format(sale.createdAt, 'dd/MM/yyyy'),
       'De': sale.fromAirport || '',
       'À': sale.toAirport || '',
@@ -74,17 +81,17 @@ const FacturationTable = () => {
     );
   }
 
-  if (recentFlightSales.length === 0) {
+  if (recentFacturationSales.length === 0) {
     return (
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground">
-            Facturation (Vols confirmés)
+            Facturation AR & TTP
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <p className="text-muted-foreground">Aucun vol confirmé enregistré</p>
+            <p className="text-muted-foreground">Aucun service AR/TTP enregistré</p>
           </div>
         </CardContent>
       </Card>
@@ -95,7 +102,7 @@ const FacturationTable = () => {
     <Card className="shadow-card">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg font-semibold text-foreground">
-          Facturation (Vols confirmés)
+          Facturation AR & TTP
         </CardTitle>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={downloadExcel}>
@@ -119,6 +126,9 @@ const FacturationTable = () => {
                   Client
                 </th>
                 <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                  Service
+                </th>
+                <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                   Prix d'achat
                 </th>
                 <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
@@ -136,14 +146,19 @@ const FacturationTable = () => {
               </tr>
             </thead>
             <tbody>
-              {recentFlightSales.map((sale) => {
-                const fees = calculateFees(sale.fromAirport, sale.toAirport);
+              {recentFacturationSales.map((sale) => {
+                const fees = calculateFees(sale.type, sale.fromAirport, sale.toAirport);
                 return (
                   <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/50">
                     <td className="py-3 px-2">
                       <div className="text-sm font-medium text-foreground">
                         {sale.clientName}
                       </div>
+                    </td>
+                    <td className="py-3 px-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {sale.type}
+                      </Badge>
                     </td>
                     <td className="py-3 px-2">
                       <span className="text-sm text-foreground">
