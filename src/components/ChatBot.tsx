@@ -24,7 +24,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ salesData }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I\'m your business analyst assistant. I can help you understand your sales data and provide insights for better decision making. What would you like to know?',
+      text: 'Bonjour ! Je suis votre assistant Business Analyst. Je peux vous aider à analyser vos données de vente et à vous fournir des insights utiles pour prendre de meilleures décisions. Que souhaitez-vous explorer ?',
       isUser: false,
       timestamp: new Date()
     }
