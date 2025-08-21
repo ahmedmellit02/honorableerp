@@ -5,6 +5,7 @@ import BookingTypePieChart from "@/components/dashboard/BookingTypePieChart";
 import RecentSalesTable from "@/components/dashboard/RecentSalesTable";
 import FacturationTable from "@/components/dashboard/FacturationTable";
 import Navigation from "@/components/ui/navigation";
+import { ChatBot } from "@/components/ChatBot";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { 
   DollarSign, 
@@ -260,6 +261,20 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+      
+      {/* Chatbot for managers */}
+      {userRole === 'manager' && (
+        <ChatBot 
+          salesData={{
+            dailySales: { totalSales: dailySalesCount, totalRevenue: dailyRevenue, totalProfit: dailyProfit },
+            monthlySales: { totalSales, totalRevenue, totalProfit, avgProfitPerSale },
+            agentPerformance: agentStats,
+            bookingTypes: { flightBookings, hotelBookings, organizedTravel },
+            systemBalances: systemBalances || [],
+            topServices: topServices || []
+          }}
+        />
+      )}
     </div>
   );
 };
