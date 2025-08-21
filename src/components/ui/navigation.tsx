@@ -135,9 +135,9 @@ const Navigation = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="p-2 bg-gradient-ocean rounded-lg">
+              {/* <div className="p-2 bg-gradient-ocean rounded-lg">
                 <Plane className="h-6 w-6 text-white" />
-              </div>
+              </div> */}
               <span className="text-xl font-bold text-foreground">HonorableCRM</span>
             </Link>
           </div>
