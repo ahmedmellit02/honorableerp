@@ -1,0 +1,276 @@
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import Navigation from "@/components/ui/navigation";
+import { useAuth } from "@/hooks/useAuth";
+
+interface Expense {
+  id: string;
+  amount: number;
+  description: string;
+  created_at: string;
+}
+
+const ExpenseControl = () => {
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [isAddingExpense, setIsAddingExpense] = useState(false);
+  const [newExpense, setNewExpense] = useState({
+    amount: "",
+    description: ""
+  });
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
+
+  const fetchExpenses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("expenses")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setExpenses(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les charges.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddExpense = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newExpense.amount || !newExpense.description.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Tous les champs sont obligatoires.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!user) {
+      toast({
+        title: "Erreur",
+        description: "Vous devez être connecté pour ajouter une charge.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAddingExpense(true);
+
+    try {
+      const { error } = await supabase
+        .from("expenses")
+        .insert({
+          user_id: user.id,
+          amount: parseFloat(newExpense.amount),
+          description: newExpense.description.trim()
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Succès",
+        description: "Charge ajoutée avec succès.",
+      });
+
+      setNewExpense({ amount: "", description: "" });
+      fetchExpenses();
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible d'ajouter la charge.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingExpense(false);
+    }
+  };
+
+  const handleDeleteExpense = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("expenses")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Succès",
+        description: "Charge supprimée avec succès.",
+      });
+
+      fetchExpenses();
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer la charge.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <div className="pt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-foreground mb-2">Contrôle des charges</h1>
+            <p className="text-muted-foreground">Gérez toutes les charges de l'entreprise</p>
+          </div>
+
+          <div className="grid gap-6">
+            {/* Summary Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Résumé des charges</span>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="flex items-center gap-2">
+                        <Plus className="h-4 w-4" />
+                        Ajouter une charge
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Ajouter une nouvelle charge</DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={handleAddExpense} className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="amount">Montant (DH) *</Label>
+                          <Input
+                            id="amount"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={newExpense.amount}
+                            onChange={(e) => setNewExpense(prev => ({ ...prev, amount: e.target.value }))}
+                            placeholder="0.00"
+                            required
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="description">Description *</Label>
+                          <Input
+                            id="description"
+                            value={newExpense.description}
+                            onChange={(e) => setNewExpense(prev => ({ ...prev, description: e.target.value }))}
+                            placeholder="Description de la charge"
+                            required
+                          />
+                        </div>
+                        
+                        <div className="flex gap-2 pt-4">
+                          <DialogTrigger asChild>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="flex-1"
+                            >
+                              Annuler
+                            </Button>
+                          </DialogTrigger>
+                          <Button
+                            type="submit"
+                            disabled={isAddingExpense}
+                            className="flex-1"
+                          >
+                            {isAddingExpense ? "Ajout..." : "Ajouter"}
+                          </Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-primary">
+                  {totalExpenses.toLocaleString('fr-FR')} DH
+                </div>
+                <p className="text-sm text-muted-foreground">Total des charges</p>
+              </CardContent>
+            </Card>
+
+            {/* Expenses Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Historique des charges</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : expenses.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Aucune charge enregistrée
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead className="text-right">Montant (DH)</TableHead>
+                        <TableHead className="text-center">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {expenses.map((expense) => (
+                        <TableRow key={expense.id}>
+                          <TableCell>
+                            {new Date(expense.created_at).toLocaleDateString('fr-FR')}
+                          </TableCell>
+                          <TableCell>{expense.description}</TableCell>
+                          <TableCell className="text-right font-medium">
+                            {expense.amount.toLocaleString('fr-FR')} DH
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteExpense(expense.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ExpenseControl;

@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, Plane, LogOut, Settings, Wallet, TrendingUp } from "lucide-react";
+import { BarChart3, Plus, Plane, LogOut, Settings, Wallet, TrendingUp, Receipt } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useState } from "react";
@@ -119,6 +119,14 @@ const Navigation = () => {
     });
   }
 
+  // Expense control for managers, cashiers, and super agents
+  if (userRole === 'manager' || userRole === 'cashier' || userRole === 'super_agent') {
+    navItems.push({
+      label: "Contrôle des charges",
+      href: "/expense-control",
+      icon: Receipt,
+    });
+  }
 
   // Balance control only for cashiers
   if (canControlBalance()) {
