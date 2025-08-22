@@ -55,10 +55,17 @@ export const ChatBot: React.FC<ChatBotProps> = ({ salesData }) => {
     setIsLoading(true);
 
     try {
+      // Get recent conversation history (last 6 messages for context)
+      const recentMessages = messages.slice(-6).map(msg => ({
+        role: msg.isUser ? 'user' : 'assistant',
+        content: msg.text
+      }));
+
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: {
           message: inputValue,
-          salesData: salesData
+          salesData: salesData,
+          conversationHistory: recentMessages
         }
       });
 
