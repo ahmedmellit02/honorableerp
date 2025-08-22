@@ -5,17 +5,26 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/ui/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
+import { Navigate } from "react-router-dom";
 
 interface Expense {
   id: string;
   amount: number;
   description: string;
   created_at: string;
+  classification: string | null;
+  approved: boolean;
+  approved_at: string | null;
+  approved_by: string | null;
+  classified_at: string | null;
+  classified_by: string | null;
 }
 
 const ExpenseControl = () => {
@@ -26,8 +35,16 @@ const ExpenseControl = () => {
     description: ""
   });
   const [loading, setLoading] = useState(true);
+  const [isClassifying, setIsClassifying] = useState<string | null>(null);
+  const [isApproving, setIsApproving] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+  const { data: userRole } = useUserRole();
+
+  // Protect route from agents
+  if (userRole === 'agent') {
+    return <Navigate to="/" replace />;
+  }
 
   useEffect(() => {
     fetchExpenses();
@@ -105,31 +122,73 @@ const ExpenseControl = () => {
     }
   };
 
-  const handleDeleteExpense = async (id: string) => {
+  const handleClassifyExpense = async (expenseId: string, classification: string) => {
+    setIsClassifying(expenseId);
+    
     try {
       const { error } = await supabase
         .from("expenses")
-        .delete()
-        .eq("id", id);
+        .update({
+          classification,
+          classified_at: new Date().toISOString(),
+          classified_by: user?.id
+        })
+        .eq("id", expenseId);
 
       if (error) throw error;
 
       toast({
         title: "Succès",
-        description: "Charge supprimée avec succès.",
+        description: "Charge classifiée avec succès.",
       });
 
       fetchExpenses();
     } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Impossible de supprimer la charge.",
+        description: "Impossible de classifier la charge.",
         variant: "destructive",
       });
+    } finally {
+      setIsClassifying(null);
+    }
+  };
+
+  const handleApproveExpense = async (expenseId: string) => {
+    setIsApproving(expenseId);
+    
+    try {
+      const { error } = await supabase
+        .from("expenses")
+        .update({
+          approved: true,
+          approved_at: new Date().toISOString(),
+          approved_by: user?.id
+        })
+        .eq("id", expenseId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Succès",
+        description: "Charge approuvée avec succès.",
+      });
+
+      fetchExpenses();
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'approuver la charge.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsApproving(null);
     }
   };
 
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const isAsri = user?.email === 'honorablevoyage@gmail.com';
+  const isManager = userRole === 'manager';
 
   return (
     <div className="min-h-screen bg-background">
@@ -236,6 +295,8 @@ const ExpenseControl = () => {
                         <TableHead>Date</TableHead>
                         <TableHead>Description</TableHead>
                         <TableHead className="text-right">Montant (DH)</TableHead>
+                        <TableHead className="text-center">Classification</TableHead>
+                        <TableHead className="text-center">Status</TableHead>
                         <TableHead className="text-center">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -250,14 +311,51 @@ const ExpenseControl = () => {
                             {expense.amount.toLocaleString('fr-FR')} DH
                           </TableCell>
                           <TableCell className="text-center">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteExpense(expense.id)}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            {isAsri && !expense.classification ? (
+                              <Select 
+                                onValueChange={(value) => handleClassifyExpense(expense.id, value)}
+                                disabled={isClassifying === expense.id}
+                              >
+                                <SelectTrigger className="w-20">
+                                  <SelectValue placeholder="--" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="V">V</SelectItem>
+                                  <SelectItem value="F">F</SelectItem>
+                                  <SelectItem value="O">O</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                expense.classification === 'V' ? 'bg-green-100 text-green-800' :
+                                expense.classification === 'F' ? 'bg-red-100 text-red-800' :
+                                expense.classification === 'O' ? 'bg-blue-100 text-blue-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {expense.classification || '--'}
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                              expense.approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {expense.approved ? 'Approuvé' : 'En attente'}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {isManager && !expense.approved && expense.classification && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleApproveExpense(expense.id)}
+                                disabled={isApproving === expense.id}
+                                className="text-green-600 hover:text-green-700"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                                Approuver
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}

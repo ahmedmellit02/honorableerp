@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
-type UserRole = 'agent' | 'cashier';
+type UserRole = 'agent' | 'cashier' | 'manager' | 'super_agent' | 'supplier_accelaero' | 'supplier_ttp';
 
 export function useUserRole() {
   const { user } = useAuth();

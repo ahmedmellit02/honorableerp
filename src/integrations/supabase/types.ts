@@ -50,6 +50,12 @@ export type Database = {
       expenses: {
         Row: {
           amount: number
+          approved: boolean | null
+          approved_at: string | null
+          approved_by: string | null
+          classification: string | null
+          classified_at: string | null
+          classified_by: string | null
           created_at: string
           description: string
           id: string
@@ -58,6 +64,12 @@ export type Database = {
         }
         Insert: {
           amount: number
+          approved?: boolean | null
+          approved_at?: string | null
+          approved_by?: string | null
+          classification?: string | null
+          classified_at?: string | null
+          classified_by?: string | null
           created_at?: string
           description: string
           id?: string
@@ -66,6 +78,12 @@ export type Database = {
         }
         Update: {
           amount?: number
+          approved?: boolean | null
+          approved_at?: string | null
+          approved_by?: string | null
+          classification?: string | null
+          classified_at?: string | null
+          classified_by?: string | null
           created_at?: string
           description?: string
           id?: string
