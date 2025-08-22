@@ -177,6 +177,12 @@ const Dashboard = () => {
             </div>
           </div>
         )}
+    
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <SalesChart />
+          <BookingTypePieChart />
+        </div>
 
         {/* Balance Section */}
         <div className="mb-8">
@@ -195,12 +201,6 @@ const Dashboard = () => {
               />
             ))}
           </div>
-        </div>
-
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <SalesChart />
-          <BookingTypePieChart />
         </div>
 
         {/* Top 3 Services du mois courant */}
