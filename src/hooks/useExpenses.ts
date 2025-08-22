@@ -43,14 +43,16 @@ export const useExpensesDaily = () => {
       
       const { data, error } = await supabase
         .from("expenses")
-        .select("amount")
+        .select("amount, approved")
         .gte("created_at", `${today}T00:00:00`)
         .lt("created_at", `${today}T23:59:59`)
         .eq("approved", true);
 
       if (error) throw error;
 
+      console.log('Daily expenses query result:', data);
       const totalExpenses = (data || []).reduce((sum, expense) => sum + Number(expense.amount), 0);
+      console.log('Total daily approved expenses:', totalExpenses);
       
       return { totalExpenses };
     },
@@ -67,14 +69,16 @@ export const useExpensesMonthly = () => {
       
       const { data, error } = await supabase
         .from("expenses")
-        .select("amount")
+        .select("amount, approved")
         .gte("created_at", startOfMonth)
         .lte("created_at", endOfMonth)
         .eq("approved", true);
 
       if (error) throw error;
 
+      console.log('Monthly expenses query result:', data);
       const totalExpenses = (data || []).reduce((sum, expense) => sum + Number(expense.amount), 0);
+      console.log('Total monthly approved expenses:', totalExpenses);
       
       return { totalExpenses };
     },
