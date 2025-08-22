@@ -142,7 +142,7 @@ const Dashboard = () => {
               gradient="bg-gradient-ocean"
             />
             <MetricCard
-              title="Bénéfices net du jour (Bénéfices jour - charges du jour)"
+              title="Bénéfices net du jour"
               value={`${Math.round(dailyNetProfit).toLocaleString()} DH`}
               icon={Calendar}
               gradient="bg-gradient-tropical"
