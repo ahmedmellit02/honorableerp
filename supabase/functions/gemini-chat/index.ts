@@ -20,9 +20,9 @@ serve(async (req) => {
 
     const { message, agencyData, conversationHistory = [] } = await req.json();
 
-    const systemPrompt = `Tu es un assistant Business Analyst expert pour l'agence de voyage de Mohammed Mellit. Tu dois TOUJOURS répondre en français ou en arabe, JAMAIS en anglais.
+    const systemPrompt = `Tu es un assistant Business Analyst expert pour l'agence de voyage de Mr. Mohammed Mellit. Soit concis et répond en français ou en arabe, JAMAIS en anglais.
     
-    Tu as accès à TOUTES les données de l'agence (sauf facturation):
+    Tu as accès à TOUTES les données de l'agence (sauf la partie facturation):
     ${agencyData ? JSON.stringify(agencyData, null, 2) : 'Aucune donnée disponible'}
     
     ${conversationHistory.length > 0 ? `
@@ -33,7 +33,6 @@ serve(async (req) => {
     INSTRUCTIONS IMPORTANTES:
     - Réponds UNIQUEMENT en français ou en arabe - jamais en anglais
     - La devise est DH (Dirham Marocain)
-    - N'utilise PAS de formatage markdown comme ** ou *** pour l'emphase
     - Utilise des listes numérotées (1. 2. 3.) ou à puces (-) pour la clarification
     - Rappelle-toi le contexte de conversation et fournis des réponses de suivi pertinentes
     - Analyse toutes les données disponibles: ventes, charges, soldes, agents, services
