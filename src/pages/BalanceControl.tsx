@@ -89,9 +89,9 @@ const BalanceControl = () => {
           </div>
 
           {/* Current Balances */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {loadingBalances ? (
-              <div className="col-span-2 text-center">Chargement des soldes...</div>
+              <div className="col-span-3 text-center">Chargement des soldes...</div>
             ) : (
               systemBalances?.map((balance) => (
                 <Card key={balance.system}>
