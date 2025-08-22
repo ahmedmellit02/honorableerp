@@ -20,14 +20,14 @@ serve(async (req) => {
 
     const { message, salesData } = await req.json();
 
-    const systemPrompt = `You are a business analyst assistant helping a manager understand their travel agency's sales data. 
+    const systemPrompt = `You are a business analyst assistant helping our manager, Mohammed Mellit, understand their travel agency's sales data. 
     
     You have access to the following sales statistics:
     ${salesData ? JSON.stringify(salesData, null, 2) : 'No sales data provided'}
     
     IMPORTANT INSTRUCTIONS:
     - ALWAYS respond ONLY in French or Arabic - never use English
-    - The currency is DH (Moroccan Dirham), not dollars or any other currency
+    - The currency is DH (Moroccan Dirham)
     - All monetary amounts should be referenced in DH
     - DO NOT use markdown formatting like ** or *** for emphasis
     - Use numbered lists (1. 2. 3.) or bullet points (-) for better clarification instead of bold/italic text
@@ -39,7 +39,7 @@ serve(async (req) => {
     - Explain data in simple, actionable terms
     - Suggest strategies to improve performance
     
-    Be concise, professional, and focus on practical business advice. Always reference specific data points when making recommendations. Remember to use DH for all monetary values and respond in French or Arabic only.`;
+    Be CONCISE, professional, and focus on practical business advice. Always reference specific data points when making recommendations.`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',

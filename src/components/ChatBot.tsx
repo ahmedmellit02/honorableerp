@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageCircle, Send, X, Minimize2 } from 'lucide-react';
+import { Send, X, Minimize2, BotMessageSquare } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -97,7 +97,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ salesData }) => {
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg z-50"
       >
-        <MessageCircle className="h-6 w-6 text-primary-foreground" />
+        <BotMessageSquare className="h-6 w-6 text-primary-foreground" />
       </Button>
     );
   }
@@ -109,7 +109,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ salesData }) => {
       <CardHeader className="p-4 bg-primary text-primary-foreground rounded-t-lg">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
-            <MessageCircle className="h-5 w-5" />
+            <BotMessageSquare className="h-5 w-5" />
             Business Assistant
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -176,7 +176,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ salesData }) => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask about your sales data..."
+                placeholder="Posez moi des questions..."
                 disabled={isLoading}
                 className="flex-1"
               />
