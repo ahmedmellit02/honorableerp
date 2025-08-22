@@ -41,21 +41,7 @@ const ExpenseControl = () => {
   const { user } = useAuth();
   const { data: userRole, isLoading: roleLoading } = useUserRole();
 
-  useEffect(() => {
-    fetchExpenses();
-  }, []);
-
-  // Protect route from agents - after all hooks are called
-  if (roleLoading) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-    </div>;
-  }
-
-  if (userRole === 'agent') {
-    return <Navigate to="/" replace />;
-  }
-
+  // Define fetchExpenses before useEffect
   const fetchExpenses = async () => {
     try {
       const { data, error } = await supabase
@@ -75,6 +61,21 @@ const ExpenseControl = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
+
+  // Protect route from agents - after all hooks are called
+  if (roleLoading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>;
+  }
+
+  if (userRole === 'agent') {
+    return <Navigate to="/" replace />;
+  }
 
   const handleAddExpense = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,9 +98,18 @@ const ExpenseControl = () => {
       return;
     }
 
+    console.log('Adding expense with user:', { id: user.id, email: user.email });
+
     setIsAddingExpense(true);
 
     try {
+      // Check current session
+      const { data: session } = await supabase.auth.getSession();
+      console.log('Current session:', { 
+        user: session.session?.user?.id, 
+        expires_at: session.session?.expires_at 
+      });
+
       const { error } = await supabase
         .from("expenses")
         .insert({
@@ -108,7 +118,19 @@ const ExpenseControl = () => {
           description: newExpense.description.trim()
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Insert error details:', error);
+        
+        if (error.code === 'PGRST301' || error.message.includes('row-level security')) {
+          toast({
+            title: "Erreur d'authentification",
+            description: "Votre session a expiré. Veuillez vous reconnecter pour continuer.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
+      }
 
       toast({
         title: "Succès",
@@ -118,6 +140,7 @@ const ExpenseControl = () => {
       setNewExpense({ amount: "", description: "" });
       fetchExpenses();
     } catch (error: any) {
+      console.error('Full error:', error);
       toast({
         title: "Erreur",
         description: error.message || "Impossible d'ajouter la charge.",
