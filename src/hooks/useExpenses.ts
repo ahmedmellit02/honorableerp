@@ -45,7 +45,8 @@ export const useExpensesDaily = () => {
         .from("expenses")
         .select("amount")
         .gte("created_at", `${today}T00:00:00`)
-        .lt("created_at", `${today}T23:59:59`);
+        .lt("created_at", `${today}T23:59:59`)
+        .eq("approved", true);
 
       if (error) throw error;
 
@@ -68,7 +69,8 @@ export const useExpensesMonthly = () => {
         .from("expenses")
         .select("amount")
         .gte("created_at", startOfMonth)
-        .lte("created_at", endOfMonth);
+        .lte("created_at", endOfMonth)
+        .eq("approved", true);
 
       if (error) throw error;
 
