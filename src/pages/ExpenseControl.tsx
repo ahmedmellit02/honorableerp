@@ -41,7 +41,11 @@ const ExpenseControl = () => {
   const { user } = useAuth();
   const { data: userRole, isLoading: roleLoading } = useUserRole();
 
-  // Protect route from agents
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
+
+  // Protect route from agents - after all hooks are called
   if (roleLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -51,10 +55,6 @@ const ExpenseControl = () => {
   if (userRole === 'agent') {
     return <Navigate to="/" replace />;
   }
-
-  useEffect(() => {
-    fetchExpenses();
-  }, []);
 
   const fetchExpenses = async () => {
     try {
