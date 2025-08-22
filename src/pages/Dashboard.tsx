@@ -20,6 +20,7 @@ import {
 import { useSales, useSalesDaily, useSalesByType, useTopServicesCurrentMonth } from "@/hooks/useSales";
 import { useSystemBalances } from "@/hooks/useBalance";
 import { useAuth } from "@/hooks/useAuth";
+import { useExpensesDaily, useExpensesMonthly } from "@/hooks/useExpenses";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -29,6 +30,8 @@ const Dashboard = () => {
   const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
   const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
+  const { data: dailyExpenses, isLoading: dailyExpensesLoading } = useExpensesDaily();
+  const { data: monthlyExpenses, isLoading: monthlyExpensesLoading } = useExpensesMonthly();
 
   console.log('Dashboard render:', { userRole, canViewDashboard: canViewDashboard() });
 
@@ -47,7 +50,8 @@ const Dashboard = () => {
   const totalSales = currentMonthSales.length;
   const totalRevenue = currentMonthSales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
   const totalProfit = currentMonthSales.reduce((sum, sale) => sum + sale.profit, 0);
-  const avgProfitPerSale = totalSales > 0 ? totalProfit / totalSales : 0;
+  const monthlyExpensesAmount = monthlyExpenses?.totalExpenses || 0;
+  const monthlyNetProfit = totalProfit - monthlyExpensesAmount;
 
   // Calculate daily metrics (today's sales only)
   const today = new Date().toDateString();
@@ -55,7 +59,8 @@ const Dashboard = () => {
   const dailySalesCount = todaySales.length;
   const dailyRevenue = todaySales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
   const dailyProfit = todaySales.reduce((sum, sale) => sum + sale.profit, 0);
-  const dailyAvgProfitPerSale = dailySalesCount > 0 ? dailyProfit / dailySalesCount : 0;
+  const dailyExpensesAmount = dailyExpenses?.totalExpenses || 0;
+  const dailyNetProfit = dailyProfit - dailyExpensesAmount;
 
   // Calculate agent stats from current month data
   const agentStats = currentMonthSales.reduce((acc, sale) => {
@@ -80,7 +85,7 @@ const Dashboard = () => {
     item.type === "Organized Travel"
   )?.count || 0;
 
-  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading || roleLoading;
+  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading || roleLoading || dailyExpensesLoading || monthlyExpensesLoading;
 
   // Check permissions for different dashboard sections  
   const showMonthlyStats = canViewMonthlyStats();
@@ -125,8 +130,8 @@ const Dashboard = () => {
               gradient="bg-gradient-tropical"
             />
             <MetricCard
-              title="Revenu du jour"
-              value={`${dailyRevenue.toLocaleString()} DH`}
+              title="Charges du jour"
+              value={`${dailyExpensesAmount.toLocaleString()} DH`}
               icon={DollarSign}
               gradient="bg-gradient-sunset"
             />
@@ -137,8 +142,8 @@ const Dashboard = () => {
               gradient="bg-gradient-ocean"
             />
             <MetricCard
-              title="Valeur moyenne du jour (bénéfice)"
-              value={`${Math.round(dailyAvgProfitPerSale).toLocaleString()} DH`}
+              title="Bénéfices net du jour (Bénéfices jour - charges du jour)"
+              value={`${Math.round(dailyNetProfit).toLocaleString()} DH`}
               icon={Calendar}
               gradient="bg-gradient-tropical"
             />
@@ -157,8 +162,8 @@ const Dashboard = () => {
                 gradient="bg-gradient-ocean"
               />
               <MetricCard
-                title="Revenu total"
-                value={`${totalRevenue.toLocaleString()} DH`}
+                title="Charges du mois"
+                value={`${monthlyExpensesAmount.toLocaleString()} DH`}
                 icon={DollarSign}
                 gradient="bg-gradient-tropical"
               />
@@ -169,8 +174,8 @@ const Dashboard = () => {
                 gradient="bg-gradient-sunset"
               />
               <MetricCard
-                title="Valeur moyenne (bénéfice)"
-                value={`${Math.round(avgProfitPerSale).toLocaleString()} DH`}
+                title="Bénéfices net du mois"
+                value={`${Math.round(monthlyNetProfit).toLocaleString()} DH`}
                 icon={Calendar}
                 gradient="bg-gradient-ocean"
               />
@@ -267,7 +272,7 @@ const Dashboard = () => {
         <ChatBot 
           salesData={{
             dailySales: { totalSales: dailySalesCount, totalRevenue: dailyRevenue, totalProfit: dailyProfit },
-            monthlySales: { totalSales, totalRevenue, totalProfit, avgProfitPerSale },
+            monthlySales: { totalSales, totalRevenue, totalProfit, monthlyNetProfit },
             agentPerformance: agentStats,
             bookingTypes: { flightBookings, hotelBookings, organizedTravel },
             systemBalances: systemBalances || [],
