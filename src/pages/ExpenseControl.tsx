@@ -39,9 +39,15 @@ const ExpenseControl = () => {
   const [isApproving, setIsApproving] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
-  const { data: userRole } = useUserRole();
+  const { data: userRole, isLoading: roleLoading } = useUserRole();
 
   // Protect route from agents
+  if (roleLoading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>;
+  }
+
   if (userRole === 'agent') {
     return <Navigate to="/" replace />;
   }
