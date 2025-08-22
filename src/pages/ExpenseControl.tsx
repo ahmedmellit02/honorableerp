@@ -161,6 +161,15 @@ const ExpenseControl = () => {
   };
 
   const handleApproveExpense = async (expenseId: string) => {
+    if (!user) {
+      toast({
+        title: "Erreur d'authentification",
+        description: "Vous devez être connecté pour approuver une charge. Veuillez vous reconnecter.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsApproving(expenseId);
     
     try {
@@ -169,11 +178,21 @@ const ExpenseControl = () => {
         .update({
           approved: true,
           approved_at: new Date().toISOString(),
-          approved_by: user?.id
+          approved_by: user.id
         })
         .eq("id", expenseId);
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST301' || error.message.includes('JWT')) {
+          toast({
+            title: "Session expirée",
+            description: "Votre session a expiré. Veuillez vous reconnecter.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
+      }
 
       toast({
         title: "Succès",
@@ -182,9 +201,10 @@ const ExpenseControl = () => {
 
       fetchExpenses();
     } catch (error: any) {
+      console.error('Expense approval error:', error);
       toast({
         title: "Erreur",
-        description: "Impossible d'approuver la charge.",
+        description: error.message || "Impossible d'approuver la charge. Vérifiez votre connexion.",
         variant: "destructive",
       });
     } finally {
