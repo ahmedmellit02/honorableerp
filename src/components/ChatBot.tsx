@@ -15,10 +15,21 @@ interface Message {
 }
 
 interface ChatBotProps {
-  salesData?: any;
+  agencyData?: {
+    dailySales: any;
+    monthlySales: any;
+    expenses: any;
+    balances: any;
+    agentPerformance: any;
+    bookingTypes: any;
+    topServices: any;
+    recentSales: any;
+    allSales: any;
+    typeStatistics: any;
+  };
 }
 
-export const ChatBot: React.FC<ChatBotProps> = ({ salesData }) => {
+export const ChatBot: React.FC<ChatBotProps> = ({ agencyData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -64,7 +75,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ salesData }) => {
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: {
           message: inputValue,
-          salesData: salesData,
+          agencyData: agencyData,
           conversationHistory: recentMessages
         }
       });

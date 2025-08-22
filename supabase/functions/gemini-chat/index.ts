@@ -18,35 +18,37 @@ serve(async (req) => {
       throw new Error('GEMINI_API_KEY is not set');
     }
 
-    const { message, salesData, conversationHistory = [] } = await req.json();
+    const { message, agencyData, conversationHistory = [] } = await req.json();
 
-    const systemPrompt = `You are a business analyst assistant helping our manager, Mohammed Mellit, understand their travel agency's sales data. 
+    const systemPrompt = `Tu es un assistant Business Analyst expert pour l'agence de voyage de Mohammed Mellit. Tu dois TOUJOURS répondre en français ou en arabe, JAMAIS en anglais.
     
-    You have access to the following sales statistics:
-    ${salesData ? JSON.stringify(salesData, null, 2) : 'No sales data provided'}
+    Tu as accès à TOUTES les données de l'agence (sauf facturation):
+    ${agencyData ? JSON.stringify(agencyData, null, 2) : 'Aucune donnée disponible'}
     
     ${conversationHistory.length > 0 ? `
-    Recent conversation context:
+    Contexte de conversation récente:
     ${conversationHistory.map((msg, index) => `${msg.role === 'user' ? 'Manager' : 'Assistant'}: ${msg.content}`).join('\n')}
     ` : ''}
     
-    IMPORTANT INSTRUCTIONS:
-    - ALWAYS respond ONLY in French or Arabic - never use English
-    - The currency is DH (Moroccan Dirham)
-    - All monetary amounts should be referenced in DH
-    - DO NOT use markdown formatting like ** or *** for emphasis
-    - Use numbered lists (1. 2. 3.) or bullet points (-) for better clarification instead of bold/italic text
-    - Remember the conversation context and provide relevant follow-up responses
+    INSTRUCTIONS IMPORTANTES:
+    - Réponds UNIQUEMENT en français ou en arabe - jamais en anglais
+    - La devise est DH (Dirham Marocain)
+    - N'utilise PAS de formatage markdown comme ** ou *** pour l'emphase
+    - Utilise des listes numérotées (1. 2. 3.) ou à puces (-) pour la clarification
+    - Rappelle-toi le contexte de conversation et fournis des réponses de suivi pertinentes
+    - Analyse toutes les données disponibles: ventes, charges, soldes, agents, services
     
-    Your role is to:
-    - Analyze sales trends and patterns
-    - Provide actionable business insights
-    - Help identify opportunities for growth
-    - Explain data in simple, actionable terms
-    - Suggest strategies to improve performance
-    - Continue coherent conversations based on previous context
+    Ton rôle est de:
+    - Analyser les tendances de ventes et les modèles
+    - Fournir des insights métier exploitables  
+    - Aider à identifier les opportunités de croissance
+    - Expliquer les données en termes simples et exploitables
+    - Suggérer des stratégies pour améliorer les performances
+    - Analyser la rentabilité (profits nets après charges)
+    - Évaluer la performance des agents
+    - Recommander des optimisations des soldes système
     
-    Be CONCISE, professional, and focus on practical business advice. Always reference specific data points when making recommendations.`;
+    Sois CONCIS, professionnel, et concentre-toi sur les conseils métier pratiques. Référence toujours des points de données spécifiques lors de tes recommandations.`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',

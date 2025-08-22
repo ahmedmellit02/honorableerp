@@ -270,13 +270,32 @@ const Dashboard = () => {
       {/* Chatbot for managers */}
       {userRole === 'manager' && (
         <ChatBot 
-          salesData={{
-            dailySales: { totalSales: dailySalesCount, totalRevenue: dailyRevenue, totalProfit: dailyProfit },
-            monthlySales: { totalSales, totalRevenue, totalProfit, monthlyNetProfit },
+          agencyData={{
+            dailySales: { 
+              totalSales: dailySalesCount, 
+              totalRevenue: dailyRevenue, 
+              totalProfit: dailyProfit,
+              netProfit: dailyNetProfit,
+              expenses: dailyExpensesAmount
+            },
+            monthlySales: { 
+              totalSales, 
+              totalRevenue, 
+              totalProfit, 
+              monthlyNetProfit,
+              expenses: monthlyExpensesAmount
+            },
+            expenses: {
+              daily: dailyExpenses,
+              monthly: monthlyExpenses
+            },
+            balances: systemBalances || [],
             agentPerformance: agentStats,
             bookingTypes: { flightBookings, hotelBookings, organizedTravel },
-            systemBalances: systemBalances || [],
-            topServices: topServices || []
+            topServices: topServices || [],
+            recentSales: sales.slice(0, 10),
+            allSales: sales,
+            typeStatistics: typeData || []
           }}
         />
       )}
