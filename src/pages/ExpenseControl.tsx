@@ -187,7 +187,7 @@ const ExpenseControl = () => {
   };
 
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const isAsri = user?.email === 'honorablevoyage@gmail.com';
+  const isCashier = userRole === 'cashier';
   const isManager = userRole === 'manager';
 
   return (
@@ -311,7 +311,7 @@ const ExpenseControl = () => {
                             {expense.amount.toLocaleString('fr-FR')} DH
                           </TableCell>
                           <TableCell className="text-center">
-                            {isAsri && !expense.classification ? (
+                            {isCashier && !expense.classification ? (
                               <Select 
                                 onValueChange={(value) => handleClassifyExpense(expense.id, value)}
                                 disabled={isClassifying === expense.id}
