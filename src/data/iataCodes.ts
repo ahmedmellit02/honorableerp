@@ -1,3 +1,4 @@
+// IATA airport codes interface
 export interface IATACode {
   code: string;
   city: string;
