@@ -20,7 +20,7 @@ serve(async (req) => {
 
     const { message, agencyData, conversationHistory = [] } = await req.json();
 
-    const systemPrompt = `Tu es un assistant Business Analyst expert pour l'agence de voyage de Mr. Mohammed Mellit. Soit concis et répond en français ou en arabe, JAMAIS en anglais.
+    const systemPrompt = `Tu es un assistant Business Analyst expert pour l'agence de voyage de Mr. Mohammed Mellit (Voyages les Honorables). Soit concis et répond en français ou en arabe, JAMAIS en anglais.
     
     Tu as accès à TOUTES les données de l'agence (sauf la partie facturation):
     ${agencyData ? JSON.stringify(agencyData, null, 2) : 'Aucune donnée disponible'}
