@@ -20,7 +20,7 @@ import {
 import { useSales, useSalesDaily, useSalesByType, useTopServicesCurrentMonth } from "@/hooks/useSales";
 import { useSystemBalances } from "@/hooks/useBalance";
 import { useAuth } from "@/hooks/useAuth";
-import { useExpensesDaily, useExpensesMonthly } from "@/hooks/useExpenses";
+import { useExpensesDaily, useExpensesMonthly, useUnapprovedExpensesDaily, useUnapprovedExpensesMonthly } from "@/hooks/useExpenses";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -32,6 +32,8 @@ const Dashboard = () => {
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
   const { data: dailyExpenses, isLoading: dailyExpensesLoading } = useExpensesDaily();
   const { data: monthlyExpenses, isLoading: monthlyExpensesLoading } = useExpensesMonthly();
+  const { data: dailyUnapproved, isLoading: dailyUnapprovedLoading } = useUnapprovedExpensesDaily();
+  const { data: monthlyUnapproved, isLoading: monthlyUnapprovedLoading } = useUnapprovedExpensesMonthly();
 
   console.log('Dashboard render:', { userRole, canViewDashboard: canViewDashboard() });
 
@@ -85,7 +87,7 @@ const Dashboard = () => {
     item.type === "Organized Travel"
   )?.count || 0;
 
-  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading || roleLoading || dailyExpensesLoading || monthlyExpensesLoading;
+  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading || roleLoading || dailyExpensesLoading || monthlyExpensesLoading || dailyUnapprovedLoading || monthlyUnapprovedLoading;
 
   // Check permissions for different dashboard sections  
   const showMonthlyStats = canViewMonthlyStats();
@@ -134,6 +136,7 @@ const Dashboard = () => {
               value={`${dailyExpensesAmount.toLocaleString()} DH`}
               icon={DollarSign}
               gradient="bg-gradient-sunset"
+              unapprovedCount={dailyUnapproved?.count}
             />
             <MetricCard
               title="Bénéfice du jour"
@@ -146,6 +149,7 @@ const Dashboard = () => {
               value={`${Math.round(dailyNetProfit).toLocaleString()} DH`}
               icon={Calendar}
               gradient="bg-gradient-tropical"
+              unapprovedCount={dailyUnapproved?.count}
             />
           </div>
         </div>
@@ -166,6 +170,7 @@ const Dashboard = () => {
                 value={`${monthlyExpensesAmount.toLocaleString()} DH`}
                 icon={DollarSign}
                 gradient="bg-gradient-tropical"
+                unapprovedCount={monthlyUnapproved?.count}
               />
               <MetricCard
                 title="Bénéfice total"
@@ -178,6 +183,7 @@ const Dashboard = () => {
                 value={`${Math.round(monthlyNetProfit).toLocaleString()} DH`}
                 icon={Calendar}
                 gradient="bg-gradient-ocean"
+                unapprovedCount={monthlyUnapproved?.count}
               />
             </div>
           </div>

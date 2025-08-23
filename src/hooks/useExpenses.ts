@@ -84,3 +84,45 @@ export const useExpensesMonthly = () => {
     },
   });
 };
+
+export const useUnapprovedExpensesDaily = () => {
+  return useQuery({
+    queryKey: ["unapproved-expenses-daily"],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      
+      const { data, error } = await supabase
+        .from("expenses")
+        .select("id, approved")
+        .gte("created_at", `${today}T00:00:00`)
+        .lt("created_at", `${today}T23:59:59`)
+        .eq("approved", false);
+
+      if (error) throw error;
+      
+      return { count: data?.length || 0 };
+    },
+  });
+};
+
+export const useUnapprovedExpensesMonthly = () => {
+  return useQuery({
+    queryKey: ["unapproved-expenses-monthly"],
+    queryFn: async () => {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+      
+      const { data, error } = await supabase
+        .from("expenses")
+        .select("id, approved")
+        .gte("created_at", startOfMonth)
+        .lte("created_at", endOfMonth)
+        .eq("approved", false);
+
+      if (error) throw error;
+      
+      return { count: data?.length || 0 };
+    },
+  });
+};

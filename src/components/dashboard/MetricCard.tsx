@@ -8,6 +8,7 @@ interface MetricCardProps {
   changeType?: "positive" | "negative" | "neutral";
   icon: LucideIcon;
   gradient?: string;
+  unapprovedCount?: number;
 }
 
 const MetricCard = ({ 
@@ -16,7 +17,8 @@ const MetricCard = ({
   change, 
   changeType = "neutral", 
   icon: Icon, 
-  gradient = "bg-gradient-ocean" 
+  gradient = "bg-gradient-ocean",
+  unapprovedCount 
 }: MetricCardProps) => {
   const changeColor = {
     positive: "text-success",
@@ -39,6 +41,11 @@ const MetricCard = ({
         {change && (
           <p className={`text-xs ${changeColor} mt-1`}>
             {change}
+          </p>
+        )}
+        {unapprovedCount !== undefined && unapprovedCount > 0 && (
+          <p className="text-xs text-destructive mt-1">
+            {unapprovedCount} charges non approuvées
           </p>
         )}
       </CardContent>
