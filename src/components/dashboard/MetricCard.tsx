@@ -38,14 +38,14 @@ const MetricCard = ({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold text-foreground">{value}</div>
+        {unapprovedCount !== undefined && unapprovedCount > 0 && (
+          <p className="text-xs text-destructive mt-1">
+            {unapprovedCount} charges en attente :
+          </p>
+        )}
         {change && (
           <p className={`text-xs ${changeColor} mt-1`}>
             {change}
-          </p>
-        )}
-        {unapprovedCount !== undefined && unapprovedCount > 0 && (
-          <p className="text-xs text-destructive mt-1">
-            {unapprovedCount} charges non approuvées
           </p>
         )}
       </CardContent>
