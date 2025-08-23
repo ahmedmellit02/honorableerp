@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,11 +24,11 @@ const AddSale = () => {
   const addSaleMutation = useAddSale();
   const { user } = useAuth();
   const { canAddSale, userRole } = useSimpleRole();
-  
+
   // Get agent based on user email
   const getAgentFromEmail = (email: string | undefined): SaleFormData["agent"] => {
     if (!email) return "Ahmed";
-    
+
     const emailToAgent: Record<string, SaleFormData["agent"]> = {
       "m.elasri73@gmail.com": "Asri",
       "achraf.elouahidy@gmail.com": "Achraf",
@@ -39,13 +38,13 @@ const AddSale = () => {
       "mohammedmellit@chorafaa.com": "Mehdi",
       "ahmedmellit@chorafaa.com": "Ahmed"
     };
-    
+
     return emailToAgent[email] || "Ahmed";
   };
 
   // Check if user should have access
   const isRestrictedUser = user?.email === "mohammedmellit@chorafaa.com";
-  
+
   const [formData, setFormData] = useState<SaleFormData>({
     type: "Flight Confirmed",
     clientName: "",
@@ -108,22 +107,59 @@ const AddSale = () => {
       newErrors.rwTime = "L'heure est requise pour RW 1";
     }
 
+    // 🚨 Check if departure and arrival airports are the same
+    if (
+      formData.type === "Flight Confirmed" &&
+      formData.fromAirport &&
+      formData.toAirport &&
+      formData.fromAirport === formData.toAirport
+    ) {
+      newErrors.toAirport = "L'aéroport d'arrivée doit être différent de l'aéroport de départ";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleInputChange = (field: keyof SaleFormData, value: any) => {
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+
+      // ✅ Real-time validation for same airports
+      if (
+        updated.type === "Flight Confirmed" &&
+        updated.fromAirport &&
+        updated.toAirport &&
+        updated.fromAirport === updated.toAirport
+      ) {
+        setErrors(prev => ({
+          ...prev,
+          toAirport: "L'aéroport d'arrivée doit être différent de l'aéroport de départ"
+        }));
+      } else {
+        setErrors(prev => ({ ...prev, toAirport: undefined }));
+      }
+
+      return updated;
+    });
+
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       try {
         await addSaleMutation.mutateAsync(formData);
-        
+
         toast({
           title: "Vente enregistrée avec succès !",
           description: `${formData.type} pour ${formData.clientName} a été enregistré.`,
         });
-        
+
         navigate("/");
       } catch (error) {
         console.error("Error saving sale:", error);
@@ -133,14 +169,6 @@ const AddSale = () => {
           variant: "destructive",
         });
       }
-    }
-  };
-
-  const handleInputChange = (field: keyof SaleFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -179,7 +207,7 @@ const AddSale = () => {
   return (
     <div className="min-h-screen bg-background pt-16">
       <Navigation />
-      
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -215,7 +243,7 @@ const AddSale = () => {
                   <Label htmlFor="type">Type de service</Label>
                   <Select
                     value={formData.type}
-                    onValueChange={(value: SaleFormData["type"]) => 
+                    onValueChange={(value: SaleFormData["type"]) =>
                       handleInputChange("type", value)
                     }
                   >
@@ -242,7 +270,7 @@ const AddSale = () => {
                   <Label htmlFor="system">Système</Label>
                   <Select
                     value={formData.system}
-                    onValueChange={(value: SaleFormData["system"]) => 
+                    onValueChange={(value: SaleFormData["system"]) =>
                       handleInputChange("system", value)
                     }
                   >
@@ -337,7 +365,7 @@ const AddSale = () => {
                       )}
                     </div>
                   </div>
-                  
+
                   {/* From and To Airport Fields */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -363,6 +391,9 @@ const AddSale = () => {
                         placeholder="Aéroport d'arrivée (ex: CDG)"
                         maxResults={8}
                       />
+                      {errors.toAirport && (
+                        <p className="text-sm text-destructive">{errors.toAirport}</p>
+                      )}
                       <p className="text-xs text-muted-foreground">
                         Code IATA de l'aéroport d'arrivée
                       </p>
@@ -462,7 +493,7 @@ const AddSale = () => {
                 </div>
               </div>
 
-              {/* Agent Assignment (auto-assigned based on user email) */}
+              {/* Agent Assignment */}
               <div className="space-y-2">
                 <Label>Agent assigné</Label>
                 <div className="h-10 px-3 py-2 border border-border rounded-md bg-muted flex items-center">
@@ -475,8 +506,8 @@ const AddSale = () => {
 
               {/* Submit Button */}
               <div className="flex justify-end pt-6">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={addSaleMutation.isPending}
                   className="flex items-center gap-2 bg-gradient-ocean hover:bg-primary-hover"
                 >
