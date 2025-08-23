@@ -45,7 +45,7 @@ const MetricCard = ({
         )}
         {unapprovedCount !== undefined && unapprovedCount > 0 && (
           <p className="text-xs text-destructive mt-1">
-            Charges en attente : {unapprovedCount}
+            Charges en attente d’approbation : {unapprovedCount}
           </p>
         )}
       </CardContent>
