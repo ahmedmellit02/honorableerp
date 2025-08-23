@@ -89,7 +89,7 @@ const Navigation = () => {
                 <div className="p-2 bg-gradient-ocean rounded-lg">
                   <Plane className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-xl font-bold text-foreground">HonorableCRM</span>
+                <span className="text-xl font-bold text-foreground">HonorableERP</span>
               </div>
             </div>
           </div>
@@ -146,7 +146,7 @@ const Navigation = () => {
               {/* <div className="p-2 bg-gradient-ocean rounded-lg">
                 <Plane className="h-6 w-6 text-white" />
               </div> */}
-              <span className="text-xl font-bold text-foreground">HonorableCRM</span>
+              <span className="text-xl font-bold text-foreground">HonorableERP</span>
             </Link>
           </div>
           
