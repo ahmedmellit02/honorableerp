@@ -219,7 +219,7 @@ const AllSales = () => {
                   <SelectValue placeholder="Type de service" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les types</SelectItem>
+                  <SelectItem value="all">Types</SelectItem>
                   {uniqueTypes.map(type => (
                     <SelectItem key={type} value={type}>{type}</SelectItem>
                   ))}
@@ -232,7 +232,7 @@ const AllSales = () => {
                   <SelectValue placeholder="Agent" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les agents</SelectItem>
+                  <SelectItem value="all">Agents</SelectItem>
                   {uniqueAgents.map(agent => (
                     <SelectItem key={agent} value={agent}>{agent}</SelectItem>
                   ))}
@@ -245,7 +245,7 @@ const AllSales = () => {
                   <SelectValue placeholder="Système" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les systèmes</SelectItem>
+                  <SelectItem value="all">Systèmes</SelectItem>
                   {uniqueSystems.map(system => (
                     <SelectItem key={system} value={system}>{system}</SelectItem>
                   ))}
@@ -258,7 +258,7 @@ const AllSales = () => {
                   <SelectValue placeholder="Statut" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les statuts</SelectItem>
+                  <SelectItem value="all">Statuts</SelectItem>
                   <SelectItem value="cashed">Encaissé</SelectItem>
                   <SelectItem value="not-cashed">Non encaissé</SelectItem>
                 </SelectContent>
