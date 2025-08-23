@@ -395,11 +395,11 @@ const ExpenseControl = () => {
                           <TableCell className="text-center">
                             {isManager && !expense.approved && expense.classification && (
                               <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
                                 onClick={() => handleApproveExpense(expense.id)}
                                 disabled={isApproving === expense.id}
-                                className="text-green-600 hover:text-green-700"
+                                className="text-xs hover:bg-success hover:text-white hover:border-success"
                               >
                                 <CheckCircle className="h-4 w-4" />
                                 Approuver
