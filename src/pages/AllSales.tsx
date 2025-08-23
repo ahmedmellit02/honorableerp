@@ -26,8 +26,6 @@ const AllSales = () => {
   const [agentFilter, setAgentFilter] = useState<string>("all");
   const [systemFilter, setSystemFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -103,17 +101,9 @@ const AllSales = () => {
         return false;
       }
 
-      // Price filter
-      if (minPrice && sale.sellingPrice < parseInt(minPrice)) {
-        return false;
-      }
-      if (maxPrice && sale.sellingPrice > parseInt(maxPrice)) {
-        return false;
-      }
-
       return true;
     });
-  }, [sales, searchQuery, typeFilter, agentFilter, systemFilter, statusFilter, minPrice, maxPrice]);
+  }, [sales, searchQuery, typeFilter, agentFilter, systemFilter, statusFilter]);
 
   // Get unique values for filters
   const uniqueTypes = useMemo(() => [...new Set(sales.map(sale => sale.type))], [sales]);
@@ -126,8 +116,6 @@ const AllSales = () => {
     setAgentFilter("all");
     setSystemFilter("all");
     setStatusFilter("all");
-    setMinPrice("");
-    setMaxPrice("");
   };
 
   const downloadExcel = () => {
@@ -212,10 +200,10 @@ const AllSales = () => {
               Filtres de recherche
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <CardContent>
+            <div className="flex flex-wrap items-center gap-3">
               {/* Search */}
-              <div className="relative">
+              <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Rechercher par client, téléphone, PNR, ID..."
@@ -227,7 +215,7 @@ const AllSales = () => {
 
               {/* Type Filter */}
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Type de service" />
                 </SelectTrigger>
                 <SelectContent>
@@ -240,7 +228,7 @@ const AllSales = () => {
 
               {/* Agent Filter */}
               <Select value={agentFilter} onValueChange={setAgentFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="w-[140px]">
                   <SelectValue placeholder="Agent" />
                 </SelectTrigger>
                 <SelectContent>
@@ -253,7 +241,7 @@ const AllSales = () => {
 
               {/* System Filter */}
               <Select value={systemFilter} onValueChange={setSystemFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="w-[140px]">
                   <SelectValue placeholder="Système" />
                 </SelectTrigger>
                 <SelectContent>
@@ -266,8 +254,8 @@ const AllSales = () => {
 
               {/* Status Filter */}
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Statut d'encaissement" />
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Statut" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les statuts</SelectItem>
@@ -275,22 +263,6 @@ const AllSales = () => {
                   <SelectItem value="not-cashed">Non encaissé</SelectItem>
                 </SelectContent>
               </Select>
-
-              {/* Min Price */}
-              <Input
-                type="number"
-                placeholder="Prix min (DH)"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-              />
-
-              {/* Max Price */}
-              <Input
-                type="number"
-                placeholder="Prix max (DH)"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-              />
 
               {/* Clear Filters */}
               <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
