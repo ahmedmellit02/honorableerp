@@ -1,14 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navigation from "@/components/ui/navigation";
 import { format } from "date-fns";
-import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft, Download, Euro, CheckCircle } from "lucide-react";
+import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft, Download, Euro, CheckCircle, Search, Filter, X } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useCashInSale } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { useState, useMemo } from "react";
 import * as XLSX from 'xlsx';
 
 const AllSales = () => {
@@ -16,6 +19,15 @@ const AllSales = () => {
   const { userRole, canCashIn } = useSimpleRole();
   const cashInMutation = useCashInSale();
   const { toast } = useToast();
+
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [agentFilter, setAgentFilter] = useState<string>("all");
+  const [systemFilter, setSystemFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -57,10 +69,71 @@ const AllSales = () => {
     }
   };
 
-  const downloadExcel = () => {
-    if (sales.length === 0) return;
+  // Filtered sales
+  const filteredSales = useMemo(() => {
+    return sales.filter(sale => {
+      // Search filter
+      if (searchQuery && !sale.clientName.toLowerCase().includes(searchQuery.toLowerCase()) && 
+          !sale.phoneNumber.includes(searchQuery) && 
+          !sale.pnr?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          !sale.numericId.toString().includes(searchQuery)) {
+        return false;
+      }
 
-    const excelData = sales.map(sale => ({
+      // Type filter
+      if (typeFilter !== "all" && sale.type !== typeFilter) {
+        return false;
+      }
+
+      // Agent filter
+      if (agentFilter !== "all" && sale.agent !== agentFilter) {
+        return false;
+      }
+
+      // System filter
+      if (systemFilter !== "all" && sale.system !== systemFilter) {
+        return false;
+      }
+
+      // Status filter
+      if (statusFilter === "cashed" && !sale.cashedIn) {
+        return false;
+      }
+      if (statusFilter === "not-cashed" && sale.cashedIn) {
+        return false;
+      }
+
+      // Price filter
+      if (minPrice && sale.sellingPrice < parseInt(minPrice)) {
+        return false;
+      }
+      if (maxPrice && sale.sellingPrice > parseInt(maxPrice)) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [sales, searchQuery, typeFilter, agentFilter, systemFilter, statusFilter, minPrice, maxPrice]);
+
+  // Get unique values for filters
+  const uniqueTypes = useMemo(() => [...new Set(sales.map(sale => sale.type))], [sales]);
+  const uniqueAgents = useMemo(() => [...new Set(sales.map(sale => sale.agent))], [sales]);
+  const uniqueSystems = useMemo(() => [...new Set(sales.map(sale => sale.system))], [sales]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setTypeFilter("all");
+    setAgentFilter("all");
+    setSystemFilter("all");
+    setStatusFilter("all");
+    setMinPrice("");
+    setMaxPrice("");
+  };
+
+  const downloadExcel = () => {
+    if (filteredSales.length === 0) return;
+
+    const excelData = filteredSales.map(sale => ({
       'ID': sale.numericId,
       'Type': sale.type,
       'Client': sale.clientName,
@@ -120,15 +193,113 @@ const AllSales = () => {
                 Toutes les ventes
               </h1>
               <p className="text-muted-foreground">
-                {sales.length} vente{sales.length > 1 ? 's' : ''} au total
+                {filteredSales.length} vente{filteredSales.length !== 1 ? 's' : ''} 
+                {filteredSales.length !== sales.length && ` sur ${sales.length} au total`}
               </p>
             </div>
           </div>
-          <Button variant="outline" onClick={downloadExcel} disabled={sales.length === 0}>
+          <Button variant="outline" onClick={downloadExcel} disabled={filteredSales.length === 0}>
             <Download className="h-4 w-4 mr-2" />
             Télécharger Excel
           </Button>
         </div>
+
+        {/* Filters */}
+        <Card className="shadow-card mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <Filter className="h-5 w-5" />
+              Filtres de recherche
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Rechercher par client, téléphone, PNR, ID..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
+              {/* Type Filter */}
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Type de service" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les types</SelectItem>
+                  {uniqueTypes.map(type => (
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Agent Filter */}
+              <Select value={agentFilter} onValueChange={setAgentFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Agent" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les agents</SelectItem>
+                  {uniqueAgents.map(agent => (
+                    <SelectItem key={agent} value={agent}>{agent}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* System Filter */}
+              <Select value={systemFilter} onValueChange={setSystemFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Système" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les systèmes</SelectItem>
+                  {uniqueSystems.map(system => (
+                    <SelectItem key={system} value={system}>{system}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Status Filter */}
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Statut d'encaissement" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
+                  <SelectItem value="cashed">Encaissé</SelectItem>
+                  <SelectItem value="not-cashed">Non encaissé</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Min Price */}
+              <Input
+                type="number"
+                placeholder="Prix min (DH)"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+              />
+
+              {/* Max Price */}
+              <Input
+                type="number"
+                placeholder="Prix max (DH)"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+              />
+
+              {/* Clear Filters */}
+              <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
+                <X className="h-4 w-4" />
+                Effacer
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="shadow-card">
           <CardHeader>
@@ -137,9 +308,11 @@ const AllSales = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {sales.length === 0 ? (
+            {filteredSales.length === 0 ? (
               <div className="flex items-center justify-center py-8">
-                <p className="text-muted-foreground">Aucune vente enregistrée</p>
+                <p className="text-muted-foreground">
+                  {sales.length === 0 ? "Aucune vente enregistrée" : "Aucune vente ne correspond aux filtres"}
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -190,7 +363,7 @@ const AllSales = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {sales.map((sale) => (
+                    {filteredSales.map((sale) => (
                       <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/50">
                         <td className="py-3 px-2">
                           <span className="text-sm font-medium text-foreground">
