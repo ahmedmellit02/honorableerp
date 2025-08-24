@@ -141,9 +141,6 @@ export function AppSidebar() {
     <Sidebar className={collapsed ? "w-14" : "w-60"} collapsible="icon">
       <SidebarHeader className="border-b border-border p-4">
         <Link to="/" className="flex items-center space-x-2">
-          <div className="p-2 bg-gradient-ocean rounded-lg shrink-0">
-            <Plane className="h-6 w-6 text-white" />
-          </div>
           {!collapsed && <span className="text-xl font-bold text-foreground">HonorableERP</span>}
         </Link>
       </SidebarHeader>
