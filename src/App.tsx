@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { NotificationBell } from "@/components/ui/notifications";
 import Dashboard from "./pages/Dashboard";
 import AddSale from "./pages/AddSale";
 import AllSales from "./pages/AllSales";
@@ -38,8 +39,9 @@ const AppRoutes = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <main className="flex-1 flex flex-col">
-          <header className="h-12 flex items-center border-b px-4">
+          <header className="h-12 flex items-center justify-between border-b px-4">
             <SidebarTrigger />
+            <NotificationBell />
           </header>
           <div className="flex-1 overflow-auto">
             <Routes>
