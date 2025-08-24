@@ -118,6 +118,15 @@ const Navigation = () => {
       icon: Plus,
     });
   }
+    
+  // Balance control only for cashiers
+  if (canControlBalance()) {
+    navItems.push({
+      label: "Contrôle du solde",
+      href: "/balance-control", 
+      icon: Wallet,
+    });
+  }
 
   // Expense control for managers, cashiers, and super agents
   if (userRole === 'manager' || userRole === 'cashier' || userRole === 'super_agent') {
@@ -128,14 +137,6 @@ const Navigation = () => {
     });
   }
 
-  // Balance control only for cashiers
-  if (canControlBalance()) {
-    navItems.push({
-      label: "Contrôle du solde",
-      href: "/balance-control", 
-      icon: Wallet,
-    });
-  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-card">
