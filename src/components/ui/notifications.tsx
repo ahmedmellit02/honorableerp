@@ -42,7 +42,10 @@ export function NotificationBell() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative"
+          className={cn(
+            "relative",
+            unreadCount > 0 && "animate-pulse"
+          )}
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
