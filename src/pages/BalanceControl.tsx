@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Navigation from "@/components/ui/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,8 +74,7 @@ const BalanceControl = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-16">
-      <Navigation />
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-8">
           {/* Header */}

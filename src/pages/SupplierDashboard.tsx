@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePermissions } from "@/hooks/usePermissions";
-import Navigation from "@/components/ui/navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { DollarSign, TrendingUp } from "lucide-react";
@@ -68,8 +67,7 @@ const SupplierDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background pt-16">
-        <Navigation />
+      <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-muted rounded w-1/3"></div>
@@ -84,8 +82,7 @@ const SupplierDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-16">
-      <Navigation />
+    <div className="min-h-screen bg-background">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">

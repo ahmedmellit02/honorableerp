@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import Navigation from "@/components/ui/navigation";
 import { format } from "date-fns";
 import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft, Download, Euro, CheckCircle, Search, Filter, X } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
@@ -151,8 +150,7 @@ const AllSales = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background pt-16">
-        <Navigation />
+      <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-center min-h-[50vh]">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -163,8 +161,7 @@ const AllSales = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-16">
-      <Navigation />
+    <div className="min-h-screen bg-background">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}

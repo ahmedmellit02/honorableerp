@@ -8,7 +8,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Autocomplete } from "@/components/ui/autocomplete";
 import { useToast } from "@/hooks/use-toast";
-import Navigation from "@/components/ui/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SaleFormData } from "@/types/sale";
@@ -182,8 +181,7 @@ const AddSale = () => {
   // Check access permissions
   if (!canAddSale() && userRole !== 'agent') {
     return (
-      <div className="min-h-screen bg-background pt-16">
-        <Navigation />
+      <div className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">
@@ -203,8 +201,7 @@ const AddSale = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-16">
-      <Navigation />
+    <div className="min-h-screen bg-background">{/* Remove Navigation and pt-16 */}
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}

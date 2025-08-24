@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/ui/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Navigate } from "react-router-dom";
@@ -241,9 +240,7 @@ const ExpenseControl = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Contrôle des charges</h1>
             <p className="text-muted-foreground">Gérez toutes les charges de l'entreprise</p>
@@ -415,7 +412,6 @@ const ExpenseControl = () => {
             </Card>
           </div>
         </div>
-      </div>
     </div>
   );
 };
