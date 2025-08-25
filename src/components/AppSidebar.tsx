@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, Plane, LogOut, Settings, Wallet, Receipt } from "lucide-react";
+import { BarChart3, Plus, Plane, LogOut, Settings, Wallet, Receipt, FileText } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useState } from "react";
@@ -132,6 +132,15 @@ export function AppSidebar() {
       label: "Contrôle des charges",
       href: "/expense-control",
       icon: Receipt,
+    });
+  }
+
+  // Facturation for managers, cashiers, and super agents
+  if (userRole === 'manager' || userRole === 'cashier' || userRole === 'super_agent') {
+    navItems.push({
+      label: "Facturation",
+      href: "/facturation",
+      icon: FileText,
     });
   }
 
