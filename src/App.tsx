@@ -39,7 +39,7 @@ const AppRoutes = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <main className="flex-1 flex flex-col">
-          <header className="h-12 flex items-center justify-between border-b px-4">
+          <header className="sticky top-0 z-50 h-12 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <SidebarTrigger />
             <NotificationBell />
           </header>
