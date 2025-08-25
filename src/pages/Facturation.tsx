@@ -178,7 +178,7 @@ const Facturation = () => {
                             </span>
                           </td>
                           <td className="py-3 px-2">
-                            <span className="text-sm font-medium text-secondary">
+                            <span className="text-sm font-medium text-primary">
                               {tva} DH
                             </span>
                           </td>
