@@ -4,7 +4,6 @@ import SalesChart from "@/components/dashboard/SalesChart";
 import BookingTypePieChart from "@/components/dashboard/BookingTypePieChart";
 import RecentSalesTable from "@/components/dashboard/RecentSalesTable";
 
-import { ChatBot } from "@/components/ChatBot";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { 
   DollarSign, 
@@ -263,39 +262,6 @@ const Dashboard = () => {
         <RecentSalesTable />
 
       </div>
-      
-      {/* Chatbot for managers */}
-      {userRole === 'manager' && (
-        <ChatBot 
-          agencyData={{
-            dailySales: { 
-              totalSales: dailySalesCount, 
-              totalRevenue: dailyRevenue, 
-              totalProfit: dailyProfit,
-              netProfit: dailyNetProfit,
-              expenses: dailyExpensesAmount
-            },
-            monthlySales: { 
-              totalSales, 
-              totalRevenue, 
-              totalProfit, 
-              monthlyNetProfit,
-              expenses: monthlyExpensesAmount
-            },
-            expenses: {
-              daily: dailyExpenses,
-              monthly: monthlyExpenses
-            },
-            balances: systemBalances || [],
-            agentPerformance: agentStats,
-            bookingTypes: { flightBookings, hotelBookings, organizedTravel },
-            topServices: topServices || [],
-            recentSales: sales.slice(0, 10),
-            allSales: sales,
-            typeStatistics: typeData || []
-          }}
-        />
-      )}
     </div>
   );
 };

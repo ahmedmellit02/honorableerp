@@ -7,6 +7,8 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { NotificationBell } from "@/components/ui/notifications";
+import { ChatBot } from "@/components/ChatBot";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
 import Dashboard from "./pages/Dashboard";
 import AddSale from "./pages/AddSale";
 import AllSales from "./pages/AllSales";
@@ -21,6 +23,7 @@ const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   const { user, loading } = useAuth();
+  const { userRole } = useSimpleRole();
 
   if (loading) {
     return (
@@ -59,6 +62,9 @@ const AppRoutes = () => {
           </div>
         </main>
       </div>
+      
+      {/* Chatbot for managers - available on all pages */}
+      {userRole === 'manager' && <ChatBot />}
     </SidebarProvider>
   );
 };
