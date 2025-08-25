@@ -39,20 +39,23 @@ const Facturation = () => {
   const downloadExcel = () => {
     if (facturationSales.length === 0) return;
 
-    const excelData = facturationSales.map(sale => ({
-      'ID': sale.numericId,
-      'Client': sale.clientName,
-      'Service': sale.type,
-      'Prix d\'achat (DH)': sale.buyingPrice,
-      'Prix de vente (DH)': sale.buyingPrice + calculateFees(sale.type, sale.fromAirport, sale.toAirport),
-      'Fees (DH)': calculateFees(sale.type, sale.fromAirport, sale.toAirport),
-      'Date': format(sale.createdAt, 'dd/MM/yyyy'),
-      'De': sale.fromAirport || '',
-      'À': sale.toAirport || '',
-      'PNR': sale.pnr || '',
-      'Agent': sale.agent,
-      'Système': sale.system
-    }));
+    const excelData = facturationSales.map(sale => {
+      const fees = calculateFees(sale.type, sale.fromAirport, sale.toAirport);
+      const tva = Math.round(fees * 0.2 * 100) / 100; // 20% of fees, rounded to 2 decimals
+      return {
+        'ID': sale.numericId,
+        'Client': sale.clientName,
+        'Service': sale.type,
+        'Prix d\'achat (DH)': sale.buyingPrice,
+        'Prix de vente (DH)': sale.buyingPrice + fees,
+        'Fees (DH)': fees,
+        'TVA (DH)': tva,
+        'Date': format(sale.createdAt, 'dd/MM/yyyy'),
+        'De': sale.fromAirport || '',
+        'À': sale.toAirport || '',
+        'Système': sale.system
+      };
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(excelData);
     const workbook = XLSX.utils.book_new();
@@ -133,6 +136,9 @@ const Facturation = () => {
                         Fees
                       </th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                        TVA (20%)
+                      </th>
+                      <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                         Date
                       </th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
@@ -143,6 +149,7 @@ const Facturation = () => {
                   <tbody>
                     {facturationSales.map((sale) => {
                       const fees = calculateFees(sale.type, sale.fromAirport, sale.toAirport);
+                      const tva = Math.round(fees * 0.2 * 100) / 100; // 20% of fees, rounded to 2 decimals
                       return (
                         <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/50">
                           <td className="py-3 px-2">
@@ -171,6 +178,11 @@ const Facturation = () => {
                             </span>
                           </td>
                           <td className="py-3 px-2">
+                            <span className="text-sm font-medium text-secondary">
+                              {tva} DH
+                            </span>
+                          </td>
+                          <td className="py-3 px-2">
                             <span className="text-sm text-muted-foreground">
                               {format(sale.createdAt, "dd/MM/yyyy")}
                             </span>
@@ -189,13 +201,8 @@ const Facturation = () => {
                                   {sale.fromAirport} → {sale.toAirport}
                                 </div>
                               )}
-                              {sale.pnr && (
-                                <div className="text-xs text-muted-foreground">
-                                  PNR: {sale.pnr}
-                                </div>
-                              )}
                               <div className="text-xs text-muted-foreground">
-                                Agent: {sale.agent} • {sale.system}
+                                {sale.system}
                               </div>
                             </div>
                           </td>
