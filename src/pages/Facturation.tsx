@@ -289,16 +289,6 @@ const Facturation = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="system-carte"
-                    checked={selectedSystems.includes('Carte')}
-                    onCheckedChange={(checked) => handleSystemToggle('Carte', !!checked)}
-                  />
-                  <label htmlFor="system-carte" className="text-sm font-medium">
-                    Carte
-                  </label>
-                </div>
               </div>
             </div>
           </CardContent>
