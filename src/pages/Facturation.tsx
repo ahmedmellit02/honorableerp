@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format, isAfter, isBefore } from "date-fns";
 import { Plane, Download, ArrowLeft, CalendarIcon, FileText, Filter } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
@@ -28,9 +28,9 @@ const Facturation = () => {
     const to = searchParams.get("to");
     return to ? new Date(to) : undefined;
   });
-  const [selectedSystems, setSelectedSystems] = useState<string[]>(() => {
+  const [selectedSystem, setSelectedSystem] = useState<string>(() => {
     const systems = searchParams.get("systems");
-    return systems ? systems.split(',') : ['AR', 'TTP'];
+    return systems === 'AR,TTP' ? 'all' : systems || 'all';
   });
 
   // Sync filters to URL
@@ -38,10 +38,10 @@ const Facturation = () => {
     const params = new URLSearchParams();
     if (dateFrom) params.set("from", dateFrom.toISOString().split('T')[0]);
     if (dateTo) params.set("to", dateTo.toISOString().split('T')[0]);
-    if (selectedSystems.length > 0) params.set("systems", selectedSystems.join(','));
+    if (selectedSystem !== 'all') params.set("systems", selectedSystem);
     
     setSearchParams(params, { replace: true });
-  }, [dateFrom, dateTo, selectedSystems, setSearchParams]);
+  }, [dateFrom, dateTo, selectedSystem, setSearchParams]);
 
   // Get all airports in Morocco from IATA codes
   const moroccanAirports = iataCodes
@@ -57,7 +57,7 @@ const Facturation = () => {
       }
 
       // System filter
-      if (selectedSystems.length > 0 && !selectedSystems.includes(sale.system)) {
+      if (selectedSystem !== 'all' && selectedSystem !== sale.system) {
         return false;
       }
 
@@ -71,7 +71,7 @@ const Facturation = () => {
 
       return true;
     });
-  }, [sales, selectedSystems, dateFrom, dateTo]);
+  }, [sales, selectedSystem, dateFrom, dateTo]);
 
   // Calculate fees based on service type and airports
   const calculateFees = (saleType: string, fromAirport?: string, toAirport?: string) => {
@@ -90,18 +90,14 @@ const Facturation = () => {
     return 20;
   };
 
-  const handleSystemToggle = (system: string, checked: boolean) => {
-    setSelectedSystems(prev => 
-      checked 
-        ? [...prev, system]
-        : prev.filter(s => s !== system)
-    );
+  const handleSystemChange = (value: string) => {
+    setSelectedSystem(value);
   };
 
   const clearFilters = () => {
     setDateFrom(undefined);
     setDateTo(undefined);
-    setSelectedSystems(['AR', 'TTP']);
+    setSelectedSystem('all');
   };
 
   const downloadExcel = () => {
@@ -129,7 +125,7 @@ const Facturation = () => {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Facturation');
     
-    const fileName = `facturation_${selectedSystems.join('_')}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
+    const fileName = `facturation_${selectedSystem === 'all' ? 'AR_TTP' : selectedSystem}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
     XLSX.writeFile(workbook, fileName);
   };
 
@@ -157,7 +153,7 @@ const Facturation = () => {
     generateFacturationPdf(pdfData, {
       dateFrom,
       dateTo,
-      systems: selectedSystems,
+      systems: selectedSystem === 'all' ? ['AR', 'TTP'] : [selectedSystem],
       agencyInfo: {
         name: "Honorable Voyage",
         address: "Adresse de l'agence",
@@ -211,7 +207,28 @@ const Facturation = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {/* First row - Date filters */}
+              {/* First row - System dropdown and reset button */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-foreground">Système :</label>
+                  <Select value={selectedSystem} onValueChange={handleSystemChange}>
+                    <SelectTrigger className="w-[200px] bg-background">
+                      <SelectValue placeholder="Sélectionner système" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background z-50">
+                      <SelectItem value="all">Tous les systèmes</SelectItem>
+                      <SelectItem value="AR">Accelaero (AR)</SelectItem>
+                      <SelectItem value="TTP">Top Travel Trip (TTP)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
+                  Réinitialiser
+                </Button>
+              </div>
+
+              {/* Second row - Date filters */}
               <div className="flex flex-wrap items-center gap-3">
                 {/* Date From */}
                 <Popover>
@@ -262,38 +279,6 @@ const Facturation = () => {
                     />
                   </PopoverContent>
                 </Popover>
-
-                <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
-                  Réinitialiser
-                </Button>
-              </div>
-
-              {/* Second row - System toggles */}
-              <div className="flex flex-wrap items-center gap-4">
-                <span className="text-sm font-medium text-foreground">Systèmes :</span>
-                
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="system-ar"
-                    checked={selectedSystems.includes('AR')}
-                    onCheckedChange={(checked) => handleSystemToggle('AR', !!checked)}
-                  />
-                  <label htmlFor="system-ar" className="text-sm font-medium">
-                    Accelaero (AR)
-                  </label>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="system-ttp"
-                    checked={selectedSystems.includes('TTP')}
-                    onCheckedChange={(checked) => handleSystemToggle('TTP', !!checked)}
-                  />
-                  <label htmlFor="system-ttp" className="text-sm font-medium">
-                    Top Travel Trip (TTP)
-                  </label>
-                </div>
-
               </div>
             </div>
           </CardContent>
