@@ -39,19 +39,13 @@ export const useExpensesDaily = () => {
   return useQuery({
     queryKey: ["expenses-daily"],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      
       const { data, error } = await supabase
-        .from("expenses")
-        .select("amount, approved")
-        .gte("created_at", `${today}T00:00:00`)
-        .lt("created_at", `${today}T23:59:59`)
-        .eq("approved", true);
+        .rpc("get_expenses_daily_total");
 
       if (error) throw error;
 
       console.log('Daily expenses query result:', data);
-      const totalExpenses = (data || []).reduce((sum, expense) => sum + Number(expense.amount), 0);
+      const totalExpenses = data?.[0]?.total_expenses ? Number(data[0].total_expenses) : 0;
       console.log('Total daily approved expenses:', totalExpenses);
       
       return { totalExpenses };
@@ -63,21 +57,13 @@ export const useExpensesMonthly = () => {
   return useQuery({
     queryKey: ["expenses-monthly"],
     queryFn: async () => {
-      const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
-      
       const { data, error } = await supabase
-        .from("expenses")
-        .select("amount, approved")
-        .gte("created_at", startOfMonth)
-        .lte("created_at", endOfMonth)
-        .eq("approved", true);
+        .rpc("get_expenses_monthly_total");
 
       if (error) throw error;
 
       console.log('Monthly expenses query result:', data);
-      const totalExpenses = (data || []).reduce((sum, expense) => sum + Number(expense.amount), 0);
+      const totalExpenses = data?.[0]?.total_expenses ? Number(data[0].total_expenses) : 0;
       console.log('Total monthly approved expenses:', totalExpenses);
       
       return { totalExpenses };
@@ -89,18 +75,12 @@ export const useUnapprovedExpensesDaily = () => {
   return useQuery({
     queryKey: ["unapproved-expenses-daily"],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      
       const { data, error } = await supabase
-        .from("expenses")
-        .select("id, approved")
-        .gte("created_at", `${today}T00:00:00`)
-        .lt("created_at", `${today}T23:59:59`)
-        .eq("approved", false);
+        .rpc("get_unapproved_expenses_daily_count");
 
       if (error) throw error;
       
-      return { count: data?.length || 0 };
+      return { count: data?.[0]?.count ? Number(data[0].count) : 0 };
     },
   });
 };
@@ -109,20 +89,12 @@ export const useUnapprovedExpensesMonthly = () => {
   return useQuery({
     queryKey: ["unapproved-expenses-monthly"],
     queryFn: async () => {
-      const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
-      
       const { data, error } = await supabase
-        .from("expenses")
-        .select("id, approved")
-        .gte("created_at", startOfMonth)
-        .lte("created_at", endOfMonth)
-        .eq("approved", false);
+        .rpc("get_unapproved_expenses_monthly_count");
 
       if (error) throw error;
       
-      return { count: data?.length || 0 };
+      return { count: data?.[0]?.count ? Number(data[0].count) : 0 };
     },
   });
 };

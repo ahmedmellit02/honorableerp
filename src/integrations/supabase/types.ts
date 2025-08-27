@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          agency_address: string | null
+          agency_email: string | null
+          agency_name: string
+          agency_phone: string | null
+          created_at: string
+          default_domestic_fee: number
+          default_international_fee: number
+          id: string
+          invoice_footer: string | null
+          tva_rate: number
+          updated_at: string
+        }
+        Insert: {
+          agency_address?: string | null
+          agency_email?: string | null
+          agency_name?: string
+          agency_phone?: string | null
+          created_at?: string
+          default_domestic_fee?: number
+          default_international_fee?: number
+          id?: string
+          invoice_footer?: string | null
+          tva_rate?: number
+          updated_at?: string
+        }
+        Update: {
+          agency_address?: string | null
+          agency_email?: string | null
+          agency_name?: string
+          agency_phone?: string | null
+          created_at?: string
+          default_domestic_fee?: number
+          default_international_fee?: number
+          id?: string
+          invoice_footer?: string | null
+          tva_rate?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       balance_records: {
         Row: {
           amount: number
@@ -272,6 +314,18 @@ export type Database = {
           system: string
         }[]
       }
+      get_expenses_daily_total: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_expenses: number
+        }[]
+      }
+      get_expenses_monthly_total: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_expenses: number
+        }[]
+      }
       get_sales_by_type_aggregates: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -302,6 +356,18 @@ export type Database = {
       get_system_balance: {
         Args: { system_name: string }
         Returns: number
+      }
+      get_unapproved_expenses_daily_count: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          count: number
+        }[]
+      }
+      get_unapproved_expenses_monthly_count: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          count: number
+        }[]
       }
       get_user_role: {
         Args: { user_id: string }
