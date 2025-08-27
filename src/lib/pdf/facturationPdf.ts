@@ -1,4 +1,4 @@
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
 
@@ -30,9 +30,8 @@ export interface PdfOptions {
 export const generateFacturationPdf = (data: FacturationPdfData[], options: PdfOptions) => {
   const doc = new jsPDF();
   
-  // Colors using your design system
+  // Colors
   const primaryColor: [number, number, number] = [33, 150, 243]; // Ocean blue
-  const accentColor: [number, number, number] = [0, 150, 136]; // Teal
   const textColor: [number, number, number] = [60, 60, 60];
   
   // Header
@@ -57,15 +56,15 @@ export const generateFacturationPdf = (data: FacturationPdfData[], options: PdfO
     yPos += 5;
   }
   
-  // Invoice title and info
+  // Invoice title
   doc.setFontSize(16);
   doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  doc.text('FACTURE DE SERVICES', 14, yPos + 15);
+  doc.text('FACTURE', 14, yPos + 15);
   
   doc.setFontSize(10);
   doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   
-  // Date range and systems info
+  // Date range and system info
   const dateInfo = options.dateFrom && options.dateTo 
     ? `Période: ${format(options.dateFrom, 'dd/MM/yyyy')} - ${format(options.dateTo, 'dd/MM/yyyy')}`
     : `Date: ${format(new Date(), 'dd/MM/yyyy')}`;
@@ -76,7 +75,7 @@ export const generateFacturationPdf = (data: FacturationPdfData[], options: PdfO
   doc.text(systemsInfo, 14, yPos + 30);
   doc.text(`Date d'émission: ${format(new Date(), 'dd/MM/yyyy')}`, 140, yPos + 25);
   
-  // Table data preparation
+  // Table data
   const tableData = data.map(item => [
     item.clientName,
     item.service,
@@ -88,7 +87,7 @@ export const generateFacturationPdf = (data: FacturationPdfData[], options: PdfO
     `#${item.numericId} (${item.system})`
   ]);
   
-  // Calculate totals
+  // Totals
   const totalFees = data.reduce((sum, item) => sum + item.fees, 0);
   const totalTva = data.reduce((sum, item) => sum + item.tva, 0);
   const totalBuyingPrice = data.reduce((sum, item) => sum + item.buyingPrice, 0);
@@ -125,7 +124,7 @@ export const generateFacturationPdf = (data: FacturationPdfData[], options: PdfO
     margin: { left: 14, right: 14 },
   });
   
-  // Get final Y position after table
+  // Final Y after table
   const finalY = (doc as any).lastAutoTable.finalY || yPos + 40;
   
   // Summary box
@@ -137,22 +136,26 @@ export const generateFacturationPdf = (data: FacturationPdfData[], options: PdfO
   // Summary content
   doc.setFontSize(10);
   doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-  doc.text('RÉCAPITULATIF', 125, summaryY + 8);
+  doc.text('RÉCAPITULATIF:', 125, summaryY + 8);
   
   doc.setFontSize(9);
   doc.text(`Nombre de services: ${data.length}`, 125, summaryY + 15);
   doc.text(`Total frais: ${totalFees.toLocaleString()} DH`, 125, summaryY + 20);
-  doc.text(`Total TVA: ${totalTva.toFixed(2)} DH`, 125, summaryY + 25);
-  
-  doc.setFontSize(10);
-  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  doc.text(`TOTAL GÉNÉRAL: ${grandTotal.toLocaleString()} DH`, 125, summaryY + 35);
+
+  // Inverted order + style swap
+  doc.setFontSize(9);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+  doc.text(`Total général: ${grandTotal.toLocaleString()} DH`, 125, summaryY + 25);
+
+  doc.setFontSize(11); // bigger
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]); // highlighted
+  doc.text(`TOTAL TVA: ${totalTva.toFixed(2)} DH`, 125, summaryY + 35);
   
   // Footer
   const footerY = Math.max(summaryY + 50, 250);
   doc.setFontSize(8);
   doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-  doc.text('Cette facture est générée automatiquement par le système de gestion.', 14, footerY);
+  doc.text("Cette facture est générée automatiquement par le système de gestion interne de l'agence (HonorableERP).", 14, footerY);
   doc.text(`TVA calculée à 20% sur les frais de service uniquement.`, 14, footerY + 4);
   
   // Save the PDF

@@ -155,10 +155,10 @@ const Facturation = () => {
       dateTo,
       systems: selectedSystem === 'all' ? ['AR', 'TTP'] : [selectedSystem],
       agencyInfo: {
-        name: "Honorable Voyage",
-        address: "Adresse de l'agence",
-        phone: "+212 XXX XXX XXX",
-        email: "contact@honorablevoyage.com"
+        name: "Honorables Voyages",
+        address: "Hay Oued Eddahab, Av. Ibn Haitam ,l’angle Rue El Rihan n°62, Salé 11090",
+        phone: "+212 661-210117",
+        email: "honorablesvoyages@gmail.com"
       }
     });
   };
