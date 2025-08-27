@@ -223,23 +223,21 @@ const AllSales = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Retour au tableau de bord
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Toutes les ventes
-              </h1>
-              <p className="text-muted-foreground">
-                {filteredSales.length} vente{filteredSales.length !== 1 ? 's' : ''} 
-                {filteredSales.length !== sales.length && ` sur ${sales.length} au total`}
-              </p>
-            </div>
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Toutes les ventes
+            </h1>
+            <p className="text-muted-foreground">
+              {filteredSales.length} vente{filteredSales.length !== 1 ? 's' : ''} 
+              {filteredSales.length !== sales.length && ` sur ${sales.length} au total`}
+            </p>
           </div>
+          <Button variant="outline" asChild>
+            <Link to="/" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Retour au tableau de bord
+            </Link>
+          </Button>
         </div>
 
         {/* Filters */}
