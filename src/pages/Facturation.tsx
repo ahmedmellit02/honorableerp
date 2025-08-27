@@ -51,6 +51,11 @@ const Facturation = () => {
   // Filter sales by selected systems and date range
   const facturationSales = useMemo(() => {
     return sales.filter(sale => {
+      // Only allow AR and TTP systems
+      if (!['AR', 'TTP'].includes(sale.system)) {
+        return false;
+      }
+
       // System filter
       if (selectedSystems.length > 0 && !selectedSystems.includes(sale.system)) {
         return false;
