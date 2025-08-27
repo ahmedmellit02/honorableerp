@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, Plane, LogOut, Settings, Wallet, Receipt, FileText, Table } from "lucide-react";
+import { BarChart3, Plus, LogOut, LockIcon, Wallet, Receipt, FileText, Table } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useState } from "react";
@@ -195,13 +195,13 @@ export function AppSidebar() {
                 size="sm"
                 className="w-full justify-center text-muted-foreground hover:text-foreground"
               >
-                <Settings className="h-4 w-4" />
-                {!collapsed && <span className="ml-2">Paramètres</span>}
+                <LockIcon className="h-4 w-4" />
+                {!collapsed && <span className="ml-2">Sécurité</span>}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Paramètres du compte</DialogTitle>
+                <DialogTitle>Sécurité du compte</DialogTitle>
               </DialogHeader>
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div className="space-y-2">
