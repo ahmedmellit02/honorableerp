@@ -3,14 +3,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { format } from "date-fns";
-import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft, Download, Euro, CheckCircle, Search, Filter, X } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format, isAfter, isBefore, isSameDay } from "date-fns";
+import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft, Download, Euro, CheckCircle, Search, Filter, X, CalendarIcon, BarChart3, TrendingUp } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useCashInSale } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import * as XLSX from 'xlsx';
 
 const AllSales = () => {
@@ -18,13 +21,36 @@ const AllSales = () => {
   const { userRole, canCashIn } = useSimpleRole();
   const cashInMutation = useCashInSale();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Filter states
-  const [searchQuery, setSearchQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [agentFilter, setAgentFilter] = useState<string>("all");
-  const [systemFilter, setSystemFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  // Filter states with URL sync
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("search") || "");
+  const [typeFilter, setTypeFilter] = useState<string>(() => searchParams.get("type") || "all");
+  const [agentFilter, setAgentFilter] = useState<string>(() => searchParams.get("agent") || "all");
+  const [systemFilter, setSystemFilter] = useState<string>(() => searchParams.get("system") || "all");
+  const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get("status") || "all");
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(() => {
+    const from = searchParams.get("from");
+    return from ? new Date(from) : undefined;
+  });
+  const [dateTo, setDateTo] = useState<Date | undefined>(() => {
+    const to = searchParams.get("to");
+    return to ? new Date(to) : undefined;
+  });
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (typeFilter !== "all") params.set("type", typeFilter);
+    if (agentFilter !== "all") params.set("agent", agentFilter);
+    if (systemFilter !== "all") params.set("system", systemFilter);
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (dateFrom) params.set("from", dateFrom.toISOString().split('T')[0]);
+    if (dateTo) params.set("to", dateTo.toISOString().split('T')[0]);
+    
+    setSearchParams(params, { replace: true });
+  }, [searchQuery, typeFilter, agentFilter, systemFilter, statusFilter, dateFrom, dateTo, setSearchParams]);
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -100,9 +126,38 @@ const AllSales = () => {
         return false;
       }
 
+      // Date range filter
+      if (dateFrom && isBefore(sale.createdAt, dateFrom)) {
+        return false;
+      }
+      if (dateTo && isAfter(sale.createdAt, new Date(dateTo.getTime() + 24 * 60 * 60 * 1000))) { // Include full day
+        return false;
+      }
+
       return true;
     });
-  }, [sales, searchQuery, typeFilter, agentFilter, systemFilter, statusFilter]);
+  }, [sales, searchQuery, typeFilter, agentFilter, systemFilter, statusFilter, dateFrom, dateTo]);
+
+  // Calculate totals
+  const totals = useMemo(() => {
+    const count = filteredSales.length;
+    const revenue = filteredSales.reduce((sum, sale) => sum + sale.sellingPrice, 0);
+    const profit = filteredSales.reduce((sum, sale) => sum + sale.profit, 0);
+    const cashedCount = filteredSales.filter(sale => sale.cashedIn).length;
+    const notCashedCount = count - cashedCount;
+    const cashedRevenue = filteredSales.filter(sale => sale.cashedIn).reduce((sum, sale) => sum + sale.sellingPrice, 0);
+    const notCashedRevenue = revenue - cashedRevenue;
+
+    return {
+      count,
+      revenue,
+      profit,
+      cashedCount,
+      notCashedCount,
+      cashedRevenue,
+      notCashedRevenue
+    };
+  }, [filteredSales]);
 
   // Get unique values for filters
   const uniqueTypes = useMemo(() => [...new Set(sales.map(sale => sale.type))], [sales]);
@@ -115,6 +170,8 @@ const AllSales = () => {
     setAgentFilter("all");
     setSystemFilter("all");
     setStatusFilter("all");
+    setDateFrom(undefined);
+    setDateTo(undefined);
   };
 
   const downloadExcel = () => {
@@ -198,78 +255,182 @@ const AllSales = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Rechercher par client, téléphone, PNR, ID..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+            <div className="space-y-4">
+              {/* First row of filters */}
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Search */}
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Rechercher par client, téléphone, PNR, ID..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                {/* Type Filter */}
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Type de service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Types</SelectItem>
+                    {uniqueTypes.map(type => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Agent Filter */}
+                <Select value={agentFilter} onValueChange={setAgentFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Agent" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Agents</SelectItem>
+                    {uniqueAgents.map(agent => (
+                      <SelectItem key={agent} value={agent}>{agent}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* System Filter */}
+                <Select value={systemFilter} onValueChange={setSystemFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Système" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Systèmes</SelectItem>
+                    {uniqueSystems.map(system => (
+                      <SelectItem key={system} value={system}>{system}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Status Filter */}
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder="Statut" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Statuts</SelectItem>
+                    <SelectItem value="cashed">Encaissé</SelectItem>
+                    <SelectItem value="not-cashed">Non encaissé</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              {/* Type Filter */}
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Type de service" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Types</SelectItem>
-                  {uniqueTypes.map(type => (
-                    <SelectItem key={type} value={type}>{type}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {/* Second row - Date filters and clear button */}
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Date From */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-[200px] justify-start text-left font-normal",
+                        !dateFrom && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateFrom ? format(dateFrom, "dd/MM/yyyy") : <span>Date de début</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dateFrom}
+                      onSelect={setDateFrom}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
 
-              {/* Agent Filter */}
-              <Select value={agentFilter} onValueChange={setAgentFilter}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Agent" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Agents</SelectItem>
-                  {uniqueAgents.map(agent => (
-                    <SelectItem key={agent} value={agent}>{agent}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {/* Date To */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-[200px] justify-start text-left font-normal",
+                        !dateTo && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateTo ? format(dateTo, "dd/MM/yyyy") : <span>Date de fin</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dateTo}
+                      onSelect={setDateTo}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
 
-              {/* System Filter */}
-              <Select value={systemFilter} onValueChange={setSystemFilter}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Système" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Systèmes</SelectItem>
-                  {uniqueSystems.map(system => (
-                    <SelectItem key={system} value={system}>{system}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue placeholder="Statut" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Statuts</SelectItem>
-                  <SelectItem value="cashed">Encaissé</SelectItem>
-                  <SelectItem value="not-cashed">Non encaissé</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Clear Filters */}
-              <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
-                <X className="h-4 w-4" />
-                Effacer
-              </Button>
+                {/* Clear Filters */}
+                <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
+                  <X className="h-4 w-4" />
+                  Effacer tous les filtres
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* Totals Summary */}
+        <Card className="shadow-card mb-6 bg-gradient-sky border-accent/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-accent" />
+              Résumé des ventes filtrées
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Count */}
+              <div className="text-center p-3 bg-background/60 rounded-lg border border-border/50">
+                <div className="text-2xl font-bold text-primary">{totals.count}</div>
+                <div className="text-sm text-muted-foreground">Ventes</div>
+              </div>
+
+              {/* Revenue */}
+              <div className="text-center p-3 bg-background/60 rounded-lg border border-border/50">
+                <div className="text-2xl font-bold text-accent">{totals.revenue.toLocaleString()} DH</div>
+                <div className="text-sm text-muted-foreground">Chiffre d'affaires</div>
+              </div>
+
+              {/* Profit */}
+              <div className="text-center p-3 bg-background/60 rounded-lg border border-border/50">
+                <div className={`text-2xl font-bold ${totals.profit >= 0 ? 'text-success' : 'text-destructive'}`}>
+                  {totals.profit >= 0 ? '+' : ''}{totals.profit.toLocaleString()} DH
+                </div>
+                <div className="text-sm text-muted-foreground">Bénéfice total</div>
+              </div>
+
+              {/* Cash Status */}
+              <div className="text-center p-3 bg-background/60 rounded-lg border border-border/50">
+                <div className="space-y-1">
+                  <div className="flex items-center justify-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-success font-semibold">{totals.cashedCount}</span>
+                    <span className="text-muted-foreground">encaissées</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 text-sm">
+                    <Euro className="h-4 w-4 text-destructive" />
+                    <span className="text-destructive font-semibold">{totals.notCashedCount}</span>
+                    <span className="text-muted-foreground">non encaissées</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-foreground">
