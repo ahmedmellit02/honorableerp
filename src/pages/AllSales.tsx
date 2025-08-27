@@ -227,7 +227,7 @@ const AllSales = () => {
             <Button variant="outline" size="sm" asChild>
               <Link to="/" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                Retour
+                Retour au tableau de bord
               </Link>
             </Button>
             <div>
@@ -240,10 +240,6 @@ const AllSales = () => {
               </p>
             </div>
           </div>
-          <Button variant="outline" onClick={downloadExcel} disabled={filteredSales.length === 0}>
-            <Download className="h-4 w-4 mr-2" />
-            Télécharger Excel
-          </Button>
         </div>
 
         {/* Filters */}
@@ -433,9 +429,15 @@ const AllSales = () => {
         </Card>
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-foreground">
-              Liste complète des ventes
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold text-foreground">
+                Liste complète des ventes
+              </CardTitle>
+              <Button variant="outline" onClick={downloadExcel} disabled={filteredSales.length === 0}>
+                <Download className="h-4 w-4 mr-2" />
+                Télécharger Excel
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {filteredSales.length === 0 ? (

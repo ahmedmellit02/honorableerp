@@ -7,8 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useAddBalance, useBalanceRecords, useSystemBalances } from "@/hooks/useBalance";
 import { useToast } from "@/hooks/use-toast";
-import { Wallet, Plus, History } from "lucide-react";
+import { Wallet, Plus, History, ArrowLeft } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Link } from "react-router-dom";
 
 const BalanceControl = () => {
   const [amount, setAmount] = useState("");
@@ -78,12 +79,20 @@ const BalanceControl = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-8">
           {/* Header */}
-          <div className="flex items-center space-x-3">
-            <Wallet className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Contrôle du solde</h1>
-              <p className="text-muted-foreground">Gérez les soldes des systèmes TTP et AR</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Wallet className="h-8 w-8 text-primary" />
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">Contrôle du solde</h1>
+                <p className="text-muted-foreground">Gérez les soldes des systèmes TTP et AR</p>
+              </div>
             </div>
+            <Button variant="outline" asChild>
+              <Link to="/" className="flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Retour au tableau de bord
+              </Link>
+            </Button>
           </div>
 
           {/* Current Balances */}
