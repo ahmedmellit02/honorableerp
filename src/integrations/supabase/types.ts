@@ -89,6 +89,36 @@ export type Database = {
         }
         Relationships: []
       }
+      debt_records: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description: string
+          id?: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -312,6 +342,12 @@ export type Database = {
         Returns: {
           current_balance: number
           system: string
+        }[]
+      }
+      get_current_debt_balance: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          current_balance: number
         }[]
       }
       get_expenses_daily_total: {

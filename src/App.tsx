@@ -16,6 +16,7 @@ import Facturation from "./pages/Facturation";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import BalanceControl from "./pages/BalanceControl";
+import DebtControl from "./pages/DebtControl";
 import SupplierDashboard from "./pages/SupplierDashboard";
 import ExpenseControl from "./pages/ExpenseControl";
 
@@ -55,6 +56,7 @@ const AppRoutes = () => {
               <Route path="/facturation" element={<Facturation />} />
               <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
               <Route path="/balance-control" element={<BalanceControl />} />
+              <Route path="/debt-control" element={<DebtControl />} />
               <Route path="/expense-control" element={<ExpenseControl />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

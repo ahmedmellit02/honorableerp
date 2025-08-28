@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, LogOut, LockIcon, Wallet, Receipt, FileText, Table } from "lucide-react";
+import { BarChart3, Plus, LogOut, LockIcon, Wallet, Receipt, FileText, Table, CreditCard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useState } from "react";
@@ -130,6 +130,11 @@ export function AppSidebar() {
       label: "Contrôle du solde",
       href: "/balance-control", 
       icon: Wallet,
+    });
+    navItems.push({
+      label: "Contrôle crédit",
+      href: "/debt-control",
+      icon: CreditCard,
     });
   }
 
