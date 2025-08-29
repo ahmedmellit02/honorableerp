@@ -8,6 +8,7 @@ export interface DebtRecord {
   amount: number;
   type: 'credit' | 'debit';
   description: string;
+  status: 'pending' | 'used' | 'paid';
   created_at: string;
   updated_at: string;
 }
@@ -85,6 +86,78 @@ export const useAddDebtRecord = () => {
       toast({
         title: "Erreur",
         description: "Erreur lors de l'ajout de l'enregistrement: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+// Hook to mark credit as used
+export const useMarkCreditAsUsed = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (recordId: string) => {
+      const { data, error } = await supabase
+        .from('debt_records')
+        .update({ status: 'used' })
+        .eq('id', recordId)
+        .eq('type', 'credit')
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as DebtRecord;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['debt-records'] });
+      queryClient.invalidateQueries({ queryKey: ['debt-balance'] });
+      toast({
+        title: "Succès",
+        description: "Crédit marqué comme utilisé",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la mise à jour: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+// Hook to mark debt as paid
+export const useMarkDebtAsPaid = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (recordId: string) => {
+      const { data, error } = await supabase
+        .from('debt_records')
+        .update({ status: 'paid' })
+        .eq('id', recordId)
+        .eq('type', 'debit')
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as DebtRecord;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['debt-records'] });
+      queryClient.invalidateQueries({ queryKey: ['debt-balance'] });
+      toast({
+        title: "Succès",
+        description: "Dette marquée comme payée",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la mise à jour: " + error.message,
         variant: "destructive",
       });
     },

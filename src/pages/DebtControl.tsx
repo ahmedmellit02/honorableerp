@@ -8,8 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, CreditCard, Check, X, Edit3 } from "lucide-react";
-import { useDebtRecords, useDebtBalance, useAddDebtRecord } from "@/hooks/useDebtRecords";
+import { ArrowLeft, Plus, CreditCard, Check } from "lucide-react";
+import { useDebtRecords, useDebtBalance, useAddDebtRecord, useMarkCreditAsUsed, useMarkDebtAsPaid } from "@/hooks/useDebtRecords";
 import { useAuth } from "@/hooks/useAuth";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 
@@ -24,6 +24,8 @@ export default function DebtControl() {
   const { data: debtRecords, isLoading: recordsLoading } = useDebtRecords();
   const { data: debtBalance, isLoading: balanceLoading } = useDebtBalance();
   const addDebtRecord = useAddDebtRecord();
+  const markCreditAsUsed = useMarkCreditAsUsed();
+  const markDebtAsPaid = useMarkDebtAsPaid();
 
   // Redirect if user doesn't have permission
   if (!canControlBalance()) {
@@ -52,13 +54,11 @@ export default function DebtControl() {
   };
 
   const handleMarkAsUsed = (recordId: string) => {
-    // TODO: Implement mark as used functionality
-    console.log("Marking credit as used:", recordId);
+    markCreditAsUsed.mutate(recordId);
   };
 
   const handleMarkAsPaid = (recordId: string) => {
-    // TODO: Implement mark as paid functionality  
-    console.log("Marking debt as paid:", recordId);
+    markDebtAsPaid.mutate(recordId);
   };
 
   const formatCurrency = (value: number) => {
@@ -199,13 +199,14 @@ export default function DebtControl() {
                       <TableHead>Type</TableHead>
                       <TableHead>Montant</TableHead>
                       <TableHead>Description</TableHead>
+                      <TableHead>Statut</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {debtRecords?.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center text-muted-foreground">
+                        <TableCell colSpan={6} className="text-center text-muted-foreground">
                           Aucun enregistrement trouvé
                         </TableCell>
                       </TableRow>
@@ -227,37 +228,43 @@ export default function DebtControl() {
                             {record.description}
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-2">
-                              {record.type === 'credit' ? (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleMarkAsUsed(record.id)}
-                                  className="flex items-center gap-1"
-                                >
-                                  <Check className="h-3 w-3" />
-                                  Marquer utilisé
-                                </Button>
-                              ) : (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleMarkAsPaid(record.id)}
-                                  className="flex items-center gap-1"
-                                >
-                                  <Check className="h-3 w-3" />
-                                  Marquer payé
-                                </Button>
-                              )}
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => console.log("Edit record:", record.id)}
-                                className="flex items-center gap-1"
-                              >
-                                <Edit3 className="h-3 w-3" />
-                              </Button>
-                            </div>
+                            <Badge variant={
+                              record.status === 'pending' ? 'outline' : 
+                              record.status === 'used' || record.status === 'paid' ? 'default' : 'outline'
+                            }>
+                              {record.status === 'pending' ? 'En attente' : 
+                               record.status === 'used' ? 'Utilisé' : 
+                               record.status === 'paid' ? 'Payé' : record.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {record.status === 'pending' && (
+                              <div className="flex items-center gap-2">
+                                {record.type === 'credit' ? (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleMarkAsUsed(record.id)}
+                                    disabled={markCreditAsUsed.isPending}
+                                    className="flex items-center gap-1"
+                                  >
+                                    <Check className="h-3 w-3" />
+                                    Marquer utilisé
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleMarkAsPaid(record.id)}
+                                    disabled={markDebtAsPaid.isPending}
+                                    className="flex items-center gap-1"
+                                  >
+                                    <Check className="h-3 w-3" />
+                                    Marquer payé
+                                  </Button>
+                                )}
+                              </div>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))
