@@ -304,7 +304,7 @@ const AddSale = () => {
                     id="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-                    placeholder="0678945612"
+                    placeholder="Exemple : 0678945612"
                     className={errors.phoneNumber ? "border-destructive" : ""}
                   />
                   {errors.phoneNumber && (
