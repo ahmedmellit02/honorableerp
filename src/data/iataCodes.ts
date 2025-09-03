@@ -67,6 +67,7 @@ export const iataCodes: IATACode[] = [
   { code: "OZZ", city: "Ouarzazate", country: "Morocco", airport: "Ouarzazate Airport" },
   { code: "ESU", city: "Essaouira", country: "Morocco", airport: "Mogador Airport" },
   { code: "TTU", city: "Tetouan", country: "Morocco", airport: "Sania Ramel Airport" },
+  { code: "NKC", city: "Nouakchott", country: "Mauritania", airport: "Nouakchott–Oumtounsy International Airport" },
   { code: "CDG", city: "Paris", country: "France", airport: "Charles de Gaulle Airport" },
   { code: "ORY", city: "Paris", country: "France", airport: "Orly Airport" },
   { code: "NCE", city: "Nice", country: "France", airport: "Nice Côte d'Azur Airport" },
