@@ -66,6 +66,7 @@ export const iataCodes: IATACode[] = [
   { code: "AHU", city: "Al Hoceima", country: "Morocco", airport: "Cote du Rif Airport" },
   { code: "OZZ", city: "Ouarzazate", country: "Morocco", airport: "Ouarzazate Airport" },
   { code: "ESU", city: "Essaouira", country: "Morocco", airport: "Mogador Airport" },
+  { code: "VIL", city: "Dakhla", country: "Morocco", airport: "Dakhla Airport" },
   { code: "TTU", city: "Tetouan", country: "Morocco", airport: "Sania Ramel Airport" },
   { code: "NKC", city: "Nouakchott", country: "Mauritania", airport: "Nouakchott–Oumtounsy International Airport" },
   { code: "CDG", city: "Paris", country: "France", airport: "Charles de Gaulle Airport" },
