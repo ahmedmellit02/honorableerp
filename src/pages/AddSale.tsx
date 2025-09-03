@@ -489,17 +489,6 @@ const AddSale = () => {
                 </div>
               </div>
 
-              {/* Agent Assignment */}
-              <div className="space-y-2">
-                <Label>Agent assigné</Label>
-                <div className="h-10 px-3 py-2 border border-border rounded-md bg-muted flex items-center">
-                  <span className="text-sm">{formData.agent}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Agent automatiquement assigné selon votre compte
-                </p>
-              </div>
-
               {/* Payment Method */}
               <div className="space-y-2">
                 <Label htmlFor="paymentMethod">Mode de paiement *</Label>
