@@ -302,37 +302,57 @@ const RecentSalesTable = () => {
                       </Badge>
                     )}
                   </td>
-                  {(userRole === 'cashier' || userRole === 'manager') && (
-                    <td className="py-3 px-2">
-                      {!sale.cashedIn && (
-                        <>
-                          {sale.paymentMethod === 'C' && userRole === 'cashier' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleCashIn(sale.id)}
-                              disabled={cashInMutation.isPending}
-                              className="text-xs hover:bg-success hover:text-white hover:border-success"
-                            >
-                              <Euro className="h-3 w-3 mr-1" />
-                              Encaisser
-                            </Button>
-                          )}
-                          {sale.paymentMethod === 'V' && userRole === 'manager' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleConfirmBankTransfer(sale.id)}
-                              disabled={confirmBankTransferMutation.isPending}
-                              className="text-xs hover:bg-blue-500 hover:text-white hover:border-blue-500"
-                            >
-                              Confirmer virement
-                            </Button>
-                          )}
-                        </>
-                      )}
-                    </td>
-                  )}
+                   {(userRole === 'cashier' || userRole === 'manager') && (
+                     <td className="py-3 px-2">
+                       <div className="flex gap-2">
+                         {/* Cash payments - Cashier can encaisser directly */}
+                         {sale.paymentMethod === 'C' && userRole === 'cashier' && !sale.cashedIn && (
+                           <Button
+                             size="sm"
+                             variant="outline"
+                             onClick={() => handleCashIn(sale.id)}
+                             disabled={cashInMutation.isPending}
+                             className="text-xs hover:bg-success hover:text-white hover:border-success"
+                           >
+                             <Euro className="h-3 w-3 mr-1" />
+                             Encaisser
+                           </Button>
+                         )}
+                         
+                         {/* Bank transfer payments - Two-step process */}
+                         {sale.paymentMethod === 'V' && (
+                           <>
+                             {/* Step 1: Manager confirms bank transfer */}
+                             {userRole === 'manager' && !sale.bankTransferConfirmed && (
+                               <Button
+                                 size="sm"
+                                 variant="outline"
+                                 onClick={() => handleConfirmBankTransfer(sale.id)}
+                                 disabled={confirmBankTransferMutation.isPending}
+                                 className="text-xs hover:bg-blue-500 hover:text-white hover:border-blue-500"
+                               >
+                                 Confirmer virement
+                               </Button>
+                             )}
+                             
+                             {/* Step 2: Cashier can encaisser after manager confirmation */}
+                             {userRole === 'cashier' && sale.bankTransferConfirmed && !sale.cashedIn && (
+                               <Button
+                                 size="sm"
+                                 variant="outline"
+                                 onClick={() => handleCashIn(sale.id)}
+                                 disabled={cashInMutation.isPending}
+                                 className="text-xs hover:bg-success hover:text-white hover:border-success"
+                               >
+                                 <Euro className="h-3 w-3 mr-1" />
+                                 Encaisser
+                               </Button>
+                             )}
+                           </>
+                         )}
+                       </div>
+                     </td>
+                   )}
                 </tr>
               ))}
             </tbody>

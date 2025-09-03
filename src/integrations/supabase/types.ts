@@ -217,6 +217,7 @@ export type Database = {
       sales: {
         Row: {
           agent: string
+          bank_transfer_confirmed: boolean | null
           buying_price: number
           cashed_in: boolean | null
           cashed_in_at: string | null
@@ -245,6 +246,7 @@ export type Database = {
         }
         Insert: {
           agent: string
+          bank_transfer_confirmed?: boolean | null
           buying_price: number
           cashed_in?: boolean | null
           cashed_in_at?: string | null
@@ -273,6 +275,7 @@ export type Database = {
         }
         Update: {
           agent?: string
+          bank_transfer_confirmed?: boolean | null
           buying_price?: number
           cashed_in?: boolean | null
           cashed_in_at?: string | null

@@ -25,6 +25,7 @@ export interface Sale {
   cashedIn: boolean;
   cashedInAt?: Date;
   cashedInBy?: string;
+  bankTransferConfirmed?: boolean; // For V payments: manager confirms bank transfer first
   paymentMethod: "C" | "V"; // C for Cash, V for Virement (Bank Transfer)
 }
 

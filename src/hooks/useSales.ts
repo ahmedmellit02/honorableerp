@@ -46,6 +46,7 @@ export const useSales = () => {
         cashedIn: sale.cashed_in || false,
         cashedInAt: sale.cashed_in_at ? new Date(sale.cashed_in_at) : undefined,
         cashedInBy: sale.cashed_in_by,
+        bankTransferConfirmed: (sale as any).bank_transfer_confirmed || false,
         paymentMethod: (sale as any).payment_method as "C" | "V" || "C",
       })) as Sale[];
     },
