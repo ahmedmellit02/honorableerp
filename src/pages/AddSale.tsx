@@ -59,6 +59,7 @@ const AddSale = () => {
     rwDate: new Date(),
     rwTime: "",
     destination: "",
+    paymentMethod: "C", // Default to Cash
   });
 
   // Update agent when user changes
@@ -496,6 +497,28 @@ const AddSale = () => {
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Agent automatiquement assigné selon votre compte
+                </p>
+              </div>
+
+              {/* Payment Method */}
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod">Mode de paiement *</Label>
+                <Select
+                  value={formData.paymentMethod}
+                  onValueChange={(value: "C" | "V") =>
+                    handleInputChange("paymentMethod", value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="C">Espèces (C)</SelectItem>
+                    <SelectItem value="V">Virement (V)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Indiquer si le client a payé par espèces ou par virement bancaire
                 </p>
               </div>
 

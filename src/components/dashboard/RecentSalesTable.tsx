@@ -4,16 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ExternalLink, Download, Euro, CheckCircle } from "lucide-react";
-import { useSales } from "@/hooks/useSales";
-import { useUserRole, useCashInSale } from "@/hooks/useUserRole";
+import { useSales, useCashInSale, useConfirmBankTransfer } from "@/hooks/useSales";
+import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import * as XLSX from 'xlsx';
 
 const RecentSalesTable = () => {
   const { data: sales = [], isLoading } = useSales();
-  const { data: userRole } = useUserRole();
+  const { userRole } = useSimpleRole();
   const cashInMutation = useCashInSale();
+  const confirmBankTransferMutation = useConfirmBankTransfer();
   const { toast } = useToast();
 
   const getTypeIcon = (type: string) => {
@@ -77,6 +78,22 @@ const RecentSalesTable = () => {
       toast({
         title: "Erreur",
         description: "Impossible d'encaisser cette vente.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleConfirmBankTransfer = async (saleId: string) => {
+    try {
+      await confirmBankTransferMutation.mutateAsync(saleId);
+      toast({
+        title: "Virement confirmé",
+        description: "Le virement bancaire a été confirmé avec succès.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la confirmation du virement.",
         variant: "destructive",
       });
     }
@@ -192,11 +209,14 @@ const RecentSalesTable = () => {
                   Date
                 </th>
                 <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                  Paiement
+                </th>
+                <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                   Statut
                 </th>
-                {userRole === 'cashier' && (
+                {(userRole === 'cashier' || userRole === 'manager') && (
                   <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
-                    Encaissement
+                    Actions
                   </th>
                 )}
               </tr>
@@ -263,6 +283,13 @@ const RecentSalesTable = () => {
                     </div>
                   </td>
                   <td className="py-3 px-2">
+                    <Badge variant="outline" className={`flex items-center gap-1 w-fit ${
+                      sale.paymentMethod === 'V' ? 'text-blue-600 border-blue-300' : 'text-green-600 border-green-300'
+                    }`}>
+                      {sale.paymentMethod === 'V' ? 'Virement' : 'Espèces'}
+                    </Badge>
+                  </td>
+                  <td className="py-3 px-2">
                     {sale.cashedIn ? (
                       <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit">
                         <CheckCircle className="h-3 w-3" />
@@ -275,19 +302,34 @@ const RecentSalesTable = () => {
                       </Badge>
                     )}
                   </td>
-                  {userRole === 'cashier' && (
+                  {(userRole === 'cashier' || userRole === 'manager') && (
                     <td className="py-3 px-2">
                       {!sale.cashedIn && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCashIn(sale.id)}
-                          disabled={cashInMutation.isPending}
-                          className="text-xs hover:bg-success hover:text-white hover:border-success"
-                        >
-                          <Euro className="h-3 w-3 mr-1" />
-                          Encaisser
-                        </Button>
+                        <>
+                          {sale.paymentMethod === 'C' && userRole === 'cashier' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleCashIn(sale.id)}
+                              disabled={cashInMutation.isPending}
+                              className="text-xs hover:bg-success hover:text-white hover:border-success"
+                            >
+                              <Euro className="h-3 w-3 mr-1" />
+                              Encaisser
+                            </Button>
+                          )}
+                          {sale.paymentMethod === 'V' && userRole === 'manager' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleConfirmBankTransfer(sale.id)}
+                              disabled={confirmBankTransferMutation.isPending}
+                              className="text-xs hover:bg-blue-500 hover:text-white hover:border-blue-500"
+                            >
+                              Confirmer virement
+                            </Button>
+                          )}
+                        </>
                       )}
                     </td>
                   )}

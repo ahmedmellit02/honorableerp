@@ -25,6 +25,7 @@ export interface Sale {
   cashedIn: boolean;
   cashedInAt?: Date;
   cashedInBy?: string;
+  paymentMethod: "C" | "V"; // C for Cash, V for Virement (Bank Transfer)
 }
 
 export interface SaleFormData {
@@ -47,4 +48,5 @@ export interface SaleFormData {
   rwTime?: string;
   // Legacy field for backward compatibility
   destination?: string;
+  paymentMethod: "C" | "V"; // C for Cash, V for Virement (Bank Transfer)
 }

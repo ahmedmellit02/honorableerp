@@ -230,6 +230,7 @@ export type Database = {
           has_registration: boolean | null
           id: string
           numeric_id: number
+          payment_method: string
           phone_number: string
           pnr: string | null
           profit: number | null
@@ -257,6 +258,7 @@ export type Database = {
           has_registration?: boolean | null
           id?: string
           numeric_id?: number
+          payment_method?: string
           phone_number: string
           pnr?: string | null
           profit?: number | null
@@ -284,6 +286,7 @@ export type Database = {
           has_registration?: boolean | null
           id?: string
           numeric_id?: number
+          payment_method?: string
           phone_number?: string
           pnr?: string | null
           profit?: number | null
@@ -329,6 +332,10 @@ export type Database = {
         Returns: undefined
       }
       cash_in_sale: {
+        Args: { sale_id: string }
+        Returns: undefined
+      }
+      confirm_bank_transfer: {
         Args: { sale_id: string }
         Returns: undefined
       }

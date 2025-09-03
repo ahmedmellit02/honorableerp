@@ -7,9 +7,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format, isAfter, isBefore, isSameDay } from "date-fns";
 import { Plane, Hotel, MapPin, LuggageIcon, Shield, SailboatIcon, Undo2Icon, ArrowLeft, Download, Euro, CheckCircle, Search, Filter, X, CalendarIcon, BarChart3, TrendingUp } from "lucide-react";
-import { useSales } from "@/hooks/useSales";
+import { useSales, useCashInSale, useConfirmBankTransfer } from "@/hooks/useSales";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
-import { useCashInSale } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useSearchParams } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
@@ -18,8 +17,9 @@ import * as XLSX from 'xlsx';
 
 const AllSales = () => {
   const { data: sales = [], isLoading } = useSales();
-  const { userRole, canCashIn } = useSimpleRole();
+  const { userRole } = useSimpleRole();
   const cashInMutation = useCashInSale();
+  const confirmBankTransferMutation = useConfirmBankTransfer();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -87,6 +87,22 @@ const AllSales = () => {
       toast({
         title: "Erreur",
         description: "Impossible d'encaisser cette vente.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleConfirmBankTransfer = async (saleId: string) => {
+    try {
+      await confirmBankTransferMutation.mutateAsync(saleId);
+      toast({
+        title: "Virement confirmé",
+        description: "Le virement bancaire a été confirmé avec succès.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la confirmation du virement.",
         variant: "destructive",
       });
     }
@@ -483,11 +499,14 @@ const AllSales = () => {
                         Date de création
                       </th>
                       <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                        Paiement
+                      </th>
+                      <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                         Statut
                       </th>
-                      {userRole === 'cashier' && (
+                      {(userRole === 'cashier' || userRole === 'manager') && (
                         <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
-                          Encaissement
+                          Actions
                         </th>
                       )}
                     </tr>
@@ -570,6 +589,13 @@ const AllSales = () => {
                           </span>
                         </td>
                         <td className="py-3 px-2">
+                          <Badge variant="outline" className={`flex items-center gap-1 w-fit ${
+                            sale.paymentMethod === 'V' ? 'text-blue-600 border-blue-300' : 'text-green-600 border-green-300'
+                          }`}>
+                            {sale.paymentMethod === 'V' ? 'Virement' : 'Espèces'}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-2">
                           {sale.cashedIn ? (
                             <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit">
                               <CheckCircle className="h-3 w-3" />
@@ -582,19 +608,34 @@ const AllSales = () => {
                             </Badge>
                           )}
                         </td>
-                        {userRole === 'cashier' && (
+                        {(userRole === 'cashier' || userRole === 'manager') && (
                           <td className="py-3 px-2">
                             {!sale.cashedIn && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleCashIn(sale.id)}
-                                disabled={cashInMutation.isPending}
-                                className="text-xs hover:bg-success hover:text-white hover:border-success"
-                              >
-                                <Euro className="h-3 w-3 mr-1" />
-                                Encaisser
-                              </Button>
+                              <>
+                                {sale.paymentMethod === 'C' && userRole === 'cashier' && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleCashIn(sale.id)}
+                                    disabled={cashInMutation.isPending}
+                                    className="text-xs hover:bg-success hover:text-white hover:border-success"
+                                  >
+                                    <Euro className="h-3 w-3 mr-1" />
+                                    Encaisser
+                                  </Button>
+                                )}
+                                {sale.paymentMethod === 'V' && userRole === 'manager' && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleConfirmBankTransfer(sale.id)}
+                                    disabled={confirmBankTransferMutation.isPending}
+                                    className="text-xs hover:bg-blue-500 hover:text-white hover:border-blue-500"
+                                  >
+                                    Confirmer virement
+                                  </Button>
+                                )}
+                              </>
                             )}
                           </td>
                         )}

@@ -46,6 +46,7 @@ export const useSales = () => {
         cashedIn: sale.cashed_in || false,
         cashedInAt: sale.cashed_in_at ? new Date(sale.cashed_in_at) : undefined,
         cashedInBy: sale.cashed_in_by,
+        paymentMethod: (sale as any).payment_method as "C" | "V" || "C",
       })) as Sale[];
     },
     enabled: !!user,
@@ -71,6 +72,7 @@ export const useAddSale = () => {
         system: saleData.system,
         agent: saleData.agent,
         destination: saleData.destination || null,
+        payment_method: saleData.paymentMethod,
       };
 
       // Add type-specific fields
@@ -238,5 +240,53 @@ export const useTopServicesCurrentMonth = () => {
       }));
     },
     enabled: !!user,
+  });
+};
+
+export const useCashInSale = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (saleId: string) => {
+      if (!user) throw new Error("User not authenticated");
+
+      const { error } = await supabase.rpc("cash_in_sale", {
+        sale_id: saleId,
+      });
+
+      if (error) {
+        console.error("Error cashing in sale:", error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.refetchQueries({ queryKey: ["sales"] });
+    },
+  });
+};
+
+export const useConfirmBankTransfer = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (saleId: string) => {
+      if (!user) throw new Error("User not authenticated");
+
+      const { error } = await supabase.rpc("confirm_bank_transfer", {
+        sale_id: saleId,
+      });
+
+      if (error) {
+        console.error("Error confirming bank transfer:", error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.refetchQueries({ queryKey: ["sales"] });
+    },
   });
 };
