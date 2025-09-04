@@ -29,6 +29,7 @@ const AllSales = () => {
   const [agentFilter, setAgentFilter] = useState<string>(() => searchParams.get("agent") || "all");
   const [systemFilter, setSystemFilter] = useState<string>(() => searchParams.get("system") || "all");
   const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get("status") || "all");
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>(() => searchParams.get("payment") || "all");
   const [dateFrom, setDateFrom] = useState<Date | undefined>(() => {
     const from = searchParams.get("from");
     return from ? new Date(from) : undefined;
@@ -46,11 +47,12 @@ const AllSales = () => {
     if (agentFilter !== "all") params.set("agent", agentFilter);
     if (systemFilter !== "all") params.set("system", systemFilter);
     if (statusFilter !== "all") params.set("status", statusFilter);
+    if (paymentMethodFilter !== "all") params.set("payment", paymentMethodFilter);
     if (dateFrom) params.set("from", dateFrom.toISOString().split('T')[0]);
     if (dateTo) params.set("to", dateTo.toISOString().split('T')[0]);
     
     setSearchParams(params, { replace: true });
-  }, [searchQuery, typeFilter, agentFilter, systemFilter, statusFilter, dateFrom, dateTo, setSearchParams]);
+  }, [searchQuery, typeFilter, agentFilter, systemFilter, statusFilter, paymentMethodFilter, dateFrom, dateTo, setSearchParams]);
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -142,6 +144,11 @@ const AllSales = () => {
         return false;
       }
 
+      // Payment method filter
+      if (paymentMethodFilter !== "all" && sale.paymentMethod !== paymentMethodFilter) {
+        return false;
+      }
+
       // Date range filter
       if (dateFrom && isBefore(sale.createdAt, dateFrom)) {
         return false;
@@ -152,7 +159,7 @@ const AllSales = () => {
 
       return true;
     });
-  }, [sales, searchQuery, typeFilter, agentFilter, systemFilter, statusFilter, dateFrom, dateTo]);
+  }, [sales, searchQuery, typeFilter, agentFilter, systemFilter, statusFilter, paymentMethodFilter, dateFrom, dateTo]);
 
   // Calculate totals
   const totals = useMemo(() => {
@@ -186,6 +193,7 @@ const AllSales = () => {
     setAgentFilter("all");
     setSystemFilter("all");
     setStatusFilter("all");
+    setPaymentMethodFilter("all");
     setDateFrom(undefined);
     setDateTo(undefined);
   };
@@ -327,6 +335,18 @@ const AllSales = () => {
                     <SelectItem value="all">Statuts</SelectItem>
                     <SelectItem value="cashed">Encaissé</SelectItem>
                     <SelectItem value="not-cashed">Non encaissé</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Payment Method Filter */}
+                <Select value={paymentMethodFilter} onValueChange={setPaymentMethodFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Paiement" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Paiement</SelectItem>
+                    <SelectItem value="C">Espèce</SelectItem>
+                    <SelectItem value="V">Virement</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
