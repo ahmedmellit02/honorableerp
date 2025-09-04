@@ -121,7 +121,9 @@ const AddSale = () => {
 
   const handleInputChange = (field: keyof SaleFormData, value: any) => {
     setFormData(prev => {
-      const updated = { ...prev, [field]: value };
+      // Convert client name to uppercase in real time
+      const processedValue = field === "clientName" ? (value as string).toUpperCase() : value;
+      const updated = { ...prev, [field]: processedValue };
 
       // ✅ Real-time validation for same airports
       if (
