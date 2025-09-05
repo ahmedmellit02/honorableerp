@@ -44,6 +44,11 @@ serve(async (req) => {
     💰 VIREMENT NON ENCAISSÉ: Manager garde l'argent qui devrait être dans l'agence
     - Ventes Virement non encaissées = Manager retient l'argent de l'agence
     - Analyse des flux de trésorerie: argent bloqué chez manager au lieu d'être en agence
+    
+    📊 CALCUL ARGENT MANAGER DE L'AGENCE:
+    - L'argent du manager qui appartient à l'agence = TOTAL des ventes Virement NON ENCAISSÉES
+    - Pour calculer: additionner toutes les ventes de type "Virement" qui ont cash_in_status = false
+    - C'est l'argent que le manager a reçu mais qu'il n'a pas encore versé à l'agence
 
     EXEMPLES DE RÉPONSES NATURELLES:
 
