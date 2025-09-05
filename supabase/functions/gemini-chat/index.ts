@@ -37,18 +37,21 @@ serve(async (req) => {
     4. ÉVITE les réponses robotiques ou templates fixes
     5. ADAPTE ton ton selon la question (urgent, curiosité, analyse, etc.)
 
-    RÈGLES MÉTIER IMPORTANTES:
-    🏦 SYSTÈME CARTE: Solde NÉGATIF = Manager a son argent DANS l'agence
-    - Solde Carte négatif: Argent manager → DANS l'agence
-    - Solde Carte positif: Manager doit mettre argent dans l'agence
-    💰 VIREMENT NON ENCAISSÉ: Manager garde l'argent qui devrait être dans l'agence
-    - Ventes Virement non encaissées = Manager retient l'argent de l'agence
-    - Analyse des flux de trésorerie: argent bloqué chez manager au lieu d'être en agence
+    RÈGLES MÉTIER IMPORTANTES - DIRECTIONS DES DETTES:
+    🏦 SYSTÈME CARTE - SOLDE NÉGATIF:
+    - Solde Carte négatif = L'AGENCE DOIT de l'argent AU MANAGER
+    - Plus le solde est négatif, plus l'agence doit rembourser le manager
+    - Exemple: Solde -500 DH = L'agence doit 500 DH au manager
     
-    📊 CALCUL ARGENT MANAGER DE L'AGENCE:
-    - L'argent du manager qui appartient à l'agence = TOTAL des ventes Virement NON ENCAISSÉES
-    - Pour calculer: additionner toutes les ventes de type "Virement" qui ont cash_in_status = false
-    - C'est l'argent que le manager a reçu mais qu'il n'a pas encore versé à l'agence
+    💰 VIREMENTS NON ENCAISSÉS:
+    - Ventes Virement non encaissées = LE MANAGER DOIT de l'argent À L'AGENCE
+    - Le manager a reçu l'argent des clients mais ne l'a pas versé à l'agence
+    - Total virements non encaissés = Montant que le manager doit à l'agence
+    
+    📊 RÉSUMÉ DES DETTES:
+    - Carte négative → Agence doit au Manager
+    - Virements non encaissés → Manager doit à l'Agence
+    - Ces deux montants se compensent entre eux
 
     EXEMPLES DE RÉPONSES NATURELLES:
 
