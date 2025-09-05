@@ -2,7 +2,6 @@ import MetricCard from "@/components/dashboard/MetricCard";
 import SalesChart from "@/components/dashboard/SalesChart";
 import BookingTypePieChart from "@/components/dashboard/BookingTypePieChart";
 import RecentSalesTable from "@/components/dashboard/RecentSalesTable";
-import { ChatBot } from "@/components/ChatBot";
 
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { 
@@ -90,95 +89,6 @@ const Dashboard = () => {
   // Check permissions for different dashboard sections  
   const showMonthlyStats = canViewMonthlyStats();
   const showDashboard = canViewDashboard();
-
-  // Prepare comprehensive agency data for ChatBot
-  const agencyData = {
-    // Daily Metrics
-    dailyMetrics: {
-      salesCount: dailySalesCount,
-      revenue: dailyRevenue,
-      profit: dailyProfit,
-      expenses: dailyExpensesAmount,
-      netProfit: dailyNetProfit,
-      date: today
-    },
-    // Monthly Metrics
-    monthlyMetrics: {
-      salesCount: totalSales,
-      revenue: totalRevenue,
-      profit: totalProfit,
-      expenses: monthlyExpensesAmount,
-      netProfit: monthlyNetProfit,
-      month: now.getMonth() + 1,
-      year: now.getFullYear()
-    },
-    // Agent Performance Analysis
-    agentPerformance: Object.entries(agentStats).map(([agent, stats]) => ({
-      name: agent,
-      salesCount: stats.sales,
-      profit: stats.profit,
-      profitPercentage: totalProfit > 0 ? ((stats.profit / totalProfit) * 100).toFixed(1) : "0",
-      avgProfitPerSale: stats.sales > 0 ? (stats.profit / stats.sales).toFixed(0) : "0"
-    })).sort((a, b) => b.profit - a.profit),
-    // Service Performance
-    serviceTypes: typeData.map(type => ({
-      name: type.type,
-      count: type.count,
-      revenue: type.revenue,
-      profit: type.profit,
-      avgTicket: type.count > 0 ? (type.revenue / type.count).toFixed(0) : "0",
-      profitMargin: type.revenue > 0 ? ((type.profit / type.revenue) * 100).toFixed(1) : "0"
-    })),
-    // Top Services
-    topServices: topServices.map((service, index) => ({
-      rank: index + 1,
-      type: service.type,
-      count: service.count,
-      totalProfit: service.totalProfit,
-      profitPercentage: totalProfit > 0 ? ((service.totalProfit / totalProfit) * 100).toFixed(1) : "0"
-    })),
-    // System Balances
-    systemBalances: systemBalances.map(balance => ({
-      system: balance.system,
-      balance: balance.current_balance,
-      status: balance.current_balance >= 0 ? 'positive' : 'negative'
-    })),
-    // Booking Types
-    bookingTypes: {
-      flights: flightBookings,
-      hotels: hotelBookings,
-      organizedTravel: organizedTravel,
-      total: flightBookings + hotelBookings + organizedTravel
-    },
-    // Recent Sales (last 10)
-    recentSales: sales.slice(0, 10).map(sale => ({
-      id: sale.numericId,
-      type: sale.type,
-      client: sale.clientName,
-      agent: sale.agent,
-      sellingPrice: sale.sellingPrice,
-      profit: sale.profit,
-      profitMargin: sale.sellingPrice > 0 ? ((sale.profit / sale.sellingPrice) * 100).toFixed(1) : "0",
-      system: sale.system,
-      date: sale.createdAt.toLocaleDateString(),
-      cashedIn: sale.cashedIn
-    })),
-    // Financial KPIs
-    kpis: {
-      dailyProfitMargin: dailyRevenue > 0 ? ((dailyProfit / dailyRevenue) * 100).toFixed(1) : "0",
-      monthlyProfitMargin: totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).toFixed(1) : "0",
-      avgDailySales: totalSales > 0 ? (totalSales / new Date().getDate()).toFixed(1) : "0",
-      avgTicketDaily: dailySalesCount > 0 ? (dailyRevenue / dailySalesCount).toFixed(0) : "0",
-      avgTicketMonthly: totalSales > 0 ? (totalRevenue / totalSales).toFixed(0) : "0",
-      topAgent: Object.entries(agentStats).length > 0 ? 
-        Object.entries(agentStats).reduce((a, b) => a[1].profit > b[1].profit ? a : b)[0] : null
-    },
-    // Unapproved expenses
-    unapprovedExpenses: {
-      daily: dailyUnapproved?.count || 0,
-      monthly: monthlyUnapproved?.count || 0
-    }
-  };
 
   if (isLoading) {
     return (
@@ -349,9 +259,6 @@ const Dashboard = () => {
 
         {/* Recent Sales Table */}
         <RecentSalesTable />
-
-        {/* Business Analyst ChatBot with comprehensive data */}
-        <ChatBot agencyData={agencyData} />
 
       </div>
     </div>
