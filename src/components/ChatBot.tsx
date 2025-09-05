@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Send, X, Minimize2, BotMessageSquare } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface Message {
   id: string;
@@ -94,6 +95,7 @@ interface ChatBotProps {
 }
 
 export const ChatBot: React.FC<ChatBotProps> = ({ agencyData }) => {
+  const { data: userRole, isLoading: roleLoading } = useUserRole();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -172,6 +174,15 @@ export const ChatBot: React.FC<ChatBotProps> = ({ agencyData }) => {
       sendMessage();
     }
   };
+
+  // Only show ChatBot for managers and super_agents
+  if (roleLoading) {
+    return null; // Don't show anything while loading role
+  }
+
+  if (!userRole || (userRole !== 'manager' && userRole !== 'super_agent')) {
+    return null; // Don't show ChatBot for other roles
+  }
 
   if (!isOpen) {
     return (
