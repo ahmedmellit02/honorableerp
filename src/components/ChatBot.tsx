@@ -16,16 +16,80 @@ interface Message {
 
 interface ChatBotProps {
   agencyData?: {
-    dailySales: any;
-    monthlySales: any;
-    expenses: any;
-    balances: any;
-    agentPerformance: any;
-    bookingTypes: any;
-    topServices: any;
-    recentSales: any;
-    allSales: any;
-    typeStatistics: any;
+    dailyMetrics: {
+      salesCount: number;
+      revenue: number;
+      profit: number;
+      expenses: number;
+      netProfit: number;
+      date: string;
+    };
+    monthlyMetrics: {
+      salesCount: number;
+      revenue: number;
+      profit: number;
+      expenses: number;
+      netProfit: number;
+      month: number;
+      year: number;
+    };
+    agentPerformance: Array<{
+      name: string;
+      salesCount: number;
+      profit: number;
+      profitPercentage: string;
+      avgProfitPerSale: string;
+    }>;
+    serviceTypes: Array<{
+      name: string;
+      count: number;
+      revenue: number;
+      profit: number;
+      avgTicket: string;
+      profitMargin: string;
+    }>;
+    topServices: Array<{
+      rank: number;
+      type: string;
+      count: number;
+      totalProfit: number;
+      profitPercentage: string;
+    }>;
+    systemBalances: Array<{
+      system: string;
+      balance: number;
+      status: string;
+    }>;
+    bookingTypes: {
+      flights: number;
+      hotels: number;
+      organizedTravel: number;
+      total: number;
+    };
+    recentSales: Array<{
+      id: number;
+      type: string;
+      client: string;
+      agent: string;
+      sellingPrice: number;
+      profit: number;
+      profitMargin: string;
+      system: string;
+      date: string;
+      cashedIn: boolean;
+    }>;
+    kpis: {
+      dailyProfitMargin: string;
+      monthlyProfitMargin: string;
+      avgDailySales: string;
+      avgTicketDaily: string;
+      avgTicketMonthly: string;
+      topAgent: string | null;
+    };
+    unapprovedExpenses: {
+      daily: number;
+      monthly: number;
+    };
   };
 }
 
