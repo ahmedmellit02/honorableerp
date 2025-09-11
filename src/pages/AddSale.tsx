@@ -43,13 +43,13 @@ const AddSale = () => {
   const isRestrictedUser = user?.email === "mohammedmellit@chorafaa.com";
 
   const [formData, setFormData] = useState<SaleFormData>({
-    type: "Flight Confirmed",
+    type: undefined as any, // Placeholder to force selection
     clientName: "",
     phoneNumber: "",
     pnr: "",
     buyingPrice: 0,
     sellingPrice: 0,
-    system: "TTP",
+    system: undefined as any, // Placeholder to force selection
     agent: getAgentFromEmail(user?.email),
     departureDate: new Date(),
     departureTime: "",
@@ -59,7 +59,7 @@ const AddSale = () => {
     rwDate: new Date(),
     rwTime: "",
     destination: "",
-    paymentMethod: "C", // Default to Cash
+    paymentMethod: undefined as any, // Placeholder to force selection
   });
 
   // Update agent when user changes
@@ -70,10 +70,25 @@ const AddSale = () => {
     }));
   }, [user?.email]);
 
-  const [errors, setErrors] = useState<Partial<SaleFormData>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof SaleFormData | 'type' | 'system' | 'paymentMethod', string>>>({});
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<SaleFormData> = {};
+    const newErrors: Partial<Record<keyof SaleFormData | 'type' | 'system' | 'paymentMethod', string>> = {};
+
+    // Validate type selection
+    if (!formData.type) {
+      newErrors.type = "Veuillez sélectionner un type de service";
+    }
+
+    // Validate system selection
+    if (!formData.system) {
+      newErrors.system = "Veuillez sélectionner un système";
+    }
+
+    // Validate payment method selection
+    if (!formData.paymentMethod) {
+      newErrors.paymentMethod = "Veuillez sélectionner un mode de paiement";
+    }
 
     if (!formData.clientName.trim()) {
       newErrors.clientName = "Le nom du client est requis";
@@ -238,15 +253,15 @@ const AddSale = () => {
               {/* First Row - Type and System */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="type">Type de service</Label>
+                  <Label htmlFor="type">Type de service *</Label>
                   <Select
-                    value={formData.type}
+                    value={formData.type || ""}
                     onValueChange={(value: SaleFormData["type"]) =>
                       handleInputChange("type", value)
                     }
                   >
-                    <SelectTrigger>
-                      <SelectValue />
+                    <SelectTrigger className={errors.type ? "border-destructive" : ""}>
+                      <SelectValue placeholder="Sélectionnez le type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Flight Confirmed">Vol confirmé</SelectItem>
@@ -262,18 +277,21 @@ const AddSale = () => {
                       <SelectItem value="Travel Insurance">Assurance voyage</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.type && (
+                    <p className="text-sm text-destructive">{errors.type}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="system">Système</Label>
+                  <Label htmlFor="system">Système *</Label>
                   <Select
-                    value={formData.system}
+                    value={formData.system || ""}
                     onValueChange={(value: SaleFormData["system"]) =>
                       handleInputChange("system", value)
                     }
                   >
-                    <SelectTrigger>
-                      <SelectValue />
+                    <SelectTrigger className={errors.system ? "border-destructive" : ""}>
+                      <SelectValue placeholder="Sélectionnez le système" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Divers">Divers</SelectItem>
@@ -282,6 +300,9 @@ const AddSale = () => {
                       <SelectItem value="Carte">Carte</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.system && (
+                    <p className="text-sm text-destructive">{errors.system}</p>
+                  )}
                 </div>
               </div>
 
@@ -495,19 +516,22 @@ const AddSale = () => {
               <div className="space-y-2">
                 <Label htmlFor="paymentMethod">Mode de paiement *</Label>
                 <Select
-                  value={formData.paymentMethod}
+                  value={formData.paymentMethod || ""}
                   onValueChange={(value: "C" | "V") =>
                     handleInputChange("paymentMethod", value)
                   }
                 >
-                  <SelectTrigger>
-                    <SelectValue />
+                  <SelectTrigger className={errors.paymentMethod ? "border-destructive" : ""}>
+                    <SelectValue placeholder="Sélectionnez le mode de paiement" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="C">Espèces (C)</SelectItem>
                     <SelectItem value="V">Virement (V)</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.paymentMethod && (
+                  <p className="text-sm text-destructive">{errors.paymentMethod}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   Indiquer si le client a payé par espèces ou par virement bancaire
                 </p>
