@@ -246,7 +246,7 @@ const Dashboard = () => {
                     key={agent}
                     title={agent}
                     value={`${profitPercentage}%`}
-                    change={`${stats.sales} ventes`}
+                    // change={`${stats.sales} ventes`}
                     changeType="neutral"
                     icon={Users}
                     gradient="bg-gradient-ocean"
