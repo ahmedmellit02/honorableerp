@@ -93,7 +93,7 @@ export const iataCodes: IATACode[] = [
   { code: "FCO", city: "Rome", country: "Italy", airport: "Leonardo da Vinci International Airport" },
   { code: "CIA", city: "Rome", country: "Italy", airport: "Ciampino Airport" },
   { code: "MXP", city: "Milan", country: "Italy", airport: "Milan Malpensa Airport" },
-  { code: "LIN", city: "Milan", country: "Italy", airport: "Milan Linate Airport" },
+  { code: "BGY", city: "Milan", country: "Italy", airport: "Milan Bergamo Airport" },
   { code: "NAP", city: "Naples", country: "Italy", airport: "Naples International Airport" },
   { code: "VCE", city: "Venice", country: "Italy", airport: "Venice Marco Polo Airport" },
   { code: "BLQ", city: "Bologna", country: "Italy", airport: "Bologna Guglielmo Marconi Airport" },
