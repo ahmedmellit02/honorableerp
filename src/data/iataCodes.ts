@@ -71,6 +71,7 @@ export const iataCodes: IATACode[] = [
   { code: "NKC", city: "Nouakchott", country: "Mauritania", airport: "Nouakchott–Oumtounsy International Airport" },
   { code: "CDG", city: "Paris", country: "France", airport: "Charles de Gaulle Airport" },
   { code: "ORY", city: "Paris", country: "France", airport: "Orly Airport" },
+  { code: "ORY", city: "Montpellier", country: "France", airport: "Montpellier–Méditerranée Airport" },
   { code: "NCE", city: "Nice", country: "France", airport: "Nice Côte d'Azur Airport" },
   { code: "LYS", city: "Lyon", country: "France", airport: "Lyon–Saint-Exupéry Airport" },
   { code: "MRS", city: "Marseille", country: "France", airport: "Marseille Provence Airport" },
