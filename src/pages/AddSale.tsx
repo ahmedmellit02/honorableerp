@@ -33,7 +33,8 @@ const AddSale = () => {
       "achrafalarabi284@gmail.com": "Achraf",
       "mehdimellit@gmail.com": "Mehdi",
       "mohammedmellit@chorafaa.com": "Mehdi",
-      "ahmedmellit@chorafaa.com": "Ahmed"
+      "ahmedmellit@chorafaa.com": "Ahmed",
+      "imaneguini123@gmail.com": "Imane"
     };
 
     return emailToAgent[email] || "Ahmed";
