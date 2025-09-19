@@ -14,7 +14,7 @@ import {
   MapPin,
   Target
 } from "lucide-react";
-import { useSales, useSalesDaily, useSalesByType, useTopServicesCurrentMonth } from "@/hooks/useSales";
+import { useSales, useSalesDaily, useSalesByTypeYearly, useTopServicesCurrentMonth } from "@/hooks/useSales";
 import { useSystemBalances } from "@/hooks/useBalance";
 import { useAuth } from "@/hooks/useAuth";
 import { useExpensesDaily, useExpensesMonthly, useUnapprovedExpensesDaily, useUnapprovedExpensesMonthly } from "@/hooks/useExpenses";
@@ -24,7 +24,7 @@ const Dashboard = () => {
   const { userRole, canViewMonthlyStats, canViewDashboard, loading: roleLoading } = useSimpleRole();
   const { data: sales = [], isLoading: salesLoading } = useSales();
   const { data: dailyData = [], isLoading: dailyLoading } = useSalesDaily();
-  const { data: typeData = [], isLoading: typeLoading } = useSalesByType();
+  const { data: typeData = [], isLoading: typeLoading } = useSalesByTypeYearly();
   const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
   const { data: dailyExpenses, isLoading: dailyExpensesLoading } = useExpensesDaily();

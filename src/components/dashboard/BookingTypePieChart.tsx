@@ -1,10 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
-import { useSalesByType } from "@/hooks/useSales";
+import { useSalesByTypeYearly } from "@/hooks/useSales";
 
 const BookingTypePieChart = () => {
-  const { data: bookingTypeData = [], isLoading } = useSalesByType();
+  const { data: bookingTypeData = [], isLoading } = useSalesByTypeYearly();
 
   const renderCustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -25,7 +25,7 @@ const BookingTypePieChart = () => {
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground">
-            Ventes par type
+            Ventes par type (annuel)
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -42,7 +42,7 @@ const BookingTypePieChart = () => {
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground">
-            Ventes par type
+            Ventes par type (annuel)
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -58,7 +58,7 @@ const BookingTypePieChart = () => {
     <Card className="shadow-card">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-foreground">
-          Ventes par type
+          Ventes par type (annuel)
         </CardTitle>
       </CardHeader>
       <CardContent>

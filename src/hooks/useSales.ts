@@ -114,10 +114,14 @@ export const useAddSale = () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
       queryClient.invalidateQueries({ queryKey: ["sales-daily"] });
       queryClient.invalidateQueries({ queryKey: ["sales-by-type"] });
+      queryClient.invalidateQueries({ queryKey: ["sales-yearly"] });
+      queryClient.invalidateQueries({ queryKey: ["sales-by-type-yearly"] });
       // Force refetch of all sales-related queries
       queryClient.refetchQueries({ queryKey: ["sales"] });
       queryClient.refetchQueries({ queryKey: ["sales-daily"] });
       queryClient.refetchQueries({ queryKey: ["sales-by-type"] });
+      queryClient.refetchQueries({ queryKey: ["sales-yearly"] });
+      queryClient.refetchQueries({ queryKey: ["sales-by-type-yearly"] });
     },
   });
 };
@@ -183,6 +187,110 @@ export const useSalesByType = () => {
         revenue: Number(item.revenue),
         profit: Number(item.profit),
         color: colors[index] || `hsl(${(index * 137.5) % 360}, 70%, 50%)` // Fallback for more than 24 services
+      }));
+    },
+    enabled: !!user,
+  });
+};
+
+export const useSalesYearly = () => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["sales-yearly", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const currentYear = new Date().getFullYear();
+      const yearStart = `${currentYear}-01-01`;
+      const yearEnd = `${currentYear + 1}-01-01`;
+      
+      const { data, error } = await supabase
+        .from("sales")
+        .select("created_at, profit, selling_price")
+        .gte("created_at", yearStart)
+        .lt("created_at", yearEnd)
+        .order("created_at", { ascending: true });
+      
+      if (error) {
+        console.error("Error fetching yearly sales:", error);
+        throw error;
+      }
+      
+      // Group by month for yearly overview
+      const monthlyData = data.reduce((acc, sale) => {
+        const month = new Date(sale.created_at).toLocaleDateString('fr-FR', { 
+          month: 'short',
+          year: 'numeric'
+        });
+        if (!acc[month]) {
+          acc[month] = { sales: 0, revenue: 0, profit: 0 };
+        }
+        acc[month].sales += 1;
+        acc[month].revenue += Number(sale.selling_price);
+        acc[month].profit += Number(sale.profit);
+        return acc;
+      }, {} as Record<string, { sales: number; revenue: number; profit: number }>);
+      
+      return Object.entries(monthlyData).map(([month, data]) => ({
+        month,
+        sales: data.sales,
+        revenue: data.revenue,
+        profit: data.profit
+      }));
+    },
+    enabled: !!user,
+  });
+};
+
+export const useSalesByTypeYearly = () => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["sales-by-type-yearly", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const currentYear = new Date().getFullYear();
+      const yearStart = `${currentYear}-01-01`;
+      const yearEnd = `${currentYear + 1}-01-01`;
+      
+      const { data, error } = await supabase
+        .from("sales")
+        .select("type, profit, selling_price")
+        .gte("created_at", yearStart)
+        .lt("created_at", yearEnd);
+      
+      if (error) {
+        console.error("Error fetching yearly sales by type:", error);
+        throw error;
+      }
+      
+      // Group by type and sum profits
+      const groupedData = data.reduce((acc, sale) => {
+        if (!acc[sale.type]) {
+          acc[sale.type] = { totalProfit: 0, count: 0, revenue: 0 };
+        }
+        acc[sale.type].totalProfit += Number(sale.profit);
+        acc[sale.type].revenue += Number(sale.selling_price);
+        acc[sale.type].count += 1;
+        return acc;
+      }, {} as Record<string, { totalProfit: number; count: number; revenue: number }>);
+      
+      // Extended color palette
+      const colors = [
+        "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4",
+        "#F97316", "#84CC16", "#EC4899", "#6366F1", "#14B8A6", "#F43F5E",
+        "#8B4513", "#FF6347", "#4682B4", "#32CD32", "#FF69B4", "#CD853F",
+        "#9370DB", "#20B2AA", "#FF7F50", "#6495ED", "#DC143C", "#00CED1"
+      ];
+      
+      return Object.entries(groupedData).map(([type, data], index) => ({
+        type,
+        count: data.count,
+        revenue: data.revenue,
+        profit: data.totalProfit,
+        color: colors[index] || `hsl(${(index * 137.5) % 360}, 70%, 50%)`
       }));
     },
     enabled: !!user,

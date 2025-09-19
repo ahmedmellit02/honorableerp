@@ -1,17 +1,17 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { useSalesDaily } from "@/hooks/useSales";
+import { useSalesYearly } from "@/hooks/useSales";
 
 const SalesChart = () => {
-  const { data: dailyData = [], isLoading } = useSalesDaily();
+  const { data: yearlyData = [], isLoading } = useSalesYearly();
 
   if (isLoading) {
     return (
       <Card className="shadow-card">
         <CardHeader>
         <CardTitle className="text-lg font-semibold text-foreground">
-          Ventes et bénéfices quotidiens
+          Ventes et bénéfices annuels
         </CardTitle>
         </CardHeader>
         <CardContent>
@@ -27,15 +27,15 @@ const SalesChart = () => {
     <Card className="shadow-card">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-foreground">
-          Ventes et bénéfices quotidiens
+          Ventes et bénéfices annuels
         </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={dailyData}>
+          <BarChart data={yearlyData}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis 
-              dataKey="day" 
+              dataKey="month" 
               stroke="hsl(var(--muted-foreground))"
               fontSize={12}
             />
