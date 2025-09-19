@@ -25,7 +25,7 @@ const BookingTypePieChart = () => {
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground">
-            Ventes par type (annuel)
+            Ventes par type ({new Date().getFullYear()})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -42,7 +42,7 @@ const BookingTypePieChart = () => {
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground">
-            Ventes par type (annuel)
+            Ventes par type ({new Date().getFullYear()})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -58,7 +58,7 @@ const BookingTypePieChart = () => {
     <Card className="shadow-card">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-foreground">
-          Ventes par type (annuel)
+          Ventes par type ({new Date().getFullYear()})
         </CardTitle>
       </CardHeader>
       <CardContent>

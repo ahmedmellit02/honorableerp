@@ -114,13 +114,13 @@ export const useAddSale = () => {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
       queryClient.invalidateQueries({ queryKey: ["sales-daily"] });
       queryClient.invalidateQueries({ queryKey: ["sales-by-type"] });
-      queryClient.invalidateQueries({ queryKey: ["sales-yearly"] });
+      queryClient.invalidateQueries({ queryKey: ["sales-daily-yearly"] });
       queryClient.invalidateQueries({ queryKey: ["sales-by-type-yearly"] });
       // Force refetch of all sales-related queries
       queryClient.refetchQueries({ queryKey: ["sales"] });
       queryClient.refetchQueries({ queryKey: ["sales-daily"] });
       queryClient.refetchQueries({ queryKey: ["sales-by-type"] });
-      queryClient.refetchQueries({ queryKey: ["sales-yearly"] });
+      queryClient.refetchQueries({ queryKey: ["sales-daily-yearly"] });
       queryClient.refetchQueries({ queryKey: ["sales-by-type-yearly"] });
     },
   });
@@ -291,6 +291,56 @@ export const useSalesByTypeYearly = () => {
         revenue: data.revenue,
         profit: data.totalProfit,
         color: colors[index] || `hsl(${(index * 137.5) % 360}, 70%, 50%)`
+      }));
+    },
+    enabled: !!user,
+  });
+};
+
+export const useSalesDailyYearly = () => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["sales-daily-yearly", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const currentYear = new Date().getFullYear();
+      const yearStart = `${currentYear}-01-01`;
+      const yearEnd = `${currentYear + 1}-01-01`;
+      
+      const { data, error } = await supabase
+        .from("sales")
+        .select("created_at, profit, selling_price")
+        .gte("created_at", yearStart)
+        .lt("created_at", yearEnd)
+        .order("created_at", { ascending: true });
+      
+      if (error) {
+        console.error("Error fetching yearly daily sales:", error);
+        throw error;
+      }
+      
+      // Group by day for current year
+      const dailyData = data.reduce((acc, sale) => {
+        const day = new Date(sale.created_at).toLocaleDateString('fr-FR', { 
+          day: '2-digit', 
+          month: 'short'
+        });
+        if (!acc[day]) {
+          acc[day] = { sales: 0, revenue: 0, profit: 0 };
+        }
+        acc[day].sales += 1;
+        acc[day].revenue += Number(sale.selling_price);
+        acc[day].profit += Number(sale.profit);
+        return acc;
+      }, {} as Record<string, { sales: number; revenue: number; profit: number }>);
+      
+      return Object.entries(dailyData).map(([day, data]) => ({
+        day,
+        sales: data.sales,
+        revenue: data.revenue,
+        profit: data.profit
       }));
     },
     enabled: !!user,
