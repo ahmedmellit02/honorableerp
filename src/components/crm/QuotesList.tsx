@@ -7,72 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, FileText, Calendar, DollarSign, Users } from 'lucide-react';
-
-interface Quote {
-  id: string;
-  quote_number: string;
-  prospect_name: string;
-  service_type: string;
-  destination: string;
-  departure_date?: string;
-  return_date?: string;
-  passengers_count: number;
-  total_amount: number;
-  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
-  valid_until?: string;
-  created_at: string;
-}
+import { useQuotes } from '@/hooks/useQuotes';
 
 export function QuotesList() {
   const { hasPermission } = usePermissions();
+  const { quotes, loading } = useQuotes();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-
-  // Mock data - will be replaced with real data from hooks
-  const mockQuotes: Quote[] = [
-    {
-      id: '1',
-      quote_number: 'Q-2024-0001',
-      prospect_name: 'Ahmed Benali',
-      service_type: 'Business Travel',
-      destination: 'Dubai, UAE',
-      departure_date: '2024-12-15',
-      return_date: '2024-12-20',
-      passengers_count: 1,
-      total_amount: 15000,
-      status: 'sent',
-      valid_until: '2024-12-01',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '2',
-      quote_number: 'Q-2024-0002',
-      prospect_name: 'Fatima El Mansouri',
-      service_type: 'Family Vacation',
-      destination: 'Turkey',
-      departure_date: '2024-11-10',
-      return_date: '2024-11-17',
-      passengers_count: 4,
-      total_amount: 32000,
-      status: 'draft',
-      valid_until: '2024-11-25',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '3',
-      quote_number: 'Q-2024-0003',
-      prospect_name: 'Omar Berrada',
-      service_type: 'Corporate Travel',
-      destination: 'Marrakech, Morocco',
-      departure_date: '2024-12-05',
-      return_date: '2024-12-08',
-      passengers_count: 25,
-      total_amount: 125000,
-      status: 'accepted',
-      valid_until: '2024-11-30',
-      created_at: new Date().toISOString()
-    }
-  ];
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -110,13 +51,29 @@ export function QuotesList() {
     }).format(amount);
   };
 
-  const filteredQuotes = mockQuotes.filter(quote => {
-    const matchesSearch = quote.prospect_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredQuotes = quotes.filter(quote => {
+    const matchesSearch = (quote.prospect_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          quote.quote_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         quote.destination.toLowerCase().includes(searchTerm.toLowerCase());
+                         (quote.destination || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || quote.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Devis</CardTitle>
+          <CardDescription>
+            Gérez les devis et propositions de voyage pour vos prospects
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-center py-8">
+          <p className="text-muted-foreground">Chargement des devis...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -194,15 +151,15 @@ export function QuotesList() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium">{quote.prospect_name}</div>
+                      <div className="font-medium">{quote.prospect_name || 'Prospect inconnu'}</div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{quote.service_type}</Badge>
+                      <Badge variant="outline">{quote.service_type || 'Service'}</Badge>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-sm">
-                          <span className="font-medium">{quote.destination}</span>
+                          <span className="font-medium">{quote.destination || 'Destination'}</span>
                         </div>
                         {quote.departure_date && (
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -215,14 +172,14 @@ export function QuotesList() {
                         )}
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Users className="h-3 w-3" />
-                          {quote.passengers_count} passager{quote.passengers_count > 1 ? 's' : ''}
+                          {quote.passengers_count || 1} passager{(quote.passengers_count || 1) > 1 ? 's' : ''}
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{formatCurrency(quote.total_amount)}</span>
+                        <span className="font-medium">{formatCurrency(quote.total_amount || 0)}</span>
                       </div>
                     </TableCell>
                     <TableCell>{getStatusBadge(quote.status)}</TableCell>

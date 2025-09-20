@@ -10,6 +10,36 @@ import { ActivityFeed } from '@/components/crm/ActivityFeed';
 import { QuotesList } from '@/components/crm/QuotesList';
 import { CRMMetrics } from '@/components/crm/CRMMetrics';
 import { AddProspectModal } from '@/components/crm/AddProspectModal';
+import { useCRMMetrics } from '@/hooks/useCRMMetrics';
+
+function PipelineStatus() {
+  const { metrics } = useCRMMetrics();
+  
+  if (!metrics) return null;
+
+  const statusLabels = {
+    new: 'Nouveau',
+    contacted: 'Contacté', 
+    qualified: 'Qualifié',
+    proposal_sent: 'Proposition Envoyée',
+    negotiation: 'Négociation',
+    won: 'Gagné',
+    lost: 'Perdu'
+  };
+
+  return (
+    <div className="space-y-3">
+      {Object.entries(statusLabels).map(([status, label]) => (
+        <div key={status} className="flex justify-between items-center">
+          <span className="text-sm">{label}</span>
+          <Badge variant={status === 'won' ? 'default' : status === 'new' ? 'secondary' : 'outline'}>
+            {metrics.prospectsByStatus[status] || 0}
+          </Badge>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function HonorableCRM() {
   const { hasPermission } = usePermissions();
@@ -92,28 +122,7 @@ export default function HonorableCRM() {
                 <CardDescription>Prospects par statut</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Nouveau</span>
-                    <Badge variant="secondary">12</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Contacté</span>
-                    <Badge variant="outline">8</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Qualifié</span>
-                    <Badge variant="outline">5</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Proposition Envoyée</span>
-                    <Badge variant="outline">3</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Gagné</span>
-                    <Badge variant="default">2</Badge>
-                  </div>
-                </div>
+                <PipelineStatus />
               </CardContent>
             </Card>
           </div>

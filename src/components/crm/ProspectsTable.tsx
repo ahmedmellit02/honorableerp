@@ -9,49 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Phone, Mail, Building, User } from 'lucide-react';
 import { useProspects } from '@/hooks/useProspects';
 
-interface Prospect {
-  id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  company?: string;
-  status: 'new' | 'contacted' | 'qualified' | 'proposal_sent' | 'negotiation' | 'won' | 'lost';
-  priority: 'low' | 'medium' | 'high';
-  source?: string;
-  created_at: string;
-}
-
 export function ProspectsTable() {
   const { hasPermission } = usePermissions();
-  const { prospects } = useProspects();
+  const { prospects, loading } = useProspects();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-
-  // Mock data - will be replaced with real data from hooks
-  const mockProspects: Prospect[] = [
-    {
-      id: '1',
-      name: 'Ahmed Benali',
-      email: 'ahmed@example.com',
-      phone: '+212-6-12-34-56-78',
-      company: 'Travel Solutions',
-      status: 'new',
-      priority: 'high',
-      source: 'Website',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '2',
-      name: 'Fatima El Mansouri',
-      email: 'fatima@company.com',
-      phone: '+212-6-87-65-43-21',
-      company: 'Business Corp',
-      status: 'contacted',
-      priority: 'medium',
-      source: 'Referral',
-      created_at: new Date().toISOString()
-    }
-  ];
 
   const getStatusBadge = (status: string) => {
     const variants = {

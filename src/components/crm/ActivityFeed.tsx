@@ -1,79 +1,15 @@
-import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Phone, Mail, Calendar, FileText, MessageSquare, Clock } from 'lucide-react';
-
-interface Activity {
-  id: string;
-  type: 'call' | 'email' | 'meeting' | 'note' | 'quote_sent' | 'follow_up';
-  prospect_name: string;
-  subject?: string;
-  description: string;
-  user_name: string;
-  created_at: string;
-  scheduled_at?: string;
-  completed_at?: string;
-}
+import { useActivities } from '@/hooks/useActivities';
 
 interface ActivityFeedProps {
   limit?: number;
 }
 
 export function ActivityFeed({ limit }: ActivityFeedProps) {
-  // Mock data - will be replaced with real data from hooks
-  const mockActivities: Activity[] = [
-    {
-      id: '1',
-      type: 'call',
-      prospect_name: 'Ahmed Benali',
-      subject: 'Initial consultation call',
-      description: 'Discussed travel requirements for business trip to Dubai. Interested in premium services.',
-      user_name: 'Sarah Manager',
-      created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 mins ago
-      completed_at: new Date(Date.now() - 1000 * 60 * 30).toISOString()
-    },
-    {
-      id: '2',
-      type: 'email',
-      prospect_name: 'Fatima El Mansouri',
-      subject: 'Travel proposal sent',
-      description: 'Sent detailed travel proposal for family vacation to Turkey including flights and accommodation.',
-      user_name: 'Ahmed Agent',
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-      completed_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString()
-    },
-    {
-      id: '3',
-      type: 'follow_up',
-      prospect_name: 'Mohammed Tazi',
-      subject: 'Follow up on quote',
-      description: 'Need to follow up on the Hajj package quote sent last week.',
-      user_name: 'Youssef Super Agent',
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(), // 4 hours ago
-      scheduled_at: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString() // Tomorrow
-    },
-    {
-      id: '4',
-      type: 'meeting',
-      prospect_name: 'Laila Benomar',
-      subject: 'In-person consultation',
-      description: 'Met with client to discuss honeymoon package to Maldives. Very interested, waiting for final decision.',
-      user_name: 'Khadija Cashier',
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(), // 6 hours ago
-      completed_at: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString()
-    },
-    {
-      id: '5',
-      type: 'quote_sent',
-      prospect_name: 'Omar Berrada',
-      subject: 'Corporate travel quote',
-      description: 'Sent comprehensive quote for company team building trip to Marrakech for 25 employees.',
-      user_name: 'Sarah Manager',
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(), // 8 hours ago
-      completed_at: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString()
-    }
-  ];
+  const { activities, loading } = useActivities();
 
   const getActivityIcon = (type: string) => {
     const icons = {
@@ -117,11 +53,21 @@ export function ActivityFeed({ limit }: ActivityFeedProps) {
     }
   };
 
-  const activities = limit ? mockActivities.slice(0, limit) : mockActivities;
+  const displayActivities = limit ? activities.slice(0, limit) : activities;
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="p-6 text-center">
+          <p className="text-muted-foreground">Chargement des activités...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      {activities.length === 0 ? (
+      {displayActivities.length === 0 ? (
         <Card>
           <CardContent className="p-6 text-center">
             <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
@@ -129,7 +75,7 @@ export function ActivityFeed({ limit }: ActivityFeedProps) {
           </CardContent>
         </Card>
       ) : (
-        activities.map((activity) => (
+        displayActivities.map((activity) => (
           <Card key={activity.id} className="p-4">
             <div className="flex gap-4">
               <div className={`p-2 rounded-full ${getActivityColor(activity.type)}`}>
@@ -172,11 +118,11 @@ export function ActivityFeed({ limit }: ActivityFeedProps) {
                   <div className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
                       <AvatarFallback className="text-xs">
-                        {activity.user_name.split(' ').map(n => n[0]).join('')}
+                        {(activity.user_name || 'U').split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
                     <span className="text-xs text-muted-foreground">
-                      {activity.user_name}
+                      {activity.user_name || 'Utilisateur'}
                     </span>
                   </div>
                   
