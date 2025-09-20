@@ -112,9 +112,6 @@ const AddSale = () => {
       newErrors.sellingPrice = "Le prix de vente doit être supérieur à 0";
     }
 
-    if (Number(formData.sellingPrice) <= Number(formData.buyingPrice)) {
-      newErrors.sellingPrice = "Le prix de vente doit être supérieur au prix d'achat";
-    }
 
     if (formData.type === "Flight Confirmed" && !formData.departureTime) {
       newErrors.departureTime = "L'heure de départ est requise pour les vols confirmés";
@@ -510,14 +507,20 @@ const AddSale = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Bénéfice (DH)</Label>
-                  <div className="h-10 px-3 py-2 border border-border rounded-md bg-muted flex items-center">
-                    <span className={`text-sm font-medium ${profit > 0 ? "text-success" : "text-muted-foreground"}`}>
-                      {profit > 0 ? `+${profit.toLocaleString()}` : "0"}
-                    </span>
+                  <div className="space-y-2">
+                    <Label>Bénéfice (DH)</Label>
+                    <div className="h-10 px-3 py-2 border border-border rounded-md bg-muted flex items-center">
+                      <span className={`text-sm font-medium ${
+                        profit > 0 ? "text-success" : 
+                        profit < 0 ? "text-destructive" : 
+                        "text-muted-foreground"
+                      }`}>
+                        {profit > 0 ? `+${profit.toLocaleString()}` : 
+                         profit < 0 ? `${profit.toLocaleString()}` : 
+                         "0"}
+                      </span>
+                    </div>
                   </div>
-                </div>
               </div>
 
               {/* Payment Method - hidden for Billet Omra */}
