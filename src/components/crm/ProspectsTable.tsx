@@ -135,7 +135,6 @@ export function ProspectsTable() {
             <TableHeader>
               <TableRow>
                 <TableHead>Prospect</TableHead>
-                <TableHead>Contact</TableHead>
                 <TableHead>Entreprise</TableHead>
                 <TableHead>Priorité</TableHead>
                 <TableHead>Source</TableHead>
@@ -145,7 +144,7 @@ export function ProspectsTable() {
             <TableBody>
               {filteredProspects.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8">
                     <div className="flex flex-col items-center gap-2">
                       <User className="h-8 w-8 text-muted-foreground" />
                       <p className="text-muted-foreground">Aucun prospect trouvé</p>
@@ -158,25 +157,15 @@ export function ProspectsTable() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{prospect.name.toUpperCase()}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Ajouté le {new Date(prospect.created_at).toLocaleDateString('fr-FR')}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        {prospect.email && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <Mail className="h-3 w-3" />
-                            {prospect.email}
-                          </div>
-                        )}
                         {prospect.phone && (
-                          <div className="flex items-center gap-2 text-sm">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                             <Phone className="h-3 w-3" />
                             {prospect.phone}
                           </div>
                         )}
+                        <p className="text-sm text-muted-foreground">
+                          Ajouté le {new Date(prospect.created_at).toLocaleDateString('fr-FR')}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
