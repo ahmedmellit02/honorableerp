@@ -113,8 +113,6 @@ export function ProspectsTable() {
             <SelectContent>
               <SelectItem value="all">Tous les Statuts</SelectItem>
               <SelectItem value="new">Nouveau</SelectItem>
-              <SelectItem value="contacted">Contacté</SelectItem>
-              <SelectItem value="qualified">Qualifié</SelectItem>
               <SelectItem value="proposal_sent">Proposition Envoyée</SelectItem>
               <SelectItem value="negotiation">Négociation</SelectItem>
               <SelectItem value="won">Gagné</SelectItem>
