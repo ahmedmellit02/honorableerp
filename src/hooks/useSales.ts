@@ -59,7 +59,7 @@ export const useAddSale = () => {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (saleData: SaleFormData) => {
+    mutationFn: async (saleData: SaleFormData & { negativeProfitReason?: string }) => {
       if (!user) throw new Error("User not authenticated");
 
       // Prepare the basic sale data
@@ -74,6 +74,7 @@ export const useAddSale = () => {
         agent: saleData.agent,
         destination: saleData.destination || null,
         payment_method: saleData.paymentMethod,
+        negative_profit_reason: saleData.negativeProfitReason || null,
       };
 
       // Add type-specific fields

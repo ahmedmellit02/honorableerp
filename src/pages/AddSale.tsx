@@ -63,6 +63,8 @@ const AddSale = () => {
     paymentMethod: undefined as any, // Placeholder to force selection
   });
 
+  const [negativeProfitReason, setNegativeProfitReason] = useState("");
+
   // Update agent when user changes
   useEffect(() => {
     setFormData(prev => ({
@@ -71,10 +73,10 @@ const AddSale = () => {
     }));
   }, [user?.email]);
 
-  const [errors, setErrors] = useState<Partial<Record<keyof SaleFormData | 'type' | 'system' | 'paymentMethod', string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof SaleFormData | 'type' | 'system' | 'paymentMethod' | 'negativeProfitReason', string>>>({});
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof SaleFormData | 'type' | 'system' | 'paymentMethod', string>> = {};
+    const newErrors: Partial<Record<keyof SaleFormData | 'type' | 'system' | 'paymentMethod' | 'negativeProfitReason', string>> = {};
 
     // Validate type selection
     if (!formData.type) {
@@ -131,6 +133,12 @@ const AddSale = () => {
       newErrors.toAirport = "L'aéroport d'arrivée doit être différent de l'aéroport de départ";
     }
 
+    // Validate negative profit reason
+    const profit = Number(formData.sellingPrice) - Number(formData.buyingPrice);
+    if (profit < 0 && !negativeProfitReason.trim()) {
+      newErrors.negativeProfitReason = "Veuillez expliquer pourquoi le bénéfice est négatif";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -169,7 +177,10 @@ const AddSale = () => {
 
     if (validateForm()) {
       try {
-        await addSaleMutation.mutateAsync(formData);
+        await addSaleMutation.mutateAsync({
+          ...formData,
+          negativeProfitReason: profit < 0 ? negativeProfitReason : undefined
+        });
 
         toast({
           title: "Vente enregistrée avec succès !",
@@ -521,7 +532,27 @@ const AddSale = () => {
                       </span>
                     </div>
                   </div>
-              </div>
+                </div>
+
+              {/* Negative Profit Reason - only shown when profit is negative */}
+              {profit < 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="negativeProfitReason">Raison du bénéfice négatif *</Label>
+                  <Input
+                    id="negativeProfitReason"
+                    value={negativeProfitReason}
+                    onChange={(e) => setNegativeProfitReason(e.target.value)}
+                    placeholder="Expliquez pourquoi le bénéfice est négatif..."
+                    className={errors.negativeProfitReason ? "border-destructive" : ""}
+                  />
+                  {errors.negativeProfitReason && (
+                    <p className="text-sm text-destructive">{errors.negativeProfitReason}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Cette information est requise lorsque le bénéfice est négatif
+                  </p>
+                </div>
+              )}
 
               {/* Payment Method - hidden for Billet Omra */}
               {formData.type !== "Billet Omra" && (

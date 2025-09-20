@@ -27,6 +27,7 @@ export interface Sale {
   cashedInBy?: string;
   bankTransferConfirmed?: boolean; // For V payments: manager confirms bank transfer first
   paymentMethod: "C" | "V"; // C for Cash, V for Virement (Bank Transfer)
+  negativeProfitReason?: string; // Reason when profit is negative
 }
 
 export interface SaleFormData {
@@ -50,4 +51,5 @@ export interface SaleFormData {
   // Legacy field for backward compatibility
   destination?: string;
   paymentMethod: "C" | "V"; // C for Cash, V for Virement (Bank Transfer)
+  negativeProfitReason?: string; // Reason when profit is negative
 }
