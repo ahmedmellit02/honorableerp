@@ -90,6 +90,15 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
       return;
     }
 
+    if (!formData.phone.trim()) {
+      toast({
+        title: "Erreur de Validation",
+        description: "Le téléphone du prospect est requis.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     
     try {
@@ -178,12 +187,13 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Téléphone</Label>
+                <Label htmlFor="phone">Téléphone *</Label>
                 <Input
                   id="phone"
                   placeholder="+212-6-XX-XX-XX-XX"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
+                  required
                 />
               </div>
             </div>
