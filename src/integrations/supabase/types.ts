@@ -230,6 +230,7 @@ export type Database = {
           from_airport: string | null
           has_registration: boolean | null
           id: string
+          negative_profit_reason: string | null
           numeric_id: number
           payment_method: string
           phone_number: string
@@ -259,6 +260,7 @@ export type Database = {
           from_airport?: string | null
           has_registration?: boolean | null
           id?: string
+          negative_profit_reason?: string | null
           numeric_id?: number
           payment_method?: string
           phone_number: string
@@ -288,6 +290,7 @@ export type Database = {
           from_airport?: string | null
           has_registration?: boolean | null
           id?: string
+          negative_profit_reason?: string | null
           numeric_id?: number
           payment_method?: string
           phone_number?: string
