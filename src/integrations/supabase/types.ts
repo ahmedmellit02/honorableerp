@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          id: string
+          prospect_id: string
+          scheduled_at: string | null
+          subject: string | null
+          type: Database["public"]["Enums"]["activity_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          prospect_id: string
+          scheduled_at?: string | null
+          subject?: string | null
+          type: Database["public"]["Enums"]["activity_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          prospect_id?: string
+          scheduled_at?: string | null
+          subject?: string | null
+          type?: Database["public"]["Enums"]["activity_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_settings: {
         Row: {
           agency_address: string | null
@@ -214,6 +261,122 @@ export type Database = {
           },
         ]
       }
+      prospects: {
+        Row: {
+          assigned_to: string | null
+          budget_range: string | null
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          priority: Database["public"]["Enums"]["prospect_priority"]
+          source: string | null
+          status: Database["public"]["Enums"]["prospect_status"]
+          travel_preferences: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          budget_range?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          priority?: Database["public"]["Enums"]["prospect_priority"]
+          source?: string | null
+          status?: Database["public"]["Enums"]["prospect_status"]
+          travel_preferences?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          budget_range?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          priority?: Database["public"]["Enums"]["prospect_priority"]
+          source?: string | null
+          status?: Database["public"]["Enums"]["prospect_status"]
+          travel_preferences?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quotes: {
+        Row: {
+          created_at: string
+          departure_date: string | null
+          destination: string | null
+          id: string
+          notes: string | null
+          passengers_count: number | null
+          prospect_id: string
+          quote_number: string
+          return_date: string | null
+          service_type: string | null
+          status: Database["public"]["Enums"]["quote_status"]
+          total_amount: number | null
+          updated_at: string
+          user_id: string
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          departure_date?: string | null
+          destination?: string | null
+          id?: string
+          notes?: string | null
+          passengers_count?: number | null
+          prospect_id: string
+          quote_number: string
+          return_date?: string | null
+          service_type?: string | null
+          status?: Database["public"]["Enums"]["quote_status"]
+          total_amount?: number | null
+          updated_at?: string
+          user_id: string
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          departure_date?: string | null
+          destination?: string | null
+          id?: string
+          notes?: string | null
+          passengers_count?: number | null
+          prospect_id?: string
+          quote_number?: string
+          return_date?: string | null
+          service_type?: string | null
+          status?: Database["public"]["Enums"]["quote_status"]
+          total_amount?: number | null
+          updated_at?: string
+          user_id?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sales: {
         Row: {
           agent: string
@@ -353,6 +516,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      generate_quote_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_all_system_balances: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -435,6 +602,13 @@ export type Database = {
       }
     }
     Enums: {
+      activity_type:
+        | "call"
+        | "email"
+        | "meeting"
+        | "note"
+        | "quote_sent"
+        | "follow_up"
       app_role:
         | "agent"
         | "cashier"
@@ -442,6 +616,16 @@ export type Database = {
         | "super_agent"
         | "supplier_accelaero"
         | "supplier_ttp"
+      prospect_priority: "low" | "medium" | "high"
+      prospect_status:
+        | "new"
+        | "contacted"
+        | "qualified"
+        | "proposal_sent"
+        | "negotiation"
+        | "won"
+        | "lost"
+      quote_status: "draft" | "sent" | "accepted" | "rejected" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -569,6 +753,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      activity_type: [
+        "call",
+        "email",
+        "meeting",
+        "note",
+        "quote_sent",
+        "follow_up",
+      ],
       app_role: [
         "agent",
         "cashier",
@@ -577,6 +769,17 @@ export const Constants = {
         "supplier_accelaero",
         "supplier_ttp",
       ],
+      prospect_priority: ["low", "medium", "high"],
+      prospect_status: [
+        "new",
+        "contacted",
+        "qualified",
+        "proposal_sent",
+        "negotiation",
+        "won",
+        "lost",
+      ],
+      quote_status: ["draft", "sent", "accepted", "rejected", "expired"],
     },
   },
 } as const

@@ -17,7 +17,19 @@ export type Permission =
   | 'view_sales_by_type'
   | 'add_balance'
   | 'view_supplier_balance'
-  | 'view_supplier_sales';
+  | 'view_supplier_sales'
+  | 'view_crm_dashboard'
+  | 'view_all_prospects'
+  | 'view_assigned_prospects'
+  | 'create_prospects'
+  | 'edit_prospects'
+  | 'assign_prospects'
+  | 'view_all_activities'
+  | 'create_activities'
+  | 'create_quotes'
+  | 'approve_quotes'
+  | 'view_crm_analytics'
+  | 'convert_to_sale';
 
 export type UserRole = 
   | 'manager'
@@ -76,7 +88,18 @@ export const usePermissions = () => {
         'view_daily_sales',
         'view_top_services',
         'view_agent_performance',
-        'view_recent_sales'
+        'view_recent_sales',
+        'view_crm_dashboard',
+        'view_all_prospects',
+        'create_prospects',
+        'edit_prospects',
+        'assign_prospects',
+        'view_all_activities',
+        'create_activities',
+        'create_quotes',
+        'approve_quotes',
+        'view_crm_analytics',
+        'convert_to_sale'
       ],
       cashier: [
         'view_dashboard',
@@ -89,7 +112,18 @@ export const usePermissions = () => {
         'view_recent_sales',
         'add_sale',
         'cash_in_sale',
-        'control_balance'
+        'control_balance',
+        'view_crm_dashboard',
+        'view_all_prospects',
+        'create_prospects',
+        'edit_prospects',
+        'assign_prospects',
+        'view_all_activities',
+        'create_activities',
+        'create_quotes',
+        'approve_quotes',
+        'view_crm_analytics',
+        'convert_to_sale'
       ],
       super_agent: [
         'view_dashboard',
@@ -100,7 +134,15 @@ export const usePermissions = () => {
         'view_top_services',
         'view_agent_performance',
         'view_recent_sales',
-        'add_sale'
+        'add_sale',
+        'view_crm_dashboard',
+        'view_assigned_prospects',
+        'create_prospects',
+        'edit_prospects',
+        'create_activities',
+        'create_quotes',
+        'view_crm_analytics',
+        'convert_to_sale'
       ],
       agent: [
         'view_daily_stats',
@@ -110,15 +152,27 @@ export const usePermissions = () => {
         'view_top_services',
         'view_agent_performance',
         'view_recent_sales',
-        'add_balance'
+        'add_balance',
+        'view_crm_dashboard',
+        'view_assigned_prospects',
+        'create_activities',
+        'create_quotes'
       ],
       supplier_accelaero: [
         'view_supplier_balance',
-        'view_supplier_sales'
+        'view_supplier_sales',
+        'view_crm_dashboard',
+        'view_assigned_prospects',
+        'create_activities',
+        'create_quotes'
       ],
       supplier_ttp: [
         'view_supplier_balance',
-        'view_supplier_sales'
+        'view_supplier_sales',
+        'view_crm_dashboard',
+        'view_assigned_prospects',
+        'create_activities',
+        'create_quotes'
       ]
     };
 
