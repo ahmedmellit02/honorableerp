@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Phone, Mail, Building, User, Plus } from 'lucide-react';
 import { AddProspectModal } from './AddProspectModal';
+import { ViewProspectModal } from './ViewProspectModal';
+import { AddActivityModal } from './AddActivityModal';
 
 export function ProspectsTable() {
   const { hasPermission } = usePermissions();
@@ -16,6 +18,9 @@ export function ProspectsTable() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showActivityModal, setShowActivityModal] = useState(false);
+  const [selectedProspect, setSelectedProspect] = useState<any>(null);
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -194,11 +199,25 @@ export function ProspectsTable() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedProspect(prospect);
+                            setShowViewModal(true);
+                          }}
+                        >
                           Voir
                         </Button>
                         {hasPermission('create_activities') && (
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              setSelectedProspect(prospect);
+                              setShowActivityModal(true);
+                            }}
+                          >
                             Activité
                           </Button>
                         )}
@@ -218,6 +237,22 @@ export function ProspectsTable() {
         onProspectAdded={() => {
           refetch();
           setShowAddModal(false);
+        }}
+      />
+
+      <ViewProspectModal
+        open={showViewModal}
+        onOpenChange={setShowViewModal}
+        prospect={selectedProspect}
+      />
+
+      <AddActivityModal
+        open={showActivityModal}
+        onOpenChange={setShowActivityModal}
+        prospect={selectedProspect}
+        onActivityAdded={() => {
+          setShowActivityModal(false);
+          setSelectedProspect(null);
         }}
       />
     </Card>
