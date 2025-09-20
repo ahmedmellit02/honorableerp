@@ -16,6 +16,43 @@ export function CRMMetrics() {
   };
 
   const getMetricCards = () => {
+    if (loading || !metrics) {
+      return [
+        {
+          title: 'Total Prospects',
+          value: '...',
+          description: 'Chargement...',
+          icon: Users,
+          trend: 'neutral' as const,
+          show: hasPermission('view_crm_analytics') || hasPermission('view_assigned_prospects')
+        },
+        {
+          title: 'Devis Actifs',
+          value: '...',
+          description: 'Chargement...',
+          icon: FileText,
+          trend: 'neutral' as const,
+          show: hasPermission('create_quotes')
+        },
+        {
+          title: 'Valeur Pipeline',
+          value: '...',
+          description: 'Chargement...',
+          icon: DollarSign,
+          trend: 'neutral' as const,
+          show: hasPermission('view_crm_analytics')
+        },
+        {
+          title: 'Taux de Conversion',
+          value: '...',
+          description: 'Chargement...',
+          icon: Target,
+          trend: 'neutral' as const,
+          show: hasPermission('view_crm_analytics')
+        }
+      ].filter(card => card.show);
+    }
+
     const baseCards: Array<{
       title: string;
       value: string;
@@ -26,7 +63,7 @@ export function CRMMetrics() {
     }> = [
       {
         title: 'Total Prospects',
-        value: loading ? '...' : metrics.totalProspects.toString(),
+        value: metrics.totalProspects.toString(),
         description: `+${metrics.newThisMonth} ce mois`,
         icon: Users,
         trend: 'up',
@@ -34,7 +71,7 @@ export function CRMMetrics() {
       },
       {
         title: 'Devis Actifs',
-        value: loading ? '...' : metrics.activeQuotes.toString(),
+        value: metrics.activeQuotes.toString(),
         description: `${metrics.totalQuotes} devis total`,
         icon: FileText,
         trend: 'up',
@@ -42,7 +79,7 @@ export function CRMMetrics() {
       },
       {
         title: 'Valeur Pipeline',
-        value: loading ? '...' : formatCurrency(metrics.pipelineValue),
+        value: formatCurrency(metrics.pipelineValue),
         description: `Moy: ${formatCurrency(metrics.avgDealSize)}`,
         icon: DollarSign,
         trend: 'up',
@@ -50,7 +87,7 @@ export function CRMMetrics() {
       },
       {
         title: 'Taux de Conversion',
-        value: loading ? '...' : `${metrics.conversionRate.toFixed(1)}%`,
+        value: `${metrics.conversionRate.toFixed(1)}%`,
         description: `${metrics.wonDeals} affaires gagnées`,
         icon: Target,
         trend: 'up',
@@ -68,7 +105,7 @@ export function CRMMetrics() {
     }> = [
       {
         title: 'Mes Prospects',
-        value: loading ? '...' : metrics.myProspects.toString(),
+        value: metrics.myProspects.toString(),
         description: `+${metrics.myNewThisWeek} cette semaine`,
         icon: Users,
         trend: 'up',
@@ -76,7 +113,7 @@ export function CRMMetrics() {
       },
       {
         title: 'Mes Activités',
-        value: loading ? '...' : metrics.activitiesThisWeek.toString(),
+        value: metrics.activitiesThisWeek.toString(),
         description: 'Cette semaine',
         icon: Activity,
         trend: 'up',
@@ -84,7 +121,7 @@ export function CRMMetrics() {
       },
       {
         title: 'Suivis à Faire',
-        value: loading ? '...' : metrics.upcomingFollowUps.toString(),
+        value: metrics.upcomingFollowUps.toString(),
         description: '7 prochains jours',
         icon: Calendar,
         trend: 'neutral',
