@@ -21,9 +21,9 @@ export default function HonorableCRM() {
       <div className="flex items-center justify-center min-h-screen">
         <Card className="w-96">
           <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
+            <CardTitle>Accès Refusé</CardTitle>
             <CardDescription>
-              You don't have permission to access the CRM system.
+              Vous n'avez pas l'autorisation d'accéder au système CRM.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -38,13 +38,13 @@ export default function HonorableCRM() {
         <div>
           <h1 className="text-3xl font-bold">HonorableCRM</h1>
           <p className="text-muted-foreground">
-            Manage prospects, activities, and grow your travel business
+            Gérez vos prospects, activités et développez votre agence de voyage
           </p>
         </div>
         {hasPermission('create_prospects') && (
           <Button onClick={() => setShowAddProspect(true)} className="gap-2">
             <Plus className="h-4 w-4" />
-            Add Prospect
+            Ajouter Prospect
           </Button>
         )}
       </div>
@@ -54,7 +54,7 @@ export default function HonorableCRM() {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview" className="gap-2">
             <TrendingUp className="h-4 w-4" />
-            Overview
+            Vue d'ensemble
           </TabsTrigger>
           <TabsTrigger value="prospects" className="gap-2">
             <Users className="h-4 w-4" />
@@ -62,11 +62,11 @@ export default function HonorableCRM() {
           </TabsTrigger>
           <TabsTrigger value="activities" className="gap-2">
             <Activity className="h-4 w-4" />
-            Activities
+            Activités
           </TabsTrigger>
           <TabsTrigger value="quotes" className="gap-2">
             <FileText className="h-4 w-4" />
-            Quotes
+            Devis
           </TabsTrigger>
         </TabsList>
 
@@ -78,7 +78,7 @@ export default function HonorableCRM() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="h-5 w-5" />
-                  Recent Activities
+                  Activités Récentes
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -88,29 +88,29 @@ export default function HonorableCRM() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Pipeline Status</CardTitle>
-                <CardDescription>Prospects by status</CardDescription>
+                <CardTitle>État du Pipeline</CardTitle>
+                <CardDescription>Prospects par statut</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">New</span>
+                    <span className="text-sm">Nouveau</span>
                     <Badge variant="secondary">12</Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Contacted</span>
+                    <span className="text-sm">Contacté</span>
                     <Badge variant="outline">8</Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Qualified</span>
+                    <span className="text-sm">Qualifié</span>
                     <Badge variant="outline">5</Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Proposal Sent</span>
+                    <span className="text-sm">Proposition Envoyée</span>
                     <Badge variant="outline">3</Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Won</span>
+                    <span className="text-sm">Gagné</span>
                     <Badge variant="default">2</Badge>
                   </div>
                 </div>
@@ -126,9 +126,9 @@ export default function HonorableCRM() {
         <TabsContent value="activities">
           <Card>
             <CardHeader>
-              <CardTitle>Activity Timeline</CardTitle>
+              <CardTitle>Chronologie des Activités</CardTitle>
               <CardDescription>
-                All activities and interactions with prospects
+                Toutes les activités et interactions avec les prospects
               </CardDescription>
             </CardHeader>
             <CardContent>

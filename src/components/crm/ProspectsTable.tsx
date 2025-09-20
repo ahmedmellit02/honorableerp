@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Phone, Mail, Building, User } from 'lucide-react';
+import { useProspects } from '@/hooks/useProspects';
 
 interface Prospect {
   id: string;
@@ -22,6 +23,7 @@ interface Prospect {
 
 export function ProspectsTable() {
   const { hasPermission } = usePermissions();
+  const { prospects } = useProspects();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
@@ -64,7 +66,14 @@ export function ProspectsTable() {
 
     return (
       <Badge variant={variants[status as keyof typeof variants] || 'secondary'}>
-        {status.replace('_', ' ').toUpperCase()}
+        {status === 'new' ? 'NOUVEAU' :
+         status === 'contacted' ? 'CONTACTÉ' :
+         status === 'qualified' ? 'QUALIFIÉ' :
+         status === 'proposal_sent' ? 'PROPOSITION ENVOYÉE' :
+         status === 'negotiation' ? 'NÉGOCIATION' :
+         status === 'won' ? 'GAGNÉ' :
+         status === 'lost' ? 'PERDU' :
+         status.replace('_', ' ').toUpperCase()}
       </Badge>
     );
   };
@@ -78,12 +87,15 @@ export function ProspectsTable() {
 
     return (
       <Badge className={colors[priority as keyof typeof colors] || colors.medium}>
-        {priority.toUpperCase()}
+        {priority === 'low' ? 'FAIBLE' :
+         priority === 'medium' ? 'MOYEN' :
+         priority === 'high' ? 'ÉLEVÉ' :
+         priority.toUpperCase()}
       </Badge>
     );
   };
 
-  const filteredProspects = mockProspects.filter(prospect => {
+  const filteredProspects = prospects.filter(prospect => {
     const matchesSearch = prospect.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          prospect.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          prospect.company?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -96,7 +108,7 @@ export function ProspectsTable() {
       <CardHeader>
         <CardTitle>Prospects</CardTitle>
         <CardDescription>
-          Manage your sales prospects and potential clients
+          Gérez vos prospects et clients potentiels
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -105,7 +117,7 @@ export function ProspectsTable() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search prospects..."
+              placeholder="Rechercher prospects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -113,17 +125,17 @@ export function ProspectsTable() {
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by status" />
+              <SelectValue placeholder="Filtrer par statut" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="new">New</SelectItem>
-              <SelectItem value="contacted">Contacted</SelectItem>
-              <SelectItem value="qualified">Qualified</SelectItem>
-              <SelectItem value="proposal_sent">Proposal Sent</SelectItem>
-              <SelectItem value="negotiation">Negotiation</SelectItem>
-              <SelectItem value="won">Won</SelectItem>
-              <SelectItem value="lost">Lost</SelectItem>
+              <SelectItem value="all">Tous les Statuts</SelectItem>
+              <SelectItem value="new">Nouveau</SelectItem>
+              <SelectItem value="contacted">Contacté</SelectItem>
+              <SelectItem value="qualified">Qualifié</SelectItem>
+              <SelectItem value="proposal_sent">Proposition Envoyée</SelectItem>
+              <SelectItem value="negotiation">Négociation</SelectItem>
+              <SelectItem value="won">Gagné</SelectItem>
+              <SelectItem value="lost">Perdu</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -135,9 +147,9 @@ export function ProspectsTable() {
               <TableRow>
                 <TableHead>Prospect</TableHead>
                 <TableHead>Contact</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Priority</TableHead>
+                <TableHead>Entreprise</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead>Priorité</TableHead>
                 <TableHead>Source</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -148,7 +160,7 @@ export function ProspectsTable() {
                   <TableCell colSpan={7} className="text-center py-8">
                     <div className="flex flex-col items-center gap-2">
                       <User className="h-8 w-8 text-muted-foreground" />
-                      <p className="text-muted-foreground">No prospects found</p>
+                      <p className="text-muted-foreground">Aucun prospect trouvé</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -159,7 +171,7 @@ export function ProspectsTable() {
                       <div>
                         <p className="font-medium">{prospect.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Added {new Date(prospect.created_at).toLocaleDateString()}
+                          Ajouté le {new Date(prospect.created_at).toLocaleDateString('fr-FR')}
                         </p>
                       </div>
                     </TableCell>
@@ -195,11 +207,11 @@ export function ProspectsTable() {
                     <TableCell>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">
-                          View
+                          Voir
                         </Button>
                         {hasPermission('create_activities') && (
                           <Button variant="outline" size="sm">
-                            Activity
+                            Activité
                           </Button>
                         )}
                       </div>

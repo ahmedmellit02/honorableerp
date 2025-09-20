@@ -125,7 +125,7 @@ export function ActivityFeed({ limit }: ActivityFeedProps) {
         <Card>
           <CardContent className="p-6 text-center">
             <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-muted-foreground">No activities yet</p>
+            <p className="text-muted-foreground">Aucune activité pour le moment</p>
           </CardContent>
         </Card>
       ) : (
@@ -141,9 +141,19 @@ export function ActivityFeed({ limit }: ActivityFeedProps) {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{activity.prospect_name}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {activity.type.replace('_', ' ').toUpperCase()}
-                      </Badge>
+                       <Badge variant="outline" className="text-xs">
+                         {(() => {
+                           switch (activity.type) {
+                             case 'call': return 'APPEL';
+                             case 'email': return 'EMAIL';
+                             case 'meeting': return 'RÉUNION';
+                             case 'note': return 'NOTE';
+                             case 'quote_sent': return 'DEVIS ENVOYÉ';
+                             case 'follow_up': return 'SUIVI';
+                             default: return (activity.type as string).replace('_', ' ').toUpperCase();
+                           }
+                         })()}
+                       </Badge>
                     </div>
                     {activity.subject && (
                       <p className="text-sm text-muted-foreground mt-1">
@@ -172,7 +182,7 @@ export function ActivityFeed({ limit }: ActivityFeedProps) {
                   
                   {activity.scheduled_at && !activity.completed_at && (
                     <Badge variant="outline" className="text-xs">
-                      Scheduled: {new Date(activity.scheduled_at).toLocaleDateString()}
+                      Programmé: {new Date(activity.scheduled_at).toLocaleDateString('fr-FR')}
                     </Badge>
                   )}
                 </div>

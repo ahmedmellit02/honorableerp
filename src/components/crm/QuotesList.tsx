@@ -93,7 +93,12 @@ export function QuotesList() {
 
     return (
       <Badge className={colors[status as keyof typeof colors] || colors.draft}>
-        {status.toUpperCase()}
+        {status === 'draft' ? 'BROUILLON' :
+         status === 'sent' ? 'ENVOYÉ' :
+         status === 'accepted' ? 'ACCEPTÉ' :
+         status === 'rejected' ? 'REJETÉ' :
+         status === 'expired' ? 'EXPIRÉ' :
+         status.toUpperCase()}
       </Badge>
     );
   };
@@ -116,9 +121,9 @@ export function QuotesList() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Quotes</CardTitle>
+        <CardTitle>Devis</CardTitle>
         <CardDescription>
-          Manage travel quotes and proposals for prospects
+          Gérez les devis et propositions de voyage pour vos prospects
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -127,7 +132,7 @@ export function QuotesList() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search quotes..."
+              placeholder="Rechercher devis..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -135,21 +140,21 @@ export function QuotesList() {
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by status" />
+              <SelectValue placeholder="Filtrer par statut" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="sent">Sent</SelectItem>
-              <SelectItem value="accepted">Accepted</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-              <SelectItem value="expired">Expired</SelectItem>
+              <SelectItem value="all">Tous les Statuts</SelectItem>
+              <SelectItem value="draft">Brouillon</SelectItem>
+              <SelectItem value="sent">Envoyé</SelectItem>
+              <SelectItem value="accepted">Accepté</SelectItem>
+              <SelectItem value="rejected">Rejeté</SelectItem>
+              <SelectItem value="expired">Expiré</SelectItem>
             </SelectContent>
           </Select>
           {hasPermission('create_quotes') && (
             <Button className="gap-2">
               <FileText className="h-4 w-4" />
-              New Quote
+              Nouveau Devis
             </Button>
           )}
         </div>
@@ -159,13 +164,13 @@ export function QuotesList() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Quote #</TableHead>
+                <TableHead>Devis #</TableHead>
                 <TableHead>Prospect</TableHead>
                 <TableHead>Service</TableHead>
-                <TableHead>Travel Details</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Valid Until</TableHead>
+                <TableHead>Détails Voyage</TableHead>
+                <TableHead>Montant</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead>Valide Jusqu'au</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -175,7 +180,7 @@ export function QuotesList() {
                   <TableCell colSpan={8} className="text-center py-8">
                     <div className="flex flex-col items-center gap-2">
                       <FileText className="h-8 w-8 text-muted-foreground" />
-                      <p className="text-muted-foreground">No quotes found</p>
+                      <p className="text-muted-foreground">Aucun devis trouvé</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -185,7 +190,7 @@ export function QuotesList() {
                     <TableCell>
                       <div className="font-medium">{quote.quote_number}</div>
                       <div className="text-sm text-muted-foreground">
-                        {new Date(quote.created_at).toLocaleDateString()}
+                        {new Date(quote.created_at).toLocaleDateString('fr-FR')}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -202,15 +207,15 @@ export function QuotesList() {
                         {quote.departure_date && (
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Calendar className="h-3 w-3" />
-                            {new Date(quote.departure_date).toLocaleDateString()}
+                            {new Date(quote.departure_date).toLocaleDateString('fr-FR')}
                             {quote.return_date && (
-                              <span>- {new Date(quote.return_date).toLocaleDateString()}</span>
+                              <span>- {new Date(quote.return_date).toLocaleDateString('fr-FR')}</span>
                             )}
                           </div>
                         )}
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Users className="h-3 w-3" />
-                          {quote.passengers_count} passenger{quote.passengers_count > 1 ? 's' : ''}
+                          {quote.passengers_count} passager{quote.passengers_count > 1 ? 's' : ''}
                         </div>
                       </div>
                     </TableCell>
@@ -224,7 +229,7 @@ export function QuotesList() {
                     <TableCell>
                       {quote.valid_until ? (
                         <span className="text-sm">
-                          {new Date(quote.valid_until).toLocaleDateString()}
+                          {new Date(quote.valid_until).toLocaleDateString('fr-FR')}
                         </span>
                       ) : (
                         '-'
@@ -233,16 +238,16 @@ export function QuotesList() {
                     <TableCell>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">
-                          View
+                          Voir
                         </Button>
                         {quote.status === 'draft' && hasPermission('create_quotes') && (
                           <Button variant="outline" size="sm">
-                            Send
+                            Envoyer
                           </Button>
                         )}
                         {quote.status === 'accepted' && hasPermission('convert_to_sale') && (
                           <Button variant="default" size="sm">
-                            Convert
+                            Convertir
                           </Button>
                         )}
                       </div>

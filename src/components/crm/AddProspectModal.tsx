@@ -44,8 +44,8 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
     
     if (!hasPermission('create_prospects')) {
       toast({
-        title: "Access Denied",
-        description: "You don't have permission to create prospects.",
+        title: "Accès Refusé",
+        description: "Vous n'avez pas l'autorisation de créer des prospects.",
         variant: "destructive"
       });
       return;
@@ -53,8 +53,8 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
 
     if (!formData.name.trim()) {
       toast({
-        title: "Validation Error",
-        description: "Prospect name is required.",
+        title: "Erreur de Validation",
+        description: "Le nom du prospect est requis.",
         variant: "destructive"
       });
       return;
@@ -67,8 +67,8 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       
       toast({
-        title: "Success",
-        description: "Prospect added successfully!"
+        title: "Succès",
+        description: "Prospect ajouté avec succès!"
       });
       
       // Reset form
@@ -86,8 +86,8 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
       onOpenChange(false);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to add prospect. Please try again.",
+        title: "Erreur",
+        description: "Impossible d'ajouter le prospect. Veuillez réessayer.",
         variant: "destructive"
       });
     } finally {
@@ -103,9 +103,9 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add New Prospect</DialogTitle>
+          <DialogTitle>Ajouter un Nouveau Prospect</DialogTitle>
           <DialogDescription>
-            Add a new potential client to your CRM system.
+            Ajoutez un nouveau client potentiel à votre système CRM.
           </DialogDescription>
         </DialogHeader>
         
@@ -113,10 +113,10 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
           <div className="grid gap-4">
             {/* Name - Required */}
             <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="name">Nom *</Label>
               <Input
                 id="name"
-                placeholder="Enter prospect name"
+                placeholder="Entrez le nom du prospect"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 required
@@ -130,13 +130,13 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
                 <Input
                   id="email"
                   type="email"
-                  placeholder="email@example.com"
+                  placeholder="email@exemple.com"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">Téléphone</Label>
                 <Input
                   id="phone"
                   placeholder="+212-6-XX-XX-XX-XX"
@@ -148,10 +148,10 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
 
             {/* Company */}
             <div className="space-y-2">
-              <Label htmlFor="company">Company</Label>
+              <Label htmlFor="company">Entreprise</Label>
               <Input
                 id="company"
-                placeholder="Company name"
+                placeholder="Nom de l'entreprise"
                 value={formData.company}
                 onChange={(e) => handleInputChange('company', e.target.value)}
               />
@@ -163,30 +163,30 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
                 <Label htmlFor="source">Source</Label>
                 <Select value={formData.source} onValueChange={(value) => handleInputChange('source', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="How did they find us?" />
+                    <SelectValue placeholder="Comment nous ont-ils trouvés ?" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="website">Website</SelectItem>
-                    <SelectItem value="referral">Referral</SelectItem>
-                    <SelectItem value="social_media">Social Media</SelectItem>
-                    <SelectItem value="phone_call">Phone Call</SelectItem>
-                    <SelectItem value="walk_in">Walk-in</SelectItem>
-                    <SelectItem value="advertisement">Advertisement</SelectItem>
-                    <SelectItem value="partner">Partner</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="website">Site Web</SelectItem>
+                    <SelectItem value="referral">Recommandation</SelectItem>
+                    <SelectItem value="social_media">Réseaux Sociaux</SelectItem>
+                    <SelectItem value="phone_call">Appel Téléphonique</SelectItem>
+                    <SelectItem value="walk_in">Visite Spontanée</SelectItem>
+                    <SelectItem value="advertisement">Publicité</SelectItem>
+                    <SelectItem value="partner">Partenaire</SelectItem>
+                    <SelectItem value="other">Autre</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
+                <Label htmlFor="priority">Priorité</Label>
                 <Select value={formData.priority} onValueChange={(value: 'low' | 'medium' | 'high') => handleInputChange('priority', value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="low">Faible</SelectItem>
+                    <SelectItem value="medium">Moyen</SelectItem>
+                    <SelectItem value="high">Élevé</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -194,18 +194,18 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
 
             {/* Budget Range */}
             <div className="space-y-2">
-              <Label htmlFor="budget_range">Budget Range</Label>
+              <Label htmlFor="budget_range">Gamme de Budget</Label>
               <Select value={formData.budget_range} onValueChange={(value) => handleInputChange('budget_range', value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select budget range" />
+                  <SelectValue placeholder="Sélectionnez la gamme de budget" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="under_5000">Under 5,000 MAD</SelectItem>
-                  <SelectItem value="5000_15000">5,000 - 15,000 MAD</SelectItem>
-                  <SelectItem value="15000_30000">15,000 - 30,000 MAD</SelectItem>
-                  <SelectItem value="30000_50000">30,000 - 50,000 MAD</SelectItem>
-                  <SelectItem value="50000_100000">50,000 - 100,000 MAD</SelectItem>
-                  <SelectItem value="over_100000">Over 100,000 MAD</SelectItem>
+                  <SelectItem value="under_5000">Moins de 5 000 MAD</SelectItem>
+                  <SelectItem value="5000_15000">5 000 - 15 000 MAD</SelectItem>
+                  <SelectItem value="15000_30000">15 000 - 30 000 MAD</SelectItem>
+                  <SelectItem value="30000_50000">30 000 - 50 000 MAD</SelectItem>
+                  <SelectItem value="50000_100000">50 000 - 100 000 MAD</SelectItem>
+                  <SelectItem value="over_100000">Plus de 100 000 MAD</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -215,7 +215,7 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
               <Label htmlFor="notes">Notes</Label>
               <Textarea
                 id="notes"
-                placeholder="Additional notes about the prospect..."
+                placeholder="Notes supplémentaires sur le prospect..."
                 value={formData.notes}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
                 rows={3}
@@ -225,11 +225,11 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              Annuler
             </Button>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Add Prospect
+              Ajouter Prospect
             </Button>
           </DialogFooter>
         </form>

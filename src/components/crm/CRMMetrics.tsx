@@ -39,31 +39,31 @@ export function CRMMetrics() {
       {
         title: 'Total Prospects',
         value: mockMetrics.totalProspects.toString(),
-        description: `+${mockMetrics.newThisMonth} this month`,
+        description: `+${mockMetrics.newThisMonth} ce mois`,
         icon: Users,
         trend: 'up',
         show: hasPermission('view_crm_analytics') || hasPermission('view_assigned_prospects')
       },
       {
-        title: 'Active Quotes',
+        title: 'Devis Actifs',
         value: mockMetrics.activeQuotes.toString(),
-        description: `${mockMetrics.totalQuotes} total quotes`,
+        description: `${mockMetrics.totalQuotes} devis total`,
         icon: FileText,
         trend: 'up',
         show: hasPermission('create_quotes')
       },
       {
-        title: 'Pipeline Value',
+        title: 'Valeur Pipeline',
         value: formatCurrency(mockMetrics.pipelineValue),
-        description: `Avg: ${formatCurrency(mockMetrics.avgDealSize)}`,
+        description: `Moy: ${formatCurrency(mockMetrics.avgDealSize)}`,
         icon: DollarSign,
         trend: 'up',
         show: hasPermission('view_crm_analytics')
       },
       {
-        title: 'Conversion Rate',
+        title: 'Taux de Conversion',
         value: `${mockMetrics.conversionRate}%`,
-        description: `${mockMetrics.wonDeals} deals won`,
+        description: `${mockMetrics.wonDeals} affaires gagnées`,
         icon: Target,
         trend: 'up',
         show: hasPermission('view_crm_analytics')
@@ -79,25 +79,25 @@ export function CRMMetrics() {
       show: boolean;
     }> = [
       {
-        title: 'My Prospects',
+        title: 'Mes Prospects',
         value: '8',
-        description: '+2 this week',
+        description: '+2 cette semaine',
         icon: Users,
         trend: 'up',
         show: userRole === 'agent' || userRole === 'super_agent'
       },
       {
-        title: 'My Activities',
+        title: 'Mes Activités',
         value: mockMetrics.activitiesThisWeek.toString(),
-        description: 'This week',
+        description: 'Cette semaine',
         icon: Activity,
         trend: 'up',
         show: true
       },
       {
-        title: 'Follow-ups Due',
+        title: 'Suivis à Faire',
         value: mockMetrics.upcomingFollowUps.toString(),
-        description: 'Next 7 days',
+        description: '7 prochains jours',
         icon: Calendar,
         trend: 'neutral',
         show: true
