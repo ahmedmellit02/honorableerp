@@ -137,7 +137,6 @@ export function ProspectsTable() {
                 <TableHead>Prospect</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Entreprise</TableHead>
-                <TableHead>Statut</TableHead>
                 <TableHead>Priorité</TableHead>
                 <TableHead>Source</TableHead>
                 <TableHead>Actions</TableHead>
@@ -146,7 +145,7 @@ export function ProspectsTable() {
             <TableBody>
               {filteredProspects.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     <div className="flex flex-col items-center gap-2">
                       <User className="h-8 w-8 text-muted-foreground" />
                       <p className="text-muted-foreground">Aucun prospect trouvé</p>
@@ -188,7 +187,6 @@ export function ProspectsTable() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell>{getStatusBadge(prospect.status)}</TableCell>
                     <TableCell>{getPriorityBadge(prospect.priority)}</TableCell>
                     <TableCell>
                       {prospect.source ? (
