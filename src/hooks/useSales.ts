@@ -48,6 +48,7 @@ export const useSales = () => {
         cashedInBy: sale.cashed_in_by,
         bankTransferConfirmed: (sale as any).bank_transfer_confirmed || false,
         paymentMethod: (sale as any).payment_method as "C" | "V" || "C",
+        negativeProfitReason: (sale as any).negative_profit_reason,
       })) as Sale[];
     },
     enabled: !!user,
