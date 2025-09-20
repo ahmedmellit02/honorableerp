@@ -19,8 +19,6 @@ function PipelineStatus() {
 
   const statusLabels = {
     new: 'Nouveau',
-    contacted: 'Contacté', 
-    qualified: 'Qualifié',
     proposal_sent: 'Proposition Envoyée',
     negotiation: 'Négociation',
     won: 'Gagné',

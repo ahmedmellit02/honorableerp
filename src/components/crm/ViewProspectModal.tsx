@@ -31,8 +31,6 @@ export function ViewProspectModal({ open, onOpenChange, prospect }: ViewProspect
   const getStatusBadge = (status: string) => {
     const variants = {
       new: 'secondary',
-      contacted: 'outline',
-      qualified: 'default',
       proposal_sent: 'default',
       negotiation: 'default',
       won: 'default',
@@ -42,8 +40,6 @@ export function ViewProspectModal({ open, onOpenChange, prospect }: ViewProspect
     return (
       <Badge variant={variants[status as keyof typeof variants] || 'secondary'}>
         {status === 'new' ? 'NOUVEAU' :
-         status === 'contacted' ? 'CONTACTÉ' :
-         status === 'qualified' ? 'QUALIFIÉ' :
          status === 'proposal_sent' ? 'PROPOSITION ENVOYÉE' :
          status === 'negotiation' ? 'NÉGOCIATION' :
          status === 'won' ? 'GAGNÉ' :

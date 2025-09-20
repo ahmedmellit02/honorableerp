@@ -25,8 +25,6 @@ export function ProspectsTable() {
   const getStatusBadge = (status: string) => {
     const variants = {
       new: 'secondary',
-      contacted: 'outline',
-      qualified: 'default',
       proposal_sent: 'default',
       negotiation: 'default',
       won: 'default',
@@ -36,8 +34,6 @@ export function ProspectsTable() {
     return (
       <Badge variant={variants[status as keyof typeof variants] || 'secondary'}>
         {status === 'new' ? 'NOUVEAU' :
-         status === 'contacted' ? 'CONTACTÉ' :
-         status === 'qualified' ? 'QUALIFIÉ' :
          status === 'proposal_sent' ? 'PROPOSITION ENVOYÉE' :
          status === 'negotiation' ? 'NÉGOCIATION' :
          status === 'won' ? 'GAGNÉ' :
