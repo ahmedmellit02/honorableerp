@@ -37,7 +37,7 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
     phone: '',
     company: '',
     source: '',
-    priority: 'medium',
+    priority: '' as 'low' | 'medium' | 'high',
     budget_range: '',
     notes: ''
   });
@@ -58,6 +58,24 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
       toast({
         title: "Erreur de Validation",
         description: "Le nom du prospect est requis.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!formData.source.trim()) {
+      toast({
+        title: "Erreur de Validation",
+        description: "La source du prospect est requise.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!formData.priority) {
+      toast({
+        title: "Erreur de Validation",
+        description: "La priorité du prospect est requise.",
         variant: "destructive"
       });
       return;
@@ -89,7 +107,7 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
         phone: '',
         company: '',
         source: '',
-        priority: 'medium',
+        priority: '' as 'low' | 'medium' | 'high',
         budget_range: '',
         notes: ''
       });
@@ -175,7 +193,7 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
             {/* Source and Priority */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="source">Source</Label>
+                <Label htmlFor="source">Source *</Label>
                 <Select value={formData.source} onValueChange={(value) => handleInputChange('source', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Comment nous ont-ils trouvés ?" />
@@ -193,10 +211,10 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="priority">Priorité</Label>
+                <Label htmlFor="priority">Priorité *</Label>
                 <Select value={formData.priority} onValueChange={(value: 'low' | 'medium' | 'high') => handleInputChange('priority', value)}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Sélectionnez la priorité" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="low">Faible</SelectItem>
