@@ -249,7 +249,7 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
               <Label htmlFor="budget_range">Gamme de Budget</Label>
               <Select value={formData.budget_range} onValueChange={(value) => handleInputChange('budget_range', value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez la gamme de budget" />
+                  <SelectValue placeholder="Choisissez la gamme de budget" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="under_5000">Moins de 5 000 MAD</SelectItem>
