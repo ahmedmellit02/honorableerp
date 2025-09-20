@@ -109,7 +109,9 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
   };
 
   const handleInputChange = (field: keyof ProspectFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    // Convert name to uppercase in real time, just like in the sales form
+    const processedValue = field === 'name' ? value.toUpperCase() : value;
+    setFormData(prev => ({ ...prev, [field]: processedValue }));
   };
 
   return (

@@ -86,7 +86,7 @@ export function ActivityFeed({ limit }: ActivityFeedProps) {
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{activity.prospect_name}</span>
+                      <span className="font-medium">{activity.prospect_name?.toUpperCase()}</span>
                        <Badge variant="outline" className="text-xs">
                          {(() => {
                            switch (activity.type) {

@@ -153,7 +153,7 @@ export function ProspectsTable() {
                   <TableRow key={prospect.id}>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{prospect.name}</p>
+                        <p className="font-medium">{prospect.name.toUpperCase()}</p>
                         <p className="text-sm text-muted-foreground">
                           Ajouté le {new Date(prospect.created_at).toLocaleDateString('fr-FR')}
                         </p>
