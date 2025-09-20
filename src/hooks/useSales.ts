@@ -90,6 +90,12 @@ export const useAddSale = () => {
         saleInsertData.departure_time = "00:00:00"; // Default time
         saleInsertData.rw_date = saleData.rwDate ? saleData.rwDate.toISOString().split('T')[0] : null;
         saleInsertData.rw_time = saleData.rwTime || null;
+      // For Billet Omra, set default values
+      } else if (saleData.type === "Billet Omra") {
+        saleInsertData.pnr = null;
+        saleInsertData.departure_date = new Date().toISOString().split('T')[0]; // Default to today
+        saleInsertData.departure_time = "00:00:00"; // Default time
+        saleInsertData.payment_method = "C"; // Default to cash for Billet Omra
       } else {
         // For other types, set default values or null
         saleInsertData.pnr = null;

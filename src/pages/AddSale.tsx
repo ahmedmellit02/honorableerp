@@ -86,8 +86,8 @@ const AddSale = () => {
       newErrors.system = "Veuillez sélectionner un système";
     }
 
-    // Validate payment method selection
-    if (!formData.paymentMethod) {
+    // Validate payment method selection (not required for Billet Omra)
+    if (!formData.paymentMethod && formData.type !== "Billet Omra") {
       newErrors.paymentMethod = "Veuillez sélectionner un mode de paiement";
     }
 
@@ -95,10 +95,13 @@ const AddSale = () => {
       newErrors.clientName = "Le nom du client est requis";
     }
 
-    if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = "Le numéro de téléphone est requis";
-    } else if (!/^\+?[0-9]{10,15}$/.test(formData.phoneNumber.replace(/\s/g, ""))) {
-      newErrors.phoneNumber = "Veuillez entrer un numéro de téléphone valide";
+    // Phone number not required for Billet Omra
+    if (formData.type !== "Billet Omra") {
+      if (!formData.phoneNumber.trim()) {
+        newErrors.phoneNumber = "Le numéro de téléphone est requis";
+      } else if (!/^\+?[0-9]{10,15}$/.test(formData.phoneNumber.replace(/\s/g, ""))) {
+        newErrors.phoneNumber = "Veuillez entrer un numéro de téléphone valide";
+      }
     }
 
     if (formData.type === "Flight Confirmed" && !formData.pnr?.trim()) {
@@ -276,6 +279,7 @@ const AddSale = () => {
                       <SelectItem value="E-VISA">VISA électronique</SelectItem>
                       <SelectItem value="Organized Travel">Voyage organisé</SelectItem>
                       <SelectItem value="Travel Insurance">Assurance voyage</SelectItem>
+                      <SelectItem value="Billet Omra">Billet Omra</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.type && (
@@ -323,19 +327,22 @@ const AddSale = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="phoneNumber">Numéro de téléphone *</Label>
-                  <Input
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-                    placeholder="Exemple : 0678945612"
-                    className={errors.phoneNumber ? "border-destructive" : ""}
-                  />
-                  {errors.phoneNumber && (
-                    <p className="text-sm text-destructive">{errors.phoneNumber}</p>
-                  )}
-                </div>
+                {/* Phone number field - hidden for Billet Omra */}
+                {formData.type !== "Billet Omra" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="phoneNumber">Numéro de téléphone *</Label>
+                    <Input
+                      id="phoneNumber"
+                      value={formData.phoneNumber}
+                      onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                      placeholder="Exemple : 0678945612"
+                      className={errors.phoneNumber ? "border-destructive" : ""}
+                    />
+                    {errors.phoneNumber && (
+                      <p className="text-sm text-destructive">{errors.phoneNumber}</p>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Flight Information Fields (only for vol confirmé) */}
@@ -513,30 +520,32 @@ const AddSale = () => {
                 </div>
               </div>
 
-              {/* Payment Method */}
-              <div className="space-y-2">
-                <Label htmlFor="paymentMethod">Mode de paiement *</Label>
-                <Select
-                  value={formData.paymentMethod || ""}
-                  onValueChange={(value: "C" | "V") =>
-                    handleInputChange("paymentMethod", value)
-                  }
-                >
-                  <SelectTrigger className={errors.paymentMethod ? "border-destructive" : ""}>
-                    <SelectValue placeholder="Sélectionnez le mode de paiement" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="C">Espèces (C)</SelectItem>
-                    <SelectItem value="V">Virement (V)</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.paymentMethod && (
-                  <p className="text-sm text-destructive">{errors.paymentMethod}</p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Indiquer si le client a payé par espèces ou par virement bancaire
-                </p>
-              </div>
+              {/* Payment Method - hidden for Billet Omra */}
+              {formData.type !== "Billet Omra" && (
+                <div className="space-y-2">
+                  <Label htmlFor="paymentMethod">Mode de paiement *</Label>
+                  <Select
+                    value={formData.paymentMethod || ""}
+                    onValueChange={(value: "C" | "V") =>
+                      handleInputChange("paymentMethod", value)
+                    }
+                  >
+                    <SelectTrigger className={errors.paymentMethod ? "border-destructive" : ""}>
+                      <SelectValue placeholder="Sélectionnez le mode de paiement" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="C">Espèces (C)</SelectItem>
+                      <SelectItem value="V">Virement (V)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.paymentMethod && (
+                    <p className="text-sm text-destructive">{errors.paymentMethod}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Indiquer si le client a payé par espèces ou par virement bancaire
+                  </p>
+                </div>
+              )}
 
               {/* Submit Button */}
               <div className="flex justify-end pt-6">
