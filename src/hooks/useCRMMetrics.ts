@@ -6,6 +6,9 @@ import { useQuotes } from './useQuotes';
 export interface CRMMetrics {
   totalProspects: number;
   newProspectsThisMonth: number;
+  newThisMonth: number; // alias for newProspectsThisMonth
+  myProspects: number;
+  myNewThisWeek: number;
   prospectsByStatus: Record<string, number>;
   conversionRate: number;
   totalQuotes: number;
@@ -99,6 +102,9 @@ export function useCRMMetrics() {
     setMetrics({
       totalProspects,
       newProspectsThisMonth,
+      newThisMonth: newProspectsThisMonth, // alias
+      myProspects: totalProspects, // for now, same as total (could be filtered by user later)
+      myNewThisWeek: prospects.filter(p => new Date(p.created_at) >= startOfWeek).length,
       prospectsByStatus,
       conversionRate,
       totalQuotes,

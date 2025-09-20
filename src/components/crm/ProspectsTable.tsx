@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useProspects } from '@/hooks/useProspects';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Phone, Mail, Building, User } from 'lucide-react';
-import { useProspects } from '@/hooks/useProspects';
+import { Search, Phone, Mail, Building, User, Plus } from 'lucide-react';
+import { AddProspectModal } from './AddProspectModal';
 
 export function ProspectsTable() {
   const { hasPermission } = usePermissions();
-  const { prospects, loading } = useProspects();
+  const { prospects, loading, refetch } = useProspects();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -55,6 +57,20 @@ export function ProspectsTable() {
          priority.toUpperCase()}
       </Badge>
     );
+  };
+
+  const getSourceLabel = (source: string) => {
+    const sourceLabels: Record<string, string> = {
+      website: 'Site Web',
+      referral: 'Recommandation',
+      social_media: 'Réseaux Sociaux',
+      phone_call: 'Appel Téléphonique',
+      walk_in: 'Visite Spontanée',
+      advertisement: 'Publicité',
+      partner: 'Partenaire',
+      other: 'Autre'
+    };
+    return sourceLabels[source] || source;
   };
 
   const filteredProspects = prospects.filter(prospect => {
@@ -100,6 +116,12 @@ export function ProspectsTable() {
               <SelectItem value="lost">Perdu</SelectItem>
             </SelectContent>
           </Select>
+          {hasPermission('create_prospects') && (
+            <Button className="gap-2" onClick={() => setShowAddModal(true)}>
+              <Plus className="h-4 w-4" />
+              Ajouter Prospect
+            </Button>
+          )}
         </div>
 
         {/* Prospects Table */}
@@ -164,7 +186,11 @@ export function ProspectsTable() {
                     <TableCell>{getStatusBadge(prospect.status)}</TableCell>
                     <TableCell>{getPriorityBadge(prospect.priority)}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{prospect.source}</Badge>
+                      {prospect.source ? (
+                        <Badge variant="outline">{getSourceLabel(prospect.source)}</Badge>
+                      ) : (
+                        <Badge variant="outline">-</Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -185,6 +211,15 @@ export function ProspectsTable() {
           </Table>
         </div>
       </CardContent>
+
+      <AddProspectModal 
+        open={showAddModal} 
+        onOpenChange={setShowAddModal}
+        onProspectAdded={() => {
+          refetch();
+          setShowAddModal(false);
+        }}
+      />
     </Card>
   );
 }

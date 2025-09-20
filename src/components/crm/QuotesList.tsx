@@ -8,12 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, FileText, Calendar, DollarSign, Users } from 'lucide-react';
 import { useQuotes } from '@/hooks/useQuotes';
+import { AddQuoteModal } from './AddQuoteModal';
 
 export function QuotesList() {
   const { hasPermission } = usePermissions();
-  const { quotes, loading } = useQuotes();
+  const { quotes, loading, refetch } = useQuotes();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -109,7 +111,7 @@ export function QuotesList() {
             </SelectContent>
           </Select>
           {hasPermission('create_quotes') && (
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={() => setShowAddModal(true)}>
               <FileText className="h-4 w-4" />
               Nouveau Devis
             </Button>
@@ -216,6 +218,15 @@ export function QuotesList() {
           </Table>
         </div>
       </CardContent>
+
+      <AddQuoteModal 
+        open={showAddModal} 
+        onOpenChange={setShowAddModal}
+        onQuoteAdded={() => {
+          refetch();
+          setShowAddModal(false);
+        }}
+      />
     </Card>
   );
 }

@@ -1,24 +1,12 @@
 import { usePermissions } from '@/hooks/usePermissions';
+import { useCRMMetrics } from '@/hooks/useCRMMetrics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Users, FileText, DollarSign, Activity, Calendar, Target } from 'lucide-react';
 
 export function CRMMetrics() {
   const { hasPermission, userRole } = usePermissions();
-
-  // Mock data - will be replaced with real data from hooks
-  const mockMetrics = {
-    totalProspects: 45,
-    newThisMonth: 12,
-    conversionRate: 15.5,
-    totalQuotes: 28,
-    activeQuotes: 15,
-    pipelineValue: 450000,
-    wonDeals: 8,
-    avgDealSize: 18750,
-    activitiesThisWeek: 34,
-    upcomingFollowUps: 7
-  };
+  const { metrics, loading } = useCRMMetrics();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -38,32 +26,32 @@ export function CRMMetrics() {
     }> = [
       {
         title: 'Total Prospects',
-        value: mockMetrics.totalProspects.toString(),
-        description: `+${mockMetrics.newThisMonth} ce mois`,
+        value: loading ? '...' : metrics.totalProspects.toString(),
+        description: `+${metrics.newThisMonth} ce mois`,
         icon: Users,
         trend: 'up',
         show: hasPermission('view_crm_analytics') || hasPermission('view_assigned_prospects')
       },
       {
         title: 'Devis Actifs',
-        value: mockMetrics.activeQuotes.toString(),
-        description: `${mockMetrics.totalQuotes} devis total`,
+        value: loading ? '...' : metrics.activeQuotes.toString(),
+        description: `${metrics.totalQuotes} devis total`,
         icon: FileText,
         trend: 'up',
         show: hasPermission('create_quotes')
       },
       {
         title: 'Valeur Pipeline',
-        value: formatCurrency(mockMetrics.pipelineValue),
-        description: `Moy: ${formatCurrency(mockMetrics.avgDealSize)}`,
+        value: loading ? '...' : formatCurrency(metrics.pipelineValue),
+        description: `Moy: ${formatCurrency(metrics.avgDealSize)}`,
         icon: DollarSign,
         trend: 'up',
         show: hasPermission('view_crm_analytics')
       },
       {
         title: 'Taux de Conversion',
-        value: `${mockMetrics.conversionRate}%`,
-        description: `${mockMetrics.wonDeals} affaires gagnées`,
+        value: loading ? '...' : `${metrics.conversionRate.toFixed(1)}%`,
+        description: `${metrics.wonDeals} affaires gagnées`,
         icon: Target,
         trend: 'up',
         show: hasPermission('view_crm_analytics')
@@ -80,15 +68,15 @@ export function CRMMetrics() {
     }> = [
       {
         title: 'Mes Prospects',
-        value: '8',
-        description: '+2 cette semaine',
+        value: loading ? '...' : metrics.myProspects.toString(),
+        description: `+${metrics.myNewThisWeek} cette semaine`,
         icon: Users,
         trend: 'up',
         show: userRole === 'agent' || userRole === 'super_agent'
       },
       {
         title: 'Mes Activités',
-        value: mockMetrics.activitiesThisWeek.toString(),
+        value: loading ? '...' : metrics.activitiesThisWeek.toString(),
         description: 'Cette semaine',
         icon: Activity,
         trend: 'up',
@@ -96,7 +84,7 @@ export function CRMMetrics() {
       },
       {
         title: 'Suivis à Faire',
-        value: mockMetrics.upcomingFollowUps.toString(),
+        value: loading ? '...' : metrics.upcomingFollowUps.toString(),
         description: '7 prochains jours',
         icon: Calendar,
         trend: 'neutral',

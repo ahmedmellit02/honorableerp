@@ -30,6 +30,7 @@ export interface Quote {
 }
 
 export interface CreateQuoteData {
+  quote_number: string;
   prospect_id: string;
   service_type?: string;
   destination?: string;

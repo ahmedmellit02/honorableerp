@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useProspects } from '@/hooks/useProspects';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,10 +24,12 @@ interface ProspectFormData {
 interface AddProspectModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onProspectAdded?: () => void;
 }
 
-export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) {
+export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddProspectModalProps) {
   const { hasPermission } = usePermissions();
+  const { createProspect } = useProspects();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<ProspectFormData>({
     name: '',
@@ -63,8 +66,16 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
     setLoading(true);
     
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      await createProspect({
+        name: formData.name,
+        email: formData.email || null,
+        phone: formData.phone || null,
+        company: formData.company || null,
+        source: formData.source || null,
+        priority: formData.priority,
+        budget_range: formData.budget_range || null,
+        notes: formData.notes || null
+      });
       
       toast({
         title: "Succès",
@@ -83,8 +94,10 @@ export function AddProspectModal({ open, onOpenChange }: AddProspectModalProps) 
         notes: ''
       });
       
+      onProspectAdded?.();
       onOpenChange(false);
     } catch (error) {
+      console.error('Error creating prospect:', error);
       toast({
         title: "Erreur",
         description: "Impossible d'ajouter le prospect. Veuillez réessayer.",
