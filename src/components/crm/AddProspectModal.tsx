@@ -81,6 +81,15 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
       return;
     }
 
+    if (!formData.notes.trim()) {
+      toast({
+        title: "Erreur de Validation",
+        description: "Les notes du prospect sont requises.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     
     try {
@@ -245,13 +254,14 @@ export function AddProspectModal({ open, onOpenChange, onProspectAdded }: AddPro
 
             {/* Notes */}
             <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
+              <Label htmlFor="notes">Notes *</Label>
               <Textarea
                 id="notes"
                 placeholder="Notes supplémentaires sur le prospect..."
                 value={formData.notes}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
                 rows={3}
+                required
               />
             </div>
           </div>
