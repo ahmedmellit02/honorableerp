@@ -457,3 +457,32 @@ export const useConfirmBankTransfer = () => {
     },
   });
 };
+
+export const useDeleteSale = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (saleId: string) => {
+      if (!user) throw new Error("User not authenticated");
+
+      const { error } = await supabase
+        .from("sales")
+        .delete()
+        .eq("id", saleId);
+
+      if (error) {
+        console.error("Error deleting sale:", error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["sales-daily"] });
+      queryClient.invalidateQueries({ queryKey: ["sales-by-type"] });
+      queryClient.invalidateQueries({ queryKey: ["sales-daily-yearly"] });
+      queryClient.invalidateQueries({ queryKey: ["sales-by-type-yearly"] });
+      queryClient.refetchQueries({ queryKey: ["sales"] });
+    },
+  });
+};
