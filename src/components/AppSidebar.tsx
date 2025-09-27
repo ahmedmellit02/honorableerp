@@ -163,8 +163,8 @@ export function AppSidebar() {
     });
   }
 
-  // Device Management only for managers
-  if (userRole === 'manager') {
+  // Device Management for managers and super agents
+  if (userRole === 'manager' || userRole === 'super_agent') {
     navItems.push({
       label: "Device Management",
       href: "/device-management",
