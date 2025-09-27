@@ -136,6 +136,39 @@ export type Database = {
         }
         Relationships: []
       }
+      banned_devices: {
+        Row: {
+          banned_at: string
+          banned_by: string
+          created_at: string
+          device_fingerprint: string
+          id: string
+          is_active: boolean
+          reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          banned_at?: string
+          banned_by: string
+          created_at?: string
+          device_fingerprint: string
+          id?: string
+          is_active?: boolean
+          reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          banned_at?: string
+          banned_by?: string
+          created_at?: string
+          device_fingerprint?: string
+          id?: string
+          is_active?: boolean
+          reason?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       debt_records: {
         Row: {
           amount: number
@@ -165,6 +198,36 @@ export type Database = {
           status?: string
           type?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      device_sessions: {
+        Row: {
+          created_at: string
+          device_fingerprint: string
+          id: string
+          ip_address: string | null
+          last_seen_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_fingerprint: string
+          id?: string
+          ip_address?: string | null
+          last_seen_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_fingerprint?: string
+          id?: string
+          ip_address?: string | null
+          last_seen_at?: string
+          user_agent?: string | null
           user_id?: string
         }
         Relationships: []
@@ -500,9 +563,21 @@ export type Database = {
         }
         Returns: undefined
       }
+      ban_device: {
+        Args: {
+          banned_by_param?: string
+          fingerprint: string
+          reason_param?: string
+        }
+        Returns: undefined
+      }
       cash_in_sale: {
         Args: { sale_id: string }
         Returns: undefined
+      }
+      check_device_ban_status: {
+        Args: { fingerprint: string }
+        Returns: boolean
       }
       confirm_bank_transfer: {
         Args: { sale_id: string }
@@ -591,6 +666,15 @@ export type Database = {
       get_user_role: {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      log_device_session: {
+        Args: {
+          fingerprint: string
+          ip_addr?: string
+          user_agent_param?: string
+          user_id_param: string
+        }
+        Returns: undefined
       }
       mark_notification_read: {
         Args: { notification_id: string }

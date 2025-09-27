@@ -23,11 +23,13 @@ import BalanceControl from './pages/BalanceControl';
 import DebtControl from './pages/DebtControl';
 import SupplierDashboard from './pages/SupplierDashboard';
 import ExpenseControl from './pages/ExpenseControl';
+import DeviceManagement from './pages/DeviceManagement';
+import { BannedDeviceBanner } from './components/BannedDeviceBanner';
 
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, deviceBanned } = useAuth();
   const { userRole } = useSimpleRole();
   
   // Fetch comprehensive data for ChatBot
@@ -170,6 +172,10 @@ const AppRoutes = () => {
     );
   }
 
+  if (deviceBanned) {
+    return <BannedDeviceBanner />;
+  }
+
   if (!user) {
     return <Auth />;
   }
@@ -195,6 +201,7 @@ const AppRoutes = () => {
               <Route path="/balance-control" element={<BalanceControl />} />
               <Route path="/debt-control" element={<DebtControl />} />
               <Route path="/expense-control" element={<ExpenseControl />} />
+              <Route path="/device-management" element={<DeviceManagement />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

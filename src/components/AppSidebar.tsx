@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, LogOut, LockIcon, Wallet, Receipt, FileText, Table, CreditCard, Users } from "lucide-react";
+import { BarChart3, Plus, LogOut, LockIcon, Wallet, Receipt, FileText, Table, CreditCard, Users, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useState } from "react";
@@ -160,6 +160,15 @@ export function AppSidebar() {
       label: "Facturation",
       href: "/facturation",
       icon: FileText,
+    });
+  }
+
+  // Device Management only for managers
+  if (userRole === 'manager') {
+    navItems.push({
+      label: "Device Management",
+      href: "/device-management",
+      icon: Shield,
     });
   }
 
