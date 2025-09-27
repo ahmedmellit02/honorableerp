@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,6 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
     price_per_person: "",
     departure_date: "",
     return_date: "",
-    departure_city: "",
     hotel_id: ""
   });
 
@@ -33,7 +32,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
     e.preventDefault();
 
     if (!formData.title || !formData.duration_days || !formData.price_per_person || 
-        !formData.departure_date || !formData.return_date || !formData.departure_city) {
+        !formData.departure_date || !formData.return_date) {
       toast({
         title: "Erreur",
         description: "Veuillez remplir tous les champs obligatoires.",
@@ -61,7 +60,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
         price_per_person: parseFloat(formData.price_per_person),
         departure_date: formData.departure_date,
         return_date: formData.return_date,
-        departure_city: formData.departure_city,
+        departure_city: "Casablanca", // Default value since field removed
         hotels: formData.hotel_id ? [formData.hotel_id] : [],
       };
 
@@ -79,7 +78,6 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
         price_per_person: "",
         departure_date: "",
         return_date: "",
-        departure_city: "",
         hotel_id: ""
       });
       
@@ -92,6 +90,19 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
       });
     }
   };
+
+  // Auto-calculate duration based on dates
+  useEffect(() => {
+    if (formData.departure_date && formData.return_date) {
+      const startDate = new Date(formData.departure_date);
+      const endDate = new Date(formData.return_date);
+      if (endDate > startDate) {
+        const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        setFormData(prev => ({ ...prev, duration_days: diffDays.toString() }));
+      }
+    }
+  }, [formData.departure_date, formData.return_date]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -110,38 +121,8 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="ex: Omra Ramadan 2024"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="departure_city">Ville de Départ *</Label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="departure_city"
-                  className="pl-10"
-                  value={formData.departure_city}
-                  onChange={(e) => setFormData(prev => ({ ...prev, departure_city: e.target.value }))}
-                  placeholder="ex: Casablanca"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="duration_days">Durée (jours) *</Label>
-              <Input
-                id="duration_days"
-                type="number"
-                min="1"
-                value={formData.duration_days}
-                onChange={(e) => setFormData(prev => ({ ...prev, duration_days: e.target.value }))}
-                placeholder="15"
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value.toUpperCase() }))}
+                placeholder="ex: OMRA RAMADAN 2024"
                 required
               />
             </div>
@@ -162,6 +143,26 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
                   required
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="duration_days">Durée (jours) *</Label>
+              <Input
+                id="duration_days"
+                type="number"
+                min="1"
+                value={formData.duration_days}
+                onChange={(e) => setFormData(prev => ({ ...prev, duration_days: e.target.value }))}
+                placeholder="15"
+                required
+                disabled
+                className="bg-muted"
+              />
+              <p className="text-xs text-muted-foreground">
+                Calculée automatiquement à partir des dates
+              </p>
             </div>
           </div>
 
@@ -200,7 +201,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
                 <SelectContent>
                   {hotels.map((hotel) => (
                     <SelectItem key={hotel.id} value={hotel.id}>
-                      {hotel.name} - {hotel.city}
+                      {hotel.name.toUpperCase()} - {hotel.city}
                     </SelectItem>
                   ))}
                 </SelectContent>

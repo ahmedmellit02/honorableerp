@@ -75,13 +75,13 @@ export function AddHotelModal({ open, onOpenChange }: AddHotelModalProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name">Nom de l'Hôtel *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="ex: Hilton Mecca"
-              required
-            />
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value.toUpperCase() }))}
+                placeholder="ex: HILTON MECCA"
+                required
+              />
           </div>
 
           <div className="space-y-2">
