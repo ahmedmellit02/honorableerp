@@ -12,6 +12,7 @@ export interface Hotel {
   description: string | null;
   amenities: string[];
   images: string[];
+  room_types: number[];
   is_active: boolean;
   created_at: string;
   updated_at: string;
