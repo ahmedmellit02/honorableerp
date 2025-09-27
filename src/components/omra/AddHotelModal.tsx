@@ -87,7 +87,7 @@ export function AddHotelModal({ open, onOpenChange }: AddHotelModalProps) {
           <div className="space-y-2">
             <Label>Types de Chambres *</Label>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[1, 2, 3, 4, 5].map((capacity) => (
+              {[2, 3, 4, 5].map((capacity) => (
                 <div key={capacity} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
@@ -109,7 +109,7 @@ export function AddHotelModal({ open, onOpenChange }: AddHotelModalProps) {
                     className="rounded border-gray-300"
                   />
                   <Label htmlFor={`room-${capacity}`} className="text-sm font-normal">
-                    {capacity === 1 ? 'Chambre Simple' : `Chambre ${capacity} Personnes`}
+                    Chambre {capacity} Personnes
                   </Label>
                 </div>
               ))}

@@ -280,8 +280,8 @@ export type Database = {
       hotels: {
         Row: {
           amenities: Json | null
-          city: string
-          country: string
+          city: string | null
+          country: string | null
           created_at: string
           created_by: string
           description: string | null
@@ -291,13 +291,14 @@ export type Database = {
           is_active: boolean
           name: string
           price_per_night: number | null
+          room_types: number[] | null
           star_rating: number | null
           updated_at: string
         }
         Insert: {
           amenities?: Json | null
-          city: string
-          country?: string
+          city?: string | null
+          country?: string | null
           created_at?: string
           created_by: string
           description?: string | null
@@ -307,13 +308,14 @@ export type Database = {
           is_active?: boolean
           name: string
           price_per_night?: number | null
+          room_types?: number[] | null
           star_rating?: number | null
           updated_at?: string
         }
         Update: {
           amenities?: Json | null
-          city?: string
-          country?: string
+          city?: string | null
+          country?: string | null
           created_at?: string
           created_by?: string
           description?: string | null
@@ -323,6 +325,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           price_per_night?: number | null
+          room_types?: number[] | null
           star_rating?: number | null
           updated_at?: string
         }
