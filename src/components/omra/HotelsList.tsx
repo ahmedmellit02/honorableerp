@@ -5,15 +5,43 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin, Star, Search, Edit, DollarSign, Hotel } from "lucide-react";
-import { useHotels } from "@/hooks/useOmraHotels";
+import { useHotels, useUpdateHotel, Hotel as HotelType } from "@/hooks/useOmraHotels";
+import { EditHotelModal } from "./EditHotelModal";
 
 export function HotelsList() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingHotel, setEditingHotel] = useState<HotelType | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
   const { data: hotels, isLoading, error } = useHotels();
+  const updateHotelMutation = useUpdateHotel();
 
   const filteredHotels = hotels?.filter(hotel =>
     hotel.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
+
+  const handleEditHotel = (hotel: HotelType) => {
+    setEditingHotel(hotel);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingHotel(null);
+  };
+
+  const handleSaveHotel = async (hotelData: Partial<HotelType>) => {
+    if (!editingHotel) return;
+    
+    try {
+      await updateHotelMutation.mutateAsync({
+        id: editingHotel.id,
+        hotelData
+      });
+    } catch (error) {
+      console.error('Error updating hotel:', error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -82,10 +110,7 @@ export function HotelsList() {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      onClick={() => {
-                        console.log('Edit hotel:', hotel);
-                        alert(`Modification de l'hôtel: ${hotel.name}`);
-                      }}
+                      onClick={() => handleEditHotel(hotel)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -133,6 +158,13 @@ export function HotelsList() {
           </div>
         </>
       )}
+
+      <EditHotelModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        hotel={editingHotel}
+        onSave={handleSaveHotel}
+      />
     </div>
   );
 }

@@ -65,3 +65,27 @@ export function useCreateHotel() {
     },
   });
 }
+
+export function useUpdateHotel() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, hotelData }: { id: string; hotelData: Partial<Hotel> }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('hotels')
+        .update(hotelData)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hotels'] });
+    },
+  });
+}
