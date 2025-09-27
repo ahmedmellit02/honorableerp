@@ -277,6 +277,57 @@ export type Database = {
         }
         Relationships: []
       }
+      hotels: {
+        Row: {
+          amenities: Json | null
+          city: string
+          country: string
+          created_at: string
+          created_by: string
+          description: string | null
+          distance_from_haram: string | null
+          id: string
+          images: Json | null
+          is_active: boolean
+          name: string
+          price_per_night: number | null
+          star_rating: number | null
+          updated_at: string
+        }
+        Insert: {
+          amenities?: Json | null
+          city: string
+          country?: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          distance_from_haram?: string | null
+          id?: string
+          images?: Json | null
+          is_active?: boolean
+          name: string
+          price_per_night?: number | null
+          star_rating?: number | null
+          updated_at?: string
+        }
+        Update: {
+          amenities?: Json | null
+          city?: string
+          country?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          distance_from_haram?: string | null
+          id?: string
+          images?: Json | null
+          is_active?: boolean
+          name?: string
+          price_per_night?: number | null
+          star_rating?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           client_name: string
@@ -323,6 +374,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      omra_programs: {
+        Row: {
+          created_at: string
+          created_by: string
+          current_participants: number | null
+          departure_city: string
+          departure_date: string
+          description: string | null
+          duration_days: number
+          excluded_services: Json | null
+          hotels: Json | null
+          id: string
+          included_services: Json | null
+          is_active: boolean
+          itinerary: Json | null
+          max_participants: number | null
+          price_per_person: number
+          return_date: string
+          status: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          current_participants?: number | null
+          departure_city: string
+          departure_date: string
+          description?: string | null
+          duration_days: number
+          excluded_services?: Json | null
+          hotels?: Json | null
+          id?: string
+          included_services?: Json | null
+          is_active?: boolean
+          itinerary?: Json | null
+          max_participants?: number | null
+          price_per_person: number
+          return_date: string
+          status?: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          current_participants?: number | null
+          departure_city?: string
+          departure_date?: string
+          description?: string | null
+          duration_days?: number
+          excluded_services?: Json | null
+          hotels?: Json | null
+          id?: string
+          included_services?: Json | null
+          is_active?: boolean
+          itinerary?: Json | null
+          max_participants?: number | null
+          price_per_person?: number
+          return_date?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       prospects: {
         Row: {

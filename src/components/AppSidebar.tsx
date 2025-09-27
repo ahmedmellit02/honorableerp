@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, LogOut, LockIcon, Wallet, Receipt, FileText, Table, CreditCard, Users, Shield } from "lucide-react";
+import { BarChart3, Plus, LogOut, LockIcon, Wallet, Receipt, FileText, Table, CreditCard, Users, Shield, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useState } from "react";
@@ -169,6 +169,15 @@ export function AppSidebar() {
       label: "Device Management",
       href: "/device-management",
       icon: Shield,
+    });
+  }
+
+  // Omra Management for managers and super agents
+  if (userRole === 'manager' || userRole === 'super_agent') {
+    navItems.push({
+      label: "Gestion Omra",
+      href: "/omra-management",
+      icon: Calendar,
     });
   }
 
