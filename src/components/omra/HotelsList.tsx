@@ -12,8 +12,7 @@ export function HotelsList() {
   const { data: hotels, isLoading, error } = useHotels();
 
   const filteredHotels = hotels?.filter(hotel =>
-    hotel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    hotel.city.toLowerCase().includes(searchTerm.toLowerCase())
+    hotel.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
   if (isLoading) {
@@ -45,7 +44,7 @@ export function HotelsList() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Rechercher par nom ou ville..."
+            placeholder="Rechercher par nom..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -74,27 +73,12 @@ export function HotelsList() {
               <Card key={hotel.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{hotel.name}</CardTitle>
-                      <CardDescription className="flex items-center gap-1 mt-1">
-                        <MapPin className="h-4 w-4" />
-                        {hotel.city}, {hotel.country}
-                      </CardDescription>
-                    </div>
+                  <div className="flex-1">
+                    <CardTitle className="text-lg">{hotel.name}</CardTitle>
+                  </div>
                     <Button variant="ghost" size="sm">
                       <Edit className="h-4 w-4" />
                     </Button>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 mt-2">
-                    {hotel.star_rating && (
-                      <div className="flex items-center gap-1">
-                        {[...Array(hotel.star_rating)].map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        ))}
-                      </div>
-                    )}
-                    <Badge variant="secondary">{hotel.star_rating || 0} étoiles</Badge>
                   </div>
                 </CardHeader>
 
