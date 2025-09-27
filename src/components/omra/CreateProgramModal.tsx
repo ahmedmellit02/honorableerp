@@ -124,7 +124,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="departure_date">Date de Départ *</Label>
               <Input
@@ -146,6 +146,24 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
                 required
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="duration_days">Durée (jours) *</Label>
+              <Input
+                id="duration_days"
+                type="number"
+                min="1"
+                value={formData.duration_days}
+                onChange={(e) => setFormData(prev => ({ ...prev, duration_days: e.target.value }))}
+                placeholder="15"
+                required
+                disabled
+                className="bg-muted"
+              />
+              <p className="text-xs text-muted-foreground">
+                Calculée automatiquement
+              </p>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -165,24 +183,6 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
                 </SelectContent>
               </Select>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="duration_days">Durée (jours) *</Label>
-            <Input
-              id="duration_days"
-              type="number"
-              min="1"
-              value={formData.duration_days}
-              onChange={(e) => setFormData(prev => ({ ...prev, duration_days: e.target.value }))}
-              placeholder="15"
-              required
-              disabled
-              className="bg-muted"
-            />
-            <p className="text-xs text-muted-foreground">
-              Calculée automatiquement à partir des dates
-            </p>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">
