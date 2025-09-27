@@ -27,7 +27,7 @@ serve(async (req) => {
 
     ${conversationHistory.length > 0 ? `
     CONTEXTE CONVERSATION:
-    ${conversationHistory.map((msg, index) => `${msg.role === 'user' ? 'Manager' : 'Analyste'}: ${msg.content}`).join('\n')}
+    ${conversationHistory.map((msg: any, index: number) => `${msg.role === 'user' ? 'Manager' : 'Analyste'}: ${msg.content}`).join('\n')}
     ` : ''}
 
     APPROCHE CONVERSATIONNELLE:
@@ -113,7 +113,8 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Error in gemini-chat function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
