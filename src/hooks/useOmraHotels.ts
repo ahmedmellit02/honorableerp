@@ -20,13 +20,7 @@ export interface Hotel {
 
 export interface CreateHotelData {
   name: string;
-  city: string;
-  country: string;
-  star_rating?: number | null;
-  distance_from_haram?: string | null;
-  price_per_night?: number | null;
-  description?: string | null;
-  amenities?: string[];
+  room_types?: number[];
 }
 
 export function useHotels() {
@@ -57,7 +51,7 @@ export function useCreateHotel() {
         .from('hotels')
         .insert([{
           ...hotelData,
-          amenities: hotelData.amenities || [],
+          room_types: hotelData.room_types || [],
           created_by: user.id,
         }])
         .select()
