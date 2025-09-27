@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Star, Search, Edit, DollarSign } from "lucide-react";
+import { MapPin, Star, Search, Edit, DollarSign, Hotel } from "lucide-react";
 import { useHotels } from "@/hooks/useOmraHotels";
 
 export function HotelsList() {
@@ -74,9 +74,19 @@ export function HotelsList() {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg">{hotel.name}</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Hotel className="h-4 w-4 text-muted-foreground" />
+                      <CardTitle className="text-lg">{hotel.name}</CardTitle>
+                    </div>
                   </div>
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => {
+                        console.log('Edit hotel:', hotel);
+                        alert(`Modification de l'hôtel: ${hotel.name}`);
+                      }}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
                   </div>
