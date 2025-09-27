@@ -22,7 +22,6 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
   const [formData, setFormData] = useState({
     title: "",
     duration_days: "",
-    price_per_person: "",
     departure_date: "",
     return_date: "",
     hotel_id: ""
@@ -31,7 +30,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.duration_days || !formData.price_per_person || 
+    if (!formData.title || !formData.duration_days || 
         !formData.departure_date || !formData.return_date) {
       toast({
         title: "Erreur",
@@ -57,7 +56,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
       const programData = {
         title: formData.title,
         duration_days: parseInt(formData.duration_days),
-        price_per_person: parseFloat(formData.price_per_person),
+        price_per_person: 0, // Default value since field removed
         departure_date: formData.departure_date,
         return_date: formData.return_date,
         departure_city: "Casablanca", // Default value since field removed
@@ -75,7 +74,6 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
       setFormData({
         title: "",
         duration_days: "",
-        price_per_person: "",
         departure_date: "",
         return_date: "",
         hotel_id: ""
@@ -115,35 +113,15 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Titre du Programme *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value.toUpperCase() }))}
-                placeholder="ex: OMRA RAMADAN 2024"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="price_per_person">Prix par Personne (MAD) *</Label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="price_per_person"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="pl-10"
-                  value={formData.price_per_person}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price_per_person: e.target.value }))}
-                  placeholder="15000"
-                  required
-                />
-              </div>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="title">Titre du Programme *</Label>
+            <Input
+              id="title"
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value.toUpperCase() }))}
+              placeholder="ex: OMRA RAMADAN 2024"
+              required
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
