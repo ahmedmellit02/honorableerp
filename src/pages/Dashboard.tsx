@@ -232,8 +232,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Top 3 Services du mois courant */}
-        <h2 className="text-xl font-semibold text-foreground mb-4">Top 3 services du mois courant</h2>
+        {/* Top 3 Services du mois en cours */}
+        <h2 className="text-xl font-semibold text-foreground mb-4">Top 3 des services du mois en cours</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {topServices.length > 0 ? (
             topServices.map((service, index) => {
@@ -258,7 +258,7 @@ const Dashboard = () => {
         </div>
 
         {/* Agent Performance */}
-        <h2 className="text-xl font-semibold text-foreground mb-4">Performance des agents de l'année courante</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-4">Performance des agents pour l'année en cours</h2>
         {Object.keys(agentStatsYearly).length > 0 && (
           <div className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
