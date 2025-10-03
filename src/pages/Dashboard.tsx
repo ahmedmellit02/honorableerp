@@ -14,7 +14,7 @@ import {
   MapPin,
   Target
 } from "lucide-react";
-import { useSales, useSalesDaily, useSalesByTypeYearly, useTopServicesCurrentMonth } from "@/hooks/useSales";
+import { useSales, useSalesDaily, useSalesByTypeYearly } from "@/hooks/useSales";
 import { useSystemBalances } from "@/hooks/useBalance";
 import { useAuth } from "@/hooks/useAuth";
 import { useExpensesDaily, useExpensesMonthly, useUnapprovedExpensesDaily, useUnapprovedExpensesMonthly } from "@/hooks/useExpenses";
@@ -25,7 +25,7 @@ const Dashboard = () => {
   const { data: sales = [], isLoading: salesLoading } = useSales();
   const { data: dailyData = [], isLoading: dailyLoading } = useSalesDaily();
   const { data: typeData = [], isLoading: typeLoading } = useSalesByTypeYearly();
-  const { data: topServices = [], isLoading: topServicesLoading } = useTopServicesCurrentMonth();
+  // Top services will be calculated from yearly typeData instead
   const { data: systemBalances = [], isLoading: balanceLoading } = useSystemBalances();
   const { data: dailyExpenses, isLoading: dailyExpensesLoading } = useExpensesDaily();
   const { data: monthlyExpenses, isLoading: monthlyExpensesLoading } = useExpensesMonthly();
@@ -107,7 +107,7 @@ const Dashboard = () => {
     item.type === "Organized Travel"
   )?.count || 0;
 
-  const isLoading = salesLoading || dailyLoading || typeLoading || topServicesLoading || balanceLoading || roleLoading || dailyExpensesLoading || monthlyExpensesLoading || dailyUnapprovedLoading || monthlyUnapprovedLoading;
+  const isLoading = salesLoading || dailyLoading || typeLoading || balanceLoading || roleLoading || dailyExpensesLoading || monthlyExpensesLoading || dailyUnapprovedLoading || monthlyUnapprovedLoading;
 
   // Check permissions for different dashboard sections  
   const showMonthlyStats = canViewMonthlyStats();
@@ -232,27 +232,30 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Top 3 Services du mois en cours */}
-        <h2 className="text-xl font-semibold text-foreground mb-4">Top 3 des services du mois en cours</h2>
+        {/* Top 3 Services pour l'année en cours */}
+        <h2 className="text-xl font-semibold text-foreground mb-4">Top 3 des services pour l'année en cours</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {topServices.length > 0 ? (
-            topServices.map((service, index) => {
-              const profitPercentage = totalProfit > 0 ? ((service.totalProfit / totalProfit) * 100).toFixed(1) : 0;
-              return (
-                <MetricCard
-                  key={service.type}
-                  title={service.type}
-                  value={`${profitPercentage}%`}
-                  change={`${service.count} ventes`}
-                  changeType={index === 0 ? "positive" : "neutral"}
-                  icon={index === 0 ? Target : index === 1 ? TrendingUp : DollarSign}
-                  gradient={index === 0 ? "bg-gradient-ocean" : index === 1 ? "bg-gradient-tropical" : "bg-gradient-sunset"}
-                />
-              );
-            })
+          {typeData.length > 0 ? (
+            typeData
+              .sort((a, b) => b.profit - a.profit)
+              .slice(0, 3)
+              .map((service, index) => {
+                const profitPercentage = totalYearlyProfit > 0 ? ((service.profit / totalYearlyProfit) * 100).toFixed(1) : 0;
+                return (
+                  <MetricCard
+                    key={service.type}
+                    title={service.type}
+                    value={`${profitPercentage}%`}
+                    change={`${service.count} ventes`}
+                    changeType={index === 0 ? "positive" : "neutral"}
+                    icon={index === 0 ? Target : index === 1 ? TrendingUp : DollarSign}
+                    gradient={index === 0 ? "bg-gradient-ocean" : index === 1 ? "bg-gradient-tropical" : "bg-gradient-sunset"}
+                  />
+                );
+              })
           ) : (
             <div className="col-span-full text-center text-muted-foreground py-8">
-              Aucune vente ce mois-ci
+              Aucune vente cette année
             </div>
           )}
         </div>
