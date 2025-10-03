@@ -39,10 +39,20 @@ const Dashboard = () => {
   const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
+  // Get current year's start and end dates
+  const currentYearStart = new Date(now.getFullYear(), 0, 1);
+  const currentYearEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+
   // Filter sales for current month
   const currentMonthSales = sales.filter(sale => {
     const saleDate = new Date(sale.createdAt);
     return saleDate >= currentMonthStart && saleDate <= currentMonthEnd;
+  });
+
+  // Filter sales for current year
+  const currentYearSales = sales.filter(sale => {
+    const saleDate = new Date(sale.createdAt);
+    return saleDate >= currentYearStart && saleDate <= currentYearEnd;
   });
 
   // Calculate monthly metrics from current month data
@@ -70,6 +80,19 @@ const Dashboard = () => {
     acc[sale.agent].profit += sale.profit;
     return acc;
   }, {} as Record<string, { sales: number; profit: number }>);
+
+  // Calculate agent stats from current year data
+  const agentStatsYearly = currentYearSales.reduce((acc, sale) => {
+    if (!acc[sale.agent]) {
+      acc[sale.agent] = { sales: 0, profit: 0 };
+    }
+    acc[sale.agent].sales += 1;
+    acc[sale.agent].profit += sale.profit;
+    return acc;
+  }, {} as Record<string, { sales: number; profit: number }>);
+
+  // Calculate total profit for current year
+  const totalYearlyProfit = currentYearSales.reduce((sum, sale) => sum + sale.profit, 0);
 
   // Get service counts by type
   const flightBookings = typeData.find(item => 
@@ -235,12 +258,12 @@ const Dashboard = () => {
         </div>
 
         {/* Agent Performance */}
-        <h2 className="text-xl font-semibold text-foreground mb-4">Performance des agents au mois courant</h2>
-        {Object.keys(agentStats).length > 0 && (
+        <h2 className="text-xl font-semibold text-foreground mb-4">Performance des agents de l'année courante</h2>
+        {Object.keys(agentStatsYearly).length > 0 && (
           <div className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              {Object.entries(agentStats).map(([agent, stats]) => {
-                const profitPercentage = totalProfit > 0 ? ((stats.profit / totalProfit) * 100).toFixed(1) : 0;
+              {Object.entries(agentStatsYearly).map(([agent, stats]) => {
+                const profitPercentage = totalYearlyProfit > 0 ? ((stats.profit / totalYearlyProfit) * 100).toFixed(1) : 0;
                 return (
                   <MetricCard
                     key={agent}
