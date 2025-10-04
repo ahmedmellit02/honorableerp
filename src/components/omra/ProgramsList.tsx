@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, MapPin, Users, DollarSign, Search, Edit, Clock } from "lucide-react";
+import { Calendar, MapPin, Users, DollarSign, Search, Edit, Clock, Plane } from "lucide-react";
 import { useOmraPrograms, OmraProgram } from "@/hooks/useOmraPrograms";
 import { formatDate } from "@/lib/utils";
 import { EditProgramModal } from "./EditProgramModal";
@@ -130,6 +130,18 @@ export function ProgramsList() {
                   </CardHeader>
 
                   <CardContent className="space-y-4">
+                    {/* Airport Information */}
+                    {(program.departure_airport || program.arrival_airport) && (
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
+                        <Plane className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">
+                          {program.departure_airport && <span className="font-medium">{program.departure_airport}</span>}
+                          {program.departure_airport && program.arrival_airport && <span className="mx-1">→</span>}
+                          {program.arrival_airport && <span className="font-medium">{program.arrival_airport}</span>}
+                        </span>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />

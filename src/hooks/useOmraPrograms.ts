@@ -12,6 +12,8 @@ export interface OmraProgram {
   departure_date: string;
   return_date: string;
   departure_city: string;
+  departure_airport?: string | null;
+  arrival_airport?: string | null;
   hotels: any[];
   included_services: string[];
   excluded_services: string[];
@@ -33,6 +35,8 @@ export interface CreateOmraProgramData {
   departure_date: string;
   return_date: string;
   departure_city: string;
+  departure_airport?: string;
+  arrival_airport?: string;
   hotels?: any[];
   included_services?: string[];
   excluded_services?: string[];
@@ -48,6 +52,8 @@ export interface UpdateOmraProgramData {
   departure_date?: string;
   return_date?: string;
   departure_city?: string;
+  departure_airport?: string;
+  arrival_airport?: string;
   hotels?: any[];
   included_services?: string[];
   excluded_services?: string[];

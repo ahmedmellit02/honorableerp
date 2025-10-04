@@ -380,9 +380,11 @@ export type Database = {
       }
       omra_programs: {
         Row: {
+          arrival_airport: string | null
           created_at: string
           created_by: string
           current_participants: number | null
+          departure_airport: string | null
           departure_city: string
           departure_date: string
           description: string | null
@@ -402,9 +404,11 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          arrival_airport?: string | null
           created_at?: string
           created_by: string
           current_participants?: number | null
+          departure_airport?: string | null
           departure_city: string
           departure_date: string
           description?: string | null
@@ -424,9 +428,11 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          arrival_airport?: string | null
           created_at?: string
           created_by?: string
           current_participants?: number | null
+          departure_airport?: string | null
           departure_city?: string
           departure_date?: string
           description?: string | null

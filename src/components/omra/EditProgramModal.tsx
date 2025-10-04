@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Autocomplete } from "@/components/ui/autocomplete";
 import { useToast } from "@/hooks/use-toast";
 import { useUpdateOmraProgram, OmraProgram } from "@/hooks/useOmraPrograms";
 import { useHotels } from "@/hooks/useOmraHotels";
+import { iataCodes } from "@/data/iataCodes";
 import { Loader2, Calendar, DollarSign, Building } from "lucide-react";
 
 interface EditProgramModalProps {
@@ -25,6 +27,8 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
     duration_days: "",
     departure_date: "",
     return_date: "",
+    departure_airport: "",
+    arrival_airport: "",
     hotel_id: "",
     price_per_person: "",
     status: "draft"
@@ -38,6 +42,8 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
         duration_days: program.duration_days?.toString() || "",
         departure_date: program.departure_date || "",
         return_date: program.return_date || "",
+        departure_airport: program.departure_airport || "",
+        arrival_airport: program.arrival_airport || "",
         hotel_id: program.hotels && program.hotels.length > 0 ? program.hotels[0] : "",
         price_per_person: program.price_per_person?.toString() || "",
         status: program.status || "draft"
@@ -72,6 +78,16 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
       return;
     }
 
+    if (formData.departure_airport && formData.arrival_airport && 
+        formData.departure_airport === formData.arrival_airport) {
+      toast({
+        title: "Erreur",
+        description: "L'aéroport d'arrivée doit être différent de l'aéroport de départ",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const programData = {
         title: formData.title,
@@ -80,6 +96,8 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
         departure_date: formData.departure_date,
         return_date: formData.return_date,
         departure_city: program.departure_city,
+        departure_airport: formData.departure_airport || undefined,
+        arrival_airport: formData.arrival_airport || undefined,
         hotels: formData.hotel_id ? [formData.hotel_id] : program.hotels,
         status: formData.status as OmraProgram['status'],
       };
@@ -113,6 +131,13 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
       }
     }
   }, [formData.departure_date, formData.return_date]);
+
+  // Convert IATA codes to autocomplete options
+  const iataOptions = iataCodes.map(code => ({
+    value: code.code,
+    label: `${code.city}, ${code.country}`,
+    description: code.airport
+  }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -174,6 +199,36 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
               />
               <p className="text-xs text-muted-foreground">
                 Calculée automatiquement
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="departure_airport">Aéroport de départ</Label>
+              <Autocomplete
+                options={iataOptions}
+                value={formData.departure_airport}
+                onChange={(value) => setFormData(prev => ({ ...prev, departure_airport: value }))}
+                placeholder="Code IATA (ex: CMN)"
+                maxResults={8}
+              />
+              <p className="text-xs text-muted-foreground">
+                Code IATA de l'aéroport de départ
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="arrival_airport">Aéroport d'arrivée</Label>
+              <Autocomplete
+                options={iataOptions}
+                value={formData.arrival_airport}
+                onChange={(value) => setFormData(prev => ({ ...prev, arrival_airport: value }))}
+                placeholder="Code IATA (ex: JED)"
+                maxResults={8}
+              />
+              <p className="text-xs text-muted-foreground">
+                Code IATA de l'aéroport d'arrivée
               </p>
             </div>
           </div>

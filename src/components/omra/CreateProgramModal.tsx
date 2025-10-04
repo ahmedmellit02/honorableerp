@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Autocomplete } from "@/components/ui/autocomplete";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateOmraProgram } from "@/hooks/useOmraPrograms";
 import { useHotels } from "@/hooks/useOmraHotels";
+import { iataCodes } from "@/data/iataCodes";
 import { Loader2, Calendar, MapPin, DollarSign, Building } from "lucide-react";
 
 interface CreateProgramModalProps {
@@ -24,6 +26,8 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
     duration_days: "",
     departure_date: "",
     return_date: "",
+    departure_airport: "",
+    arrival_airport: "",
     hotel_id: "",
     price_per_person: ""
   });
@@ -53,6 +57,16 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
       return;
     }
 
+    if (formData.departure_airport && formData.arrival_airport && 
+        formData.departure_airport === formData.arrival_airport) {
+      toast({
+        title: "Erreur",
+        description: "L'aéroport d'arrivée doit être différent de l'aéroport de départ",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const programData = {
         title: formData.title,
@@ -61,6 +75,8 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
         departure_date: formData.departure_date,
         return_date: formData.return_date,
         departure_city: "Casablanca", // Default value since field removed
+        departure_airport: formData.departure_airport || undefined,
+        arrival_airport: formData.arrival_airport || undefined,
         hotels: formData.hotel_id ? [formData.hotel_id] : [],
       };
 
@@ -77,6 +93,8 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
         duration_days: "",
         departure_date: "",
         return_date: "",
+        departure_airport: "",
+        arrival_airport: "",
         hotel_id: "",
         price_per_person: ""
       });
@@ -103,6 +121,13 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
       }
     }
   }, [formData.departure_date, formData.return_date]);
+
+  // Convert IATA codes to autocomplete options
+  const iataOptions = iataCodes.map(code => ({
+    value: code.code,
+    label: `${code.city}, ${code.country}`,
+    description: code.airport
+  }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -164,6 +189,36 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
               />
               <p className="text-xs text-muted-foreground">
                 Calculée automatiquement
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="departure_airport">Aéroport de départ</Label>
+              <Autocomplete
+                options={iataOptions}
+                value={formData.departure_airport}
+                onChange={(value) => setFormData(prev => ({ ...prev, departure_airport: value }))}
+                placeholder="Code IATA (ex: CMN)"
+                maxResults={8}
+              />
+              <p className="text-xs text-muted-foreground">
+                Code IATA de l'aéroport de départ
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="arrival_airport">Aéroport d'arrivée</Label>
+              <Autocomplete
+                options={iataOptions}
+                value={formData.arrival_airport}
+                onChange={(value) => setFormData(prev => ({ ...prev, arrival_airport: value }))}
+                placeholder="Code IATA (ex: JED)"
+                maxResults={8}
+              />
+              <p className="text-xs text-muted-foreground">
+                Code IATA de l'aéroport d'arrivée
               </p>
             </div>
           </div>
