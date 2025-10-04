@@ -30,8 +30,7 @@ export function ProgramsList() {
       draft: { label: "Brouillon", variant: "secondary" as const },
       published: { label: "Publié", variant: "default" as const },
       full: { label: "Complet", variant: "destructive" as const },
-      cancelled: { label: "Annulé", variant: "destructive" as const },
-      completed: { label: "Terminé", variant: "outline" as const }
+      cancelled: { label: "Annulé", variant: "destructive" as const }
     };
     
     return statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;

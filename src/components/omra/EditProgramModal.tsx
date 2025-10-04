@@ -208,7 +208,6 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
                   <SelectItem value="published">Publié</SelectItem>
                   <SelectItem value="full">Complet</SelectItem>
                   <SelectItem value="cancelled">Annulé</SelectItem>
-                  <SelectItem value="completed">Terminé</SelectItem>
                 </SelectContent>
               </Select>
             </div>
