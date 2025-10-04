@@ -33,8 +33,25 @@ export interface CreateOmraProgramData {
   departure_date: string;
   return_date: string;
   departure_city: string;
+  hotels?: any[];
   included_services?: string[];
   excluded_services?: string[];
+  status?: 'draft' | 'published' | 'full' | 'cancelled' | 'completed';
+}
+
+export interface UpdateOmraProgramData {
+  title?: string;
+  description?: string | null;
+  duration_days?: number;
+  price_per_person?: number;
+  max_participants?: number | null;
+  departure_date?: string;
+  return_date?: string;
+  departure_city?: string;
+  hotels?: any[];
+  included_services?: string[];
+  excluded_services?: string[];
+  status?: 'draft' | 'published' | 'full' | 'cancelled' | 'completed';
 }
 
 export function useOmraPrograms() {
@@ -69,6 +86,34 @@ export function useCreateOmraProgram() {
           excluded_services: programData.excluded_services || [],
           created_by: user.id,
         }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['omra-programs'] });
+    },
+  });
+}
+
+export function useUpdateOmraProgram() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data: programData }: { id: string; data: UpdateOmraProgramData }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('omra_programs')
+        .update({
+          ...programData,
+          updated_by: user.id,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
         .select()
         .single();
 

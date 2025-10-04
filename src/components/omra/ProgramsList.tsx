@@ -5,12 +5,20 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, MapPin, Users, DollarSign, Search, Edit, Clock } from "lucide-react";
-import { useOmraPrograms } from "@/hooks/useOmraPrograms";
+import { useOmraPrograms, OmraProgram } from "@/hooks/useOmraPrograms";
 import { formatDate } from "@/lib/utils";
+import { EditProgramModal } from "./EditProgramModal";
 
 export function ProgramsList() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingProgram, setEditingProgram] = useState<OmraProgram | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { data: programs, isLoading, error } = useOmraPrograms();
+
+  const handleEditClick = (program: OmraProgram) => {
+    setEditingProgram(program);
+    setIsEditModalOpen(true);
+  };
 
   const filteredPrograms = programs?.filter(program =>
     program.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -53,18 +61,25 @@ export function ProgramsList() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher par titre ou ville de départ..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+    <>
+      <EditProgramModal 
+        open={isEditModalOpen} 
+        onOpenChange={setIsEditModalOpen}
+        program={editingProgram}
+      />
+      
+      <div className="space-y-6">
+        <div className="flex items-center space-x-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher par titre ou ville de départ..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
         </div>
-      </div>
 
       {filteredPrograms.length === 0 ? (
         <div className="text-center py-12">
@@ -104,7 +119,11 @@ export function ProgramsList() {
                         <Badge variant={statusBadge.variant}>
                           {statusBadge.label}
                         </Badge>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleEditClick(program)}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                       </div>
@@ -195,6 +214,7 @@ export function ProgramsList() {
           </div>
         </>
       )}
-    </div>
+      </div>
+    </>
   );
 }
