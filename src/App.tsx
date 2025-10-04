@@ -23,15 +23,13 @@ import BalanceControl from './pages/BalanceControl';
 import DebtControl from './pages/DebtControl';
 import SupplierDashboard from './pages/SupplierDashboard';
 import ExpenseControl from './pages/ExpenseControl';
-import DeviceManagement from './pages/DeviceManagement';
 import OmraManagement from './pages/OmraManagement';
 import OmraPrograms from './pages/OmraPrograms';
-import { BannedDeviceBanner } from './components/BannedDeviceBanner';
 
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
-  const { user, loading, deviceBanned } = useAuth();
+  const { user, loading } = useAuth();
   const { userRole } = useSimpleRole();
   
   // Fetch comprehensive data for ChatBot
@@ -174,10 +172,6 @@ const AppRoutes = () => {
     );
   }
 
-  if (deviceBanned) {
-    return <BannedDeviceBanner />;
-  }
-
   if (!user) {
     return <Auth />;
   }
@@ -203,7 +197,6 @@ const AppRoutes = () => {
               <Route path="/balance-control" element={<BalanceControl />} />
               <Route path="/debt-control" element={<DebtControl />} />
               <Route path="/expense-control" element={<ExpenseControl />} />
-              <Route path="/device-management" element={<DeviceManagement />} />
               <Route path="/omra-management" element={<OmraManagement />} />
               <Route path="/omra" element={<OmraPrograms />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
