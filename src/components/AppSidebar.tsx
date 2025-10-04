@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Plus, LogOut, LockIcon, Wallet, Receipt, FileText, Table, CreditCard, Users, Shield, Calendar } from "lucide-react";
+import { BarChart3, Plus, LogOut, LockIcon, Wallet, Receipt, FileText, Table, CreditCard, Users, Shield, Calendar, Moon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { useState } from "react";
@@ -130,13 +130,6 @@ export function AppSidebar() {
     href: "/crm",
     icon: Users,
   });
-
-  // Omra Programs for all authenticated users
-  navItems.push({
-    label: "Gestion Omra",
-    href: "/omra",
-    icon: Calendar,
-  });
     
   // Balance control only for cashiers
   if (canControlBalance()) {
@@ -187,6 +180,13 @@ export function AppSidebar() {
       icon: Calendar,
     });
   }
+
+  // Omra Programs for all authenticated users - Last item
+  navItems.push({
+    label: "Gestion Omra",
+    href: "/omra",
+    icon: Moon,
+  });
 
   const isActive = (path: string) => location.pathname === path;
 
