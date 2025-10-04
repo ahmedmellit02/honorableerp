@@ -25,6 +25,7 @@ import SupplierDashboard from './pages/SupplierDashboard';
 import ExpenseControl from './pages/ExpenseControl';
 import DeviceManagement from './pages/DeviceManagement';
 import OmraManagement from './pages/OmraManagement';
+import OmraPrograms from './pages/OmraPrograms';
 import { BannedDeviceBanner } from './components/BannedDeviceBanner';
 
 const queryClient = new QueryClient();
@@ -204,6 +205,7 @@ const AppRoutes = () => {
               <Route path="/expense-control" element={<ExpenseControl />} />
               <Route path="/device-management" element={<DeviceManagement />} />
               <Route path="/omra-management" element={<OmraManagement />} />
+              <Route path="/omra" element={<OmraPrograms />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

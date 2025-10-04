@@ -130,6 +130,13 @@ export function AppSidebar() {
     href: "/crm",
     icon: Users,
   });
+
+  // Omra Programs for all authenticated users
+  navItems.push({
+    label: "Gestion Omra",
+    href: "/omra",
+    icon: Calendar,
+  });
     
   // Balance control only for cashiers
   if (canControlBalance()) {
@@ -172,10 +179,10 @@ export function AppSidebar() {
     });
   }
 
-  // Omra Management for managers and super agents
+  // Program Management for managers and super agents
   if (userRole === 'manager' || userRole === 'super_agent') {
     navItems.push({
-      label: "Gestion Omra",
+      label: "Gestion Programmes",
       href: "/omra-management",
       icon: Calendar,
     });

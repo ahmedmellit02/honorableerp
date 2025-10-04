@@ -39,7 +39,7 @@ export default function OmraManagement() {
     <div className="container mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestion Omra</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Gestion Programmes</h1>
           <p className="text-muted-foreground">
             Gérez vos programmes de pèlerinage et hôtels
           </p>
