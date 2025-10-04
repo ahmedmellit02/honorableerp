@@ -20,11 +20,11 @@ export default function OmraPrograms() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      published: { label: "Disponible", variant: "default" as const },
-      full: { label: "Complet", variant: "destructive" as const },
+      published: { label: "Disponible", variant: "success" as const },
+      full: { label: "Complet", variant: "info" as const },
     };
     
-    return statusConfig[status as keyof typeof statusConfig] || { label: "Disponible", variant: "default" as const };
+    return statusConfig[status as keyof typeof statusConfig] || { label: "Disponible", variant: "success" as const };
   };
 
   if (isLoading) {

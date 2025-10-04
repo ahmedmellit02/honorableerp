@@ -40,6 +40,10 @@ All colors MUST be HSL.
     --success: 145 70% 45%;
     --success-foreground: 0 0% 100%;
 
+    /* Info: Sky Blue */
+    --info: 210 100% 50%;
+    --info-foreground: 0 0% 100%;
+
     /* Warning: Sunset Orange */
     --warning: 30 85% 55%;
     --warning-foreground: 0 0% 100%;

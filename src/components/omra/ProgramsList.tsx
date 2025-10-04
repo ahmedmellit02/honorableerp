@@ -28,8 +28,8 @@ export function ProgramsList() {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       draft: { label: "Brouillon", variant: "secondary" as const },
-      published: { label: "Publié", variant: "default" as const },
-      full: { label: "Complet", variant: "destructive" as const },
+      published: { label: "Publié", variant: "success" as const },
+      full: { label: "Complet", variant: "info" as const },
       cancelled: { label: "Annulé", variant: "destructive" as const }
     };
     
