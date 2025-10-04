@@ -22,7 +22,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
   const { data: hotels = [] } = useHotels();
   
   const [formData, setFormData] = useState({
-    title: "",
+    program_name: "",
     duration_days: "",
     departure_date: "",
     return_date: "",
@@ -35,7 +35,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.duration_days || 
+    if (!formData.program_name || !formData.duration_days || 
         !formData.departure_date || !formData.return_date || !formData.price_per_person) {
       toast({
         title: "Erreur",
@@ -68,8 +68,16 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
     }
 
     try {
+      // Generate title automatically
+      const selectedHotel = hotels.find(h => h.id === formData.hotel_id);
+      const hotelPart = selectedHotel ? ` | ${selectedHotel.name.toUpperCase()}` : '';
+      const airportPart = (formData.departure_airport && formData.arrival_airport) 
+        ? ` Départ de ${formData.departure_airport} à ${formData.arrival_airport}`
+        : '';
+      const generatedTitle = `${formData.program_name.toUpperCase()}${hotelPart}${airportPart}`;
+
       const programData = {
-        title: formData.title,
+        title: generatedTitle,
         duration_days: parseInt(formData.duration_days),
         price_per_person: parseFloat(formData.price_per_person),
         departure_date: formData.departure_date,
@@ -89,7 +97,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
 
       // Reset form
       setFormData({
-        title: "",
+        program_name: "",
         duration_days: "",
         departure_date: "",
         return_date: "",
@@ -141,14 +149,17 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Titre du Programme *</Label>
+            <Label htmlFor="program_name">Nom du Programme *</Label>
             <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value.toUpperCase() }))}
+              id="program_name"
+              value={formData.program_name}
+              onChange={(e) => setFormData(prev => ({ ...prev, program_name: e.target.value.toUpperCase() }))}
               placeholder="ex: OMRA RAMADAN 2024"
               required
             />
+            <p className="text-xs text-muted-foreground">
+              Le titre complet sera généré automatiquement
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
