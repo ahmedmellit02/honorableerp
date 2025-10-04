@@ -24,14 +24,15 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
     duration_days: "",
     departure_date: "",
     return_date: "",
-    hotel_id: ""
+    hotel_id: "",
+    price_per_person: ""
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.title || !formData.duration_days || 
-        !formData.departure_date || !formData.return_date) {
+        !formData.departure_date || !formData.return_date || !formData.price_per_person) {
       toast({
         title: "Erreur",
         description: "Veuillez remplir tous les champs obligatoires.",
@@ -56,7 +57,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
       const programData = {
         title: formData.title,
         duration_days: parseInt(formData.duration_days),
-        price_per_person: 0, // Default value since field removed
+        price_per_person: parseFloat(formData.price_per_person),
         departure_date: formData.departure_date,
         return_date: formData.return_date,
         departure_city: "Casablanca", // Default value since field removed
@@ -76,7 +77,8 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
         duration_days: "",
         departure_date: "",
         return_date: "",
-        hotel_id: ""
+        hotel_id: "",
+        price_per_person: ""
       });
       
       onOpenChange(false);
@@ -166,22 +168,42 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="hotel_id">Hôtel</Label>
-            <div className="relative">
-              <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-              <Select value={formData.hotel_id} onValueChange={(value) => setFormData(prev => ({ ...prev, hotel_id: value }))}>
-                <SelectTrigger className="pl-10">
-                  <SelectValue placeholder="Sélectionner un hôtel" />
-                </SelectTrigger>
-                <SelectContent>
-                  {hotels.map((hotel) => (
-                    <SelectItem key={hotel.id} value={hotel.id}>
-                      {hotel.name.toUpperCase()} - {hotel.city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price_per_person">Prix par Personne (MAD) *</Label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="price_per_person"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formData.price_per_person}
+                  onChange={(e) => setFormData(prev => ({ ...prev, price_per_person: e.target.value }))}
+                  placeholder="15000"
+                  required
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="hotel_id">Hôtel</Label>
+              <div className="relative">
+                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                <Select value={formData.hotel_id} onValueChange={(value) => setFormData(prev => ({ ...prev, hotel_id: value }))}>
+                  <SelectTrigger className="pl-10">
+                    <SelectValue placeholder="Sélectionner un hôtel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {hotels.map((hotel) => (
+                      <SelectItem key={hotel.id} value={hotel.id}>
+                        {hotel.name.toUpperCase()} - {hotel.city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
