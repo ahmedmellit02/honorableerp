@@ -71,10 +71,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
       // Generate title automatically
       const selectedHotel = hotels.find(h => h.id === formData.hotel_id);
       const hotelPart = selectedHotel ? ` | ${selectedHotel.name.toUpperCase()}` : '';
-      const airportPart = (formData.departure_airport && formData.arrival_airport) 
-        ? ` Départ de ${formData.departure_airport} à ${formData.arrival_airport}`
-        : '';
-      const generatedTitle = `${formData.program_name.toUpperCase()}${hotelPart}${airportPart}`;
+      const generatedTitle = `${formData.program_name.toUpperCase()}${hotelPart}`;
 
       const programData = {
         title: generatedTitle,

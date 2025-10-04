@@ -111,7 +111,11 @@ export function ProgramsList() {
                         <CardTitle className="text-xl">{program.title}</CardTitle>
                         <CardDescription className="flex items-center gap-1 mt-1">
                           <MapPin className="h-4 w-4" />
-                          Départ de {program.departure_city}
+                          {program.departure_airport && program.arrival_airport ? (
+                            <>Départ de {program.departure_airport} à {program.arrival_airport}</>
+                          ) : (
+                            <>Départ de {program.departure_city}</>
+                          )}
                         </CardDescription>
                       </div>
                       <div className="flex items-center gap-2">
