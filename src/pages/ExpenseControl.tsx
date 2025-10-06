@@ -6,12 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, CheckCircle, ArrowLeft } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Plus, CheckCircle, ArrowLeft, CalendarIcon, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Navigate, Link } from "react-router-dom";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface Expense {
   id: string;
@@ -36,6 +40,9 @@ const ExpenseControl = () => {
   const [loading, setLoading] = useState(true);
   const [isClassifying, setIsClassifying] = useState<string | null>(null);
   const [isApproving, setIsApproving] = useState<string | null>(null);
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
+  const [descriptionFilter, setDescriptionFilter] = useState("");
   const { toast } = useToast();
   const { user } = useAuth();
   const { data: userRole, isLoading: roleLoading } = useUserRole();
@@ -234,9 +241,28 @@ const ExpenseControl = () => {
     }
   };
 
-  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  // Filter expenses based on filters
+  const filteredExpenses = expenses.filter(expense => {
+    const expenseDate = new Date(expense.created_at);
+    const matchesDateFrom = !dateFrom || expenseDate >= dateFrom;
+    const matchesDateTo = !dateTo || expenseDate <= new Date(dateTo.getTime() + 86400000); // Add 1 day to include the end date
+    const matchesDescription = !descriptionFilter || 
+      expense.description.toLowerCase().includes(descriptionFilter.toLowerCase());
+    
+    return matchesDateFrom && matchesDateTo && matchesDescription;
+  });
+
+  const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   const isCashier = userRole === 'cashier';
   const isManager = userRole === 'manager';
+
+  const clearFilters = () => {
+    setDateFrom(undefined);
+    setDateTo(undefined);
+    setDescriptionFilter("");
+  };
+
+  const hasActiveFilters = dateFrom || dateTo || descriptionFilter;
 
   return (
     <div className="min-h-screen bg-background">
@@ -334,13 +360,97 @@ const ExpenseControl = () => {
                 <CardTitle>Historique des charges</CardTitle>
               </CardHeader>
               <CardContent>
+                {/* Filters */}
+                <div className="mb-6 space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Date From */}
+                    <div className="flex-1">
+                      <Label className="mb-2 block">Date de début</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !dateFrom && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateFrom ? format(dateFrom, "dd/MM/yyyy") : "Sélectionner"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateFrom}
+                            onSelect={setDateFrom}
+                            initialFocus
+                            className="pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    {/* Date To */}
+                    <div className="flex-1">
+                      <Label className="mb-2 block">Date de fin</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !dateTo && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateTo ? format(dateTo, "dd/MM/yyyy") : "Sélectionner"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateTo}
+                            onSelect={setDateTo}
+                            initialFocus
+                            className="pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    {/* Description Filter */}
+                    <div className="flex-1">
+                      <Label className="mb-2 block">Description</Label>
+                      <Input
+                        placeholder="Rechercher..."
+                        value={descriptionFilter}
+                        onChange={(e) => setDescriptionFilter(e.target.value)}
+                      />
+                    </div>
+
+                    {/* Clear Filters Button */}
+                    {hasActiveFilters && (
+                      <div className="flex items-end">
+                        <Button
+                          variant="ghost"
+                          onClick={clearFilters}
+                          className="gap-2"
+                        >
+                          <X className="h-4 w-4" />
+                          Réinitialiser
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 {loading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                   </div>
-                ) : expenses.length === 0 ? (
+                ) : filteredExpenses.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
-                    Aucune charge enregistrée
+                    {expenses.length === 0 ? "Aucune charge enregistrée" : "Aucune charge ne correspond aux filtres"}
                   </div>
                 ) : (
                   <Table>
@@ -355,7 +465,7 @@ const ExpenseControl = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {expenses.map((expense) => (
+                      {filteredExpenses.map((expense) => (
                         <TableRow key={expense.id}>
                           <TableCell>
                             {new Date(expense.created_at).toLocaleDateString('fr-FR')}
