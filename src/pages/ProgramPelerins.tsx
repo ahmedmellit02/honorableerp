@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,19 +11,29 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AddPelerinModal } from "@/components/omra/AddPelerinModal";
+import { AddPaymentModal } from "@/components/omra/AddPaymentModal";
 import { usePelerins } from "@/hooks/usePelerins";
 import { useOmraPrograms } from "@/hooks/useOmraPrograms";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, DollarSign } from "lucide-react";
 
 export default function ProgramPelerins() {
   const { programId } = useParams<{ programId: string }>();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   
   const { data: programs } = useOmraPrograms();
   const { data: pelerins, isLoading, error } = usePelerins(programId || "");
 
   const program = programs?.find(p => p.id === programId);
+
+  // Sort pelerins by updated_at DESC to show recently updated at top
+  const sortedPelerins = useMemo(() => {
+    if (!pelerins) return [];
+    return [...pelerins].sort((a, b) => 
+      new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    );
+  }, [pelerins]);
 
   if (isLoading) {
     return (
@@ -64,10 +74,16 @@ export default function ProgramPelerins() {
             </p>
           </div>
         </div>
-        <Button onClick={() => setIsAddModalOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Ajouter un Pèlerin
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setIsPaymentModalOpen(true)} variant="outline">
+            <DollarSign className="h-4 w-4 mr-2" />
+            Enregistrer un Paiement
+          </Button>
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Ajouter un Pèlerin
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -81,14 +97,14 @@ export default function ProgramPelerins() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {!pelerins || pelerins.length === 0 ? (
+            {!sortedPelerins || sortedPelerins.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
                   Aucun pèlerin inscrit pour ce programme
                 </TableCell>
               </TableRow>
             ) : (
-              pelerins.map((pelerin) => (
+              sortedPelerins.map((pelerin) => (
                 <TableRow key={pelerin.id}>
                   <TableCell className="font-medium">{pelerin.name}</TableCell>
                   <TableCell>{pelerin.address || "-"}</TableCell>
@@ -116,6 +132,13 @@ export default function ProgramPelerins() {
       <AddPelerinModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
+        programId={programId || ""}
+      />
+
+      <AddPaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        pelerins={pelerins || []}
         programId={programId || ""}
       />
     </div>
