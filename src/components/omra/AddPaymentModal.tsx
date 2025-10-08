@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Autocomplete } from "@/components/ui/autocomplete";
 import { useCreatePayment } from "@/hooks/usePelerinPayments";
 import { toast } from "sonner";
@@ -24,7 +23,6 @@ interface AddPaymentModalProps {
 export function AddPaymentModal({ isOpen, onClose, pelerins, programId }: AddPaymentModalProps) {
   const [selectedPelerinId, setSelectedPelerinId] = useState("");
   const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
   const createPayment = useCreatePayment();
 
   const pelerinOptions = pelerins.map(p => ({
@@ -51,14 +49,12 @@ export function AddPaymentModal({ isOpen, onClose, pelerins, programId }: AddPay
       {
         pelerin_id: selectedPelerinId,
         amount: paymentAmount,
-        description: description || undefined,
       },
       {
         onSuccess: () => {
           toast.success("Paiement enregistré avec succès");
           setSelectedPelerinId("");
           setAmount("");
-          setDescription("");
           onClose();
         },
         onError: () => {
@@ -95,17 +91,6 @@ export function AddPaymentModal({ isOpen, onClose, pelerins, programId }: AddPay
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Entrez le montant"
               required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Description (optionnel)</Label>
-            <Textarea
-              id="description"
-              placeholder="Ex: Paiement partiel, Solde final..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={2}
             />
           </div>
 
