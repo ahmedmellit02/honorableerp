@@ -25,6 +25,7 @@ import SupplierDashboard from './pages/SupplierDashboard';
 import ExpenseControl from './pages/ExpenseControl';
 import OmraManagement from './pages/OmraManagement';
 import OmraPrograms from './pages/OmraPrograms';
+import ProgramPelerins from './pages/ProgramPelerins';
 
 const queryClient = new QueryClient();
 
@@ -199,6 +200,7 @@ const AppRoutes = () => {
               <Route path="/expense-control" element={<ExpenseControl />} />
               <Route path="/omra-management" element={<OmraManagement />} />
               <Route path="/omra" element={<OmraPrograms />} />
+              <Route path="/program-pelerins/:programId" element={<ProgramPelerins />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

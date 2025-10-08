@@ -390,6 +390,50 @@ export type Database = {
         }
         Relationships: []
       }
+      pelerins: {
+        Row: {
+          address: string | null
+          advance_payment: number | null
+          contacts: Json | null
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          program_id: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          advance_payment?: number | null
+          contacts?: Json | null
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          program_id: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          advance_payment?: number | null
+          contacts?: Json | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          program_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pelerins_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "omra_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prospects: {
         Row: {
           assigned_to: string | null

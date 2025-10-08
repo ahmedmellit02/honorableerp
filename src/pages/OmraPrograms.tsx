@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,7 @@ import { useOmraPrograms, OmraProgram } from "@/hooks/useOmraPrograms";
 import { formatDate } from "@/lib/utils";
 
 export default function OmraPrograms() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const { data: programs, isLoading, error } = useOmraPrograms();
 
@@ -102,7 +104,11 @@ export default function OmraPrograms() {
                   : 0;
 
                 return (
-                  <Card key={program.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <Card 
+                    key={program.id} 
+                    className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/program-pelerins/${program.id}`)}
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
