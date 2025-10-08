@@ -75,18 +75,14 @@ export function ViewPaymentHistoryModal({
                   <TableHead>Date</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead className="text-right">Montant</TableHead>
-                  {(userRole === 'cashier' || userRole === 'manager') && (
-                    <>
-                      <TableHead className="text-center">Caissier</TableHead>
-                      <TableHead className="text-center">Manager</TableHead>
-                    </>
-                  )}
+                  <TableHead className="text-center">Caissier</TableHead>
+                  <TableHead className="text-center">Manager</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {!payments || payments.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={userRole === 'cashier' || userRole === 'manager' ? 5 : 3} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                       Aucun paiement enregistré
                     </TableCell>
                   </TableRow>
@@ -101,61 +97,57 @@ export function ViewPaymentHistoryModal({
                         {Number(payment.amount).toLocaleString('fr-MA')} MAD
                       </TableCell>
                       
-                      {(userRole === 'cashier' || userRole === 'manager') && (
-                        <>
-                          {/* Cashier column */}
-                          <TableCell className="text-center">
-                            {payment.cashed_in_by_cashier ? (
-                              <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
-                                <CheckCircle className="h-3 w-3" />
-                                Encaissé
-                              </Badge>
-                            ) : userRole === 'cashier' ? (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleCashInCashier(payment.id)}
-                                disabled={cashInCashierMutation.isPending}
-                                className="text-xs hover:bg-success hover:text-white hover:border-success"
-                              >
-                                <Euro className="h-3 w-3 mr-1" />
-                                Encaisser
-                              </Button>
-                            ) : (
-                              <Badge variant="outline" className="flex items-center gap-1 text-destructive border-destructive w-fit mx-auto">
-                                <Euro className="h-3 w-3" />
-                                Non encaissé
-                              </Badge>
-                            )}
-                          </TableCell>
+                      {/* Cashier column */}
+                      <TableCell className="text-center">
+                        {payment.cashed_in_by_cashier ? (
+                          <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
+                            <CheckCircle className="h-3 w-3" />
+                            Encaissé
+                          </Badge>
+                        ) : userRole === 'cashier' ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCashInCashier(payment.id)}
+                            disabled={cashInCashierMutation.isPending}
+                            className="text-xs hover:bg-success hover:text-white hover:border-success"
+                          >
+                            <Euro className="h-3 w-3 mr-1" />
+                            Encaisser
+                          </Button>
+                        ) : (
+                          <Badge variant="outline" className="flex items-center gap-1 text-destructive border-destructive w-fit mx-auto">
+                            <Euro className="h-3 w-3" />
+                            Non encaissé
+                          </Badge>
+                        )}
+                      </TableCell>
 
-                          {/* Manager column */}
-                          <TableCell className="text-center">
-                            {payment.cashed_in_by_manager ? (
-                              <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
-                                <CheckCircle className="h-3 w-3" />
-                                Encaissé
-                              </Badge>
-                            ) : userRole === 'manager' ? (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleCashInManager(payment.id)}
-                                disabled={cashInManagerMutation.isPending}
-                                className="text-xs hover:bg-success hover:text-white hover:border-success"
-                              >
-                                <Euro className="h-3 w-3 mr-1" />
-                                Encaisser
-                              </Button>
-                            ) : (
-                              <Badge variant="outline" className="flex items-center gap-1 text-destructive border-destructive w-fit mx-auto">
-                                <Euro className="h-3 w-3" />
-                                Non encaissé
-                              </Badge>
-                            )}
-                          </TableCell>
-                        </>
-                      )}
+                      {/* Manager column */}
+                      <TableCell className="text-center">
+                        {payment.cashed_in_by_manager ? (
+                          <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
+                            <CheckCircle className="h-3 w-3" />
+                            Encaissé
+                          </Badge>
+                        ) : userRole === 'manager' ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCashInManager(payment.id)}
+                            disabled={cashInManagerMutation.isPending}
+                            className="text-xs hover:bg-success hover:text-white hover:border-success"
+                          >
+                            <Euro className="h-3 w-3 mr-1" />
+                            Encaisser
+                          </Button>
+                        ) : (
+                          <Badge variant="outline" className="flex items-center gap-1 text-destructive border-destructive w-fit mx-auto">
+                            <Euro className="h-3 w-3" />
+                            Non encaissé
+                          </Badge>
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
