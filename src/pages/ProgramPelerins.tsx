@@ -50,7 +50,7 @@ export default function ProgramPelerins() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link to="/omra-programs">
+          <Link to="/omra">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-5 w-5" />
             </Button>
