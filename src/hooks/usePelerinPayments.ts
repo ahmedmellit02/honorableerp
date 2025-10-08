@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 export interface PelerinPayment {
   id: string;
@@ -9,6 +10,10 @@ export interface PelerinPayment {
   description: string | null;
   created_by: string;
   created_at: string;
+  cashed_in_by_cashier: string | null;
+  cashed_in_at_cashier: string | null;
+  cashed_in_by_manager: string | null;
+  cashed_in_at_manager: string | null;
 }
 
 export interface CreatePaymentData {
@@ -94,6 +99,80 @@ export function useCreatePayment() {
       queryClient.invalidateQueries({ queryKey: ['pelerin-payments', data.pelerin_id] });
       queryClient.invalidateQueries({ queryKey: ['program-payments'] });
       queryClient.invalidateQueries({ queryKey: ['pelerins'] });
+    },
+  });
+}
+
+export function useCashInPaymentCashier() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (paymentId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('pelerin_payments')
+        .update({
+          cashed_in_by_cashier: user.id,
+          cashed_in_at_cashier: new Date().toISOString(),
+        })
+        .eq('id', paymentId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pelerin-payments'] });
+      queryClient.invalidateQueries({ queryKey: ['program-payments'] });
+      toast({
+        title: "Encaissement réussi",
+        description: "Le paiement a été marqué comme encaissé (Caissier).",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'encaisser ce paiement.",
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useCashInPaymentManager() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (paymentId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('pelerin_payments')
+        .update({
+          cashed_in_by_manager: user.id,
+          cashed_in_at_manager: new Date().toISOString(),
+        })
+        .eq('id', paymentId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pelerin-payments'] });
+      queryClient.invalidateQueries({ queryKey: ['program-payments'] });
+      toast({
+        title: "Encaissement réussi",
+        description: "Le paiement a été marqué comme encaissé (Manager).",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'encaisser ce paiement.",
+        variant: "destructive",
+      });
     },
   });
 }

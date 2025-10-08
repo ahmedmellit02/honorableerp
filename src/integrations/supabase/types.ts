@@ -393,6 +393,10 @@ export type Database = {
       pelerin_payments: {
         Row: {
           amount: number
+          cashed_in_at_cashier: string | null
+          cashed_in_at_manager: string | null
+          cashed_in_by_cashier: string | null
+          cashed_in_by_manager: string | null
           created_at: string
           created_by: string
           description: string | null
@@ -402,6 +406,10 @@ export type Database = {
         }
         Insert: {
           amount: number
+          cashed_in_at_cashier?: string | null
+          cashed_in_at_manager?: string | null
+          cashed_in_by_cashier?: string | null
+          cashed_in_by_manager?: string | null
           created_at?: string
           created_by: string
           description?: string | null
@@ -411,6 +419,10 @@ export type Database = {
         }
         Update: {
           amount?: number
+          cashed_in_at_cashier?: string | null
+          cashed_in_at_manager?: string | null
+          cashed_in_by_cashier?: string | null
+          cashed_in_by_manager?: string | null
           created_at?: string
           created_by?: string
           description?: string | null
