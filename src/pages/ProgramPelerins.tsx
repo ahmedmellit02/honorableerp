@@ -66,7 +66,7 @@ export default function ProgramPelerins() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-2xl font-bold">
               {program?.title || "Programme"}
             </h1>
             <p className="text-muted-foreground">
