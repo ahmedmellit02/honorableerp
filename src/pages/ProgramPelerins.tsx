@@ -12,20 +12,39 @@ import {
 } from "@/components/ui/table";
 import { AddPelerinModal } from "@/components/omra/AddPelerinModal";
 import { AddPaymentModal } from "@/components/omra/AddPaymentModal";
+import { ViewPaymentHistoryModal } from "@/components/omra/ViewPaymentHistoryModal";
 import { usePelerins } from "@/hooks/usePelerins";
 import { useOmraPrograms } from "@/hooks/useOmraPrograms";
+import { useProgramPayments } from "@/hooks/usePelerinPayments";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Plus, DollarSign } from "lucide-react";
+import { ArrowLeft, Plus, DollarSign, Receipt } from "lucide-react";
 
 export default function ProgramPelerins() {
   const { programId } = useParams<{ programId: string }>();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedPelerinForHistory, setSelectedPelerinForHistory] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   
   const { data: programs } = useOmraPrograms();
   const { data: pelerins, isLoading, error } = usePelerins(programId || "");
+  const { data: allPayments } = useProgramPayments(programId || "");
 
   const program = programs?.find(p => p.id === programId);
+
+  // Calculate payment totals for each pelerin
+  const pelerinPaymentTotals = useMemo(() => {
+    const totals: Record<string, number> = {};
+    allPayments?.forEach(payment => {
+      if (!totals[payment.pelerin_id]) {
+        totals[payment.pelerin_id] = 0;
+      }
+      totals[payment.pelerin_id] += Number(payment.amount);
+    });
+    return totals;
+  }, [allPayments]);
 
   // Sort pelerins by updated_at DESC to show recently updated at top
   const sortedPelerins = useMemo(() => {
@@ -93,37 +112,51 @@ export default function ProgramPelerins() {
               <TableHead>Nom</TableHead>
               <TableHead>Adresse</TableHead>
               <TableHead>Contacts</TableHead>
-              <TableHead className="text-right">Avance Payée</TableHead>
+              <TableHead className="text-right">Total Payé</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {!sortedPelerins || sortedPelerins.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                   Aucun pèlerin inscrit pour ce programme
                 </TableCell>
               </TableRow>
             ) : (
-              sortedPelerins.map((pelerin) => (
-                <TableRow key={pelerin.id}>
-                  <TableCell className="font-medium">{pelerin.name}</TableCell>
-                  <TableCell>{pelerin.address || "-"}</TableCell>
-                  <TableCell>
-                    {pelerin.contacts && pelerin.contacts.length > 0 ? (
-                      <div className="space-y-1">
-                        {pelerin.contacts.map((contact, idx) => (
-                          <div key={idx} className="text-sm">{contact}</div>
-                        ))}
-                      </div>
-                    ) : (
-                      "-"
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {pelerin.advance_payment.toLocaleString('fr-MA')} MAD
-                  </TableCell>
-                </TableRow>
-              ))
+              sortedPelerins.map((pelerin) => {
+                const totalPaid = pelerinPaymentTotals[pelerin.id] || 0;
+                return (
+                  <TableRow key={pelerin.id}>
+                    <TableCell className="font-medium">{pelerin.name}</TableCell>
+                    <TableCell>{pelerin.address || "-"}</TableCell>
+                    <TableCell>
+                      {pelerin.contacts && pelerin.contacts.length > 0 ? (
+                        <div className="space-y-1">
+                          {pelerin.contacts.map((contact, idx) => (
+                            <div key={idx} className="text-sm">{contact}</div>
+                          ))}
+                        </div>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {totalPaid.toLocaleString('fr-MA')} MAD
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedPelerinForHistory({ id: pelerin.id, name: pelerin.name })}
+                      >
+                        <Receipt className="h-4 w-4 mr-2" />
+                        Historique
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
@@ -141,6 +174,15 @@ export default function ProgramPelerins() {
         pelerins={pelerins || []}
         programId={programId || ""}
       />
+
+      {selectedPelerinForHistory && (
+        <ViewPaymentHistoryModal
+          isOpen={!!selectedPelerinForHistory}
+          onClose={() => setSelectedPelerinForHistory(null)}
+          pelerinId={selectedPelerinForHistory.id}
+          pelerinName={selectedPelerinForHistory.name}
+        />
+      )}
     </div>
   );
 }

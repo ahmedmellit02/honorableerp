@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Autocomplete } from "@/components/ui/autocomplete";
-import { useUpdatePelerin } from "@/hooks/usePelerins";
+import { useCreatePayment } from "@/hooks/usePelerinPayments";
 import { toast } from "sonner";
 
 interface Pelerin {
@@ -23,7 +24,8 @@ interface AddPaymentModalProps {
 export function AddPaymentModal({ isOpen, onClose, pelerins, programId }: AddPaymentModalProps) {
   const [selectedPelerinId, setSelectedPelerinId] = useState("");
   const [amount, setAmount] = useState("");
-  const updatePelerin = useUpdatePelerin();
+  const [description, setDescription] = useState("");
+  const createPayment = useCreatePayment();
 
   const pelerinOptions = pelerins.map(p => ({
     value: p.id,
@@ -35,27 +37,28 @@ export function AddPaymentModal({ isOpen, onClose, pelerins, programId }: AddPay
     e.preventDefault();
     
     if (!selectedPelerinId || !amount) {
-      toast.error("Veuillez remplir tous les champs");
+      toast.error("Veuillez remplir tous les champs requis");
       return;
     }
 
-    const selectedPelerin = pelerins.find(p => p.id === selectedPelerinId);
-    if (!selectedPelerin) return;
+    const paymentAmount = parseFloat(amount);
+    if (isNaN(paymentAmount) || paymentAmount <= 0) {
+      toast.error("Veuillez entrer un montant valide");
+      return;
+    }
 
-    const newTotalAmount = selectedPelerin.advance_payment + parseFloat(amount);
-
-    updatePelerin.mutate(
+    createPayment.mutate(
       {
-        id: selectedPelerinId,
-        data: {
-          advance_payment: newTotalAmount
-        }
+        pelerin_id: selectedPelerinId,
+        amount: paymentAmount,
+        description: description || undefined,
       },
       {
         onSuccess: () => {
           toast.success("Paiement enregistré avec succès");
           setSelectedPelerinId("");
           setAmount("");
+          setDescription("");
           onClose();
         },
         onError: () => {
@@ -95,12 +98,23 @@ export function AddPaymentModal({ isOpen, onClose, pelerins, programId }: AddPay
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="description">Description (optionnel)</Label>
+            <Textarea
+              id="description"
+              placeholder="Ex: Paiement partiel, Solde final..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={2}
+            />
+          </div>
+
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button type="submit" disabled={updatePelerin.isPending}>
-              {updatePelerin.isPending ? "Enregistrement..." : "Enregistrer"}
+            <Button type="submit" disabled={createPayment.isPending}>
+              {createPayment.isPending ? "Enregistrement..." : "Enregistrer"}
             </Button>
           </div>
         </form>

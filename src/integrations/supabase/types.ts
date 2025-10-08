@@ -390,6 +390,44 @@ export type Database = {
         }
         Relationships: []
       }
+      pelerin_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          payment_date: string
+          pelerin_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          payment_date?: string
+          pelerin_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          payment_date?: string
+          pelerin_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pelerin_payments_pelerin_id_fkey"
+            columns: ["pelerin_id"]
+            isOneToOne: false
+            referencedRelation: "pelerins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pelerins: {
         Row: {
           address: string | null
