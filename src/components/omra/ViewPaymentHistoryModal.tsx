@@ -73,7 +73,6 @@ export function ViewPaymentHistoryModal({
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
-                  <TableHead>Description</TableHead>
                   <TableHead className="text-right">Montant</TableHead>
                   <TableHead className="text-center">Caissier</TableHead>
                   <TableHead className="text-center">Manager</TableHead>
@@ -82,7 +81,7 @@ export function ViewPaymentHistoryModal({
               <TableBody>
                 {!payments || payments.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
                       Aucun paiement enregistré
                     </TableCell>
                   </TableRow>
@@ -92,7 +91,6 @@ export function ViewPaymentHistoryModal({
                       <TableCell>
                         {format(new Date(payment.payment_date), "dd MMM yyyy à HH:mm", { locale: fr })}
                       </TableCell>
-                      <TableCell>{payment.description || "-"}</TableCell>
                       <TableCell className="text-right font-medium">
                         {Number(payment.amount).toLocaleString('fr-MA')} MAD
                       </TableCell>
