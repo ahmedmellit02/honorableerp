@@ -87,6 +87,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
         departure_airport: formData.departure_airport || undefined,
         arrival_airport: formData.arrival_airport || undefined,
         hotels: formData.hotel_id ? [formData.hotel_id] : [],
+        room_type_capacity: formData.room_type_capacity ? parseInt(formData.room_type_capacity) : undefined,
       };
 
       await createProgram.mutateAsync(programData);

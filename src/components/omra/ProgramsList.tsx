@@ -164,6 +164,15 @@ export function ProgramsList() {
                       </div>
                     </div>
 
+                    {program.room_type_capacity && (
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">
+                          Chambre {program.room_type_capacity} Personnes
+                        </span>
+                      </div>
+                    )}
+
                     {program.max_participants && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-sm">

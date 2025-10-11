@@ -15,6 +15,7 @@ export interface OmraProgram {
   departure_airport?: string | null;
   arrival_airport?: string | null;
   hotels: any[];
+  room_type_capacity?: number | null;
   included_services: string[];
   excluded_services: string[];
   itinerary: any[];
