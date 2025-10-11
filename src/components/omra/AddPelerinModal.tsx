@@ -14,9 +14,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 
 const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis").max(100, "Le nom doit contenir moins de 100 caractères"),
-  address: z.string().max(500, "L'adresse doit contenir moins de 500 caractères").optional(),
-  contacts: z.array(z.object({ value: z.string() })),
-  advance_payment: z.coerce.number().min(0, "Le montant doit être positif").optional(),
+  address: z.string().min(1, "L'adresse est requise").max(500, "L'adresse doit contenir moins de 500 caractères"),
+  contacts: z.array(z.object({ 
+    value: z.string().min(1, "Le contact ne peut pas être vide") 
+  })).min(1, "Au moins un contact est requis"),
+  advance_payment: z.coerce.number().min(0, "Le montant doit être positif"),
 });
 
 interface AddPelerinModalProps {
@@ -113,7 +115,7 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Adresse</FormLabel>
+                  <FormLabel>Adresse *</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
@@ -128,7 +130,7 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label>Contacts</Label>
+                <Label>Contacts *</Label>
                 <Button
                   type="button"
                   onClick={() => append({ value: "" })}
@@ -176,7 +178,7 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
               name="advance_payment"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Avance payée (MAD)</FormLabel>
+                  <FormLabel>Avance payée (MAD) *</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
