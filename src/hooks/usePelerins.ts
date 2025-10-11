@@ -8,6 +8,8 @@ export interface Pelerin {
   address: string | null;
   contacts: string[];
   advance_payment: number;
+  hotel_id: string | null;
+  roommate_id: string | null;
   advance_cashed_in_by_cashier: string | null;
   advance_cashed_in_at_cashier: string | null;
   advance_cashed_in_by_manager: string | null;
@@ -23,6 +25,8 @@ export interface CreatePelerinData {
   address?: string;
   contacts: string[];
   advance_payment: number;
+  hotel_id?: string;
+  roommate_id?: string;
 }
 
 export function usePelerins(programId: string) {

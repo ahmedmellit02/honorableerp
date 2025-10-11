@@ -1,16 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreatePelerin } from "@/hooks/usePelerins";
+import { useCreatePelerin, usePelerins } from "@/hooks/usePelerins";
+import { useHotels } from "@/hooks/useOmraHotels";
 import { useToast } from "@/hooks/use-toast";
 import { X, Plus } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Autocomplete } from "@/components/ui/autocomplete";
 
 const formSchema = z.object({
   name: z.string().min(1, "Le nom est requis").max(100, "Le nom doit contenir moins de 100 caractères"),
@@ -19,6 +22,8 @@ const formSchema = z.object({
     value: z.string().min(1, "Le contact ne peut pas être vide") 
   })).min(1, "Au moins un contact est requis"),
   advance_payment: z.coerce.number().min(0, "Le montant doit être positif"),
+  hotel_id: z.string().optional(),
+  roommate_id: z.string().optional(),
 });
 
 interface AddPelerinModalProps {
@@ -30,6 +35,9 @@ interface AddPelerinModalProps {
 export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalProps) {
   const { toast } = useToast();
   const createPelerin = useCreatePelerin();
+  const { data: hotels } = useHotels();
+  const { data: pelerins } = usePelerins(programId);
+  const [selectedHotelId, setSelectedHotelId] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,6 +46,8 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
       address: "",
       contacts: [{ value: "" }],
       advance_payment: 0,
+      hotel_id: "",
+      roommate_id: "",
     },
   });
 
@@ -46,9 +56,16 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
     name: "contacts",
   });
 
+  // Filter pelerins by selected hotel for roommate selection
+  const availableRoommates = useMemo(() => {
+    if (!pelerins || !selectedHotelId) return [];
+    return pelerins.filter(p => p.hotel_id === selectedHotelId);
+  }, [pelerins, selectedHotelId]);
+
   useEffect(() => {
     if (!isOpen) {
       form.reset();
+      setSelectedHotelId("");
     }
   }, [isOpen, form]);
 
@@ -64,6 +81,8 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
         address: values.address?.trim() || undefined,
         contacts: validContacts,
         advance_payment: values.advance_payment || 0,
+        hotel_id: values.hotel_id || undefined,
+        roommate_id: values.roommate_id || undefined,
       });
 
       toast({
@@ -72,6 +91,7 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
       });
 
       form.reset();
+      setSelectedHotelId("");
       onClose();
     } catch (error) {
       console.error("Error creating pelerin:", error);
@@ -189,6 +209,75 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
                       value={field.value || ""}
                       onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="hotel_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Hôtel</FormLabel>
+                  <Select 
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setSelectedHotelId(value);
+                      form.setValue("roommate_id", ""); // Reset roommate when hotel changes
+                    }} 
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner un hôtel" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {hotels?.map((hotel) => (
+                        <SelectItem key={hotel.id} value={hotel.id}>
+                          {hotel.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="roommate_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Compagnon de chambre</FormLabel>
+                  <FormControl>
+                    {!selectedHotelId ? (
+                      <Input 
+                        placeholder="Veuillez d'abord sélectionner un hôtel" 
+                        disabled 
+                      />
+                    ) : availableRoommates.length === 0 ? (
+                      <Input 
+                        placeholder="Aucun pèlerin trouvé avec le même hôtel" 
+                        disabled 
+                      />
+                    ) : (
+                      <Autocomplete
+                        options={availableRoommates.map((p) => ({
+                          value: p.name,
+                          label: p.id,
+                        }))}
+                        value={availableRoommates.find(p => p.id === field.value)?.name || ""}
+                        onChange={(name) => {
+                          const pelerin = availableRoommates.find(p => p.name === name);
+                          field.onChange(pelerin?.id || "");
+                        }}
+                        placeholder="Rechercher un pèlerin..."
+                      />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>

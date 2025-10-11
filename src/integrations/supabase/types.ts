@@ -454,9 +454,11 @@ export type Database = {
           contacts: Json | null
           created_at: string
           created_by: string
+          hotel_id: string | null
           id: string
           name: string
           program_id: string
+          roommate_id: string | null
           updated_at: string
         }
         Insert: {
@@ -469,9 +471,11 @@ export type Database = {
           contacts?: Json | null
           created_at?: string
           created_by: string
+          hotel_id?: string | null
           id?: string
           name: string
           program_id: string
+          roommate_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -484,17 +488,33 @@ export type Database = {
           contacts?: Json | null
           created_at?: string
           created_by?: string
+          hotel_id?: string | null
           id?: string
           name?: string
           program_id?: string
+          roommate_id?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "pelerins_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pelerins_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "omra_programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pelerins_roommate_id_fkey"
+            columns: ["roommate_id"]
+            isOneToOne: false
+            referencedRelation: "pelerins"
             referencedColumns: ["id"]
           },
         ]
