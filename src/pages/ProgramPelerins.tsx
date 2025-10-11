@@ -34,17 +34,25 @@ export default function ProgramPelerins() {
 
   const program = programs?.find(p => p.id === programId);
 
-  // Calculate payment totals for each pelerin
+  // Calculate payment totals for each pelerin (including advance payment)
   const pelerinPaymentTotals = useMemo(() => {
     const totals: Record<string, number> = {};
+    
+    // Add advance payments from pelerins table
+    pelerins?.forEach(pelerin => {
+      totals[pelerin.id] = Number(pelerin.advance_payment) || 0;
+    });
+    
+    // Add payments from pelerin_payments table
     allPayments?.forEach(payment => {
       if (!totals[payment.pelerin_id]) {
         totals[payment.pelerin_id] = 0;
       }
       totals[payment.pelerin_id] += Number(payment.amount);
     });
+    
     return totals;
-  }, [allPayments]);
+  }, [allPayments, pelerins]);
 
   // Sort pelerins by updated_at DESC to show recently updated at top
   const sortedPelerins = useMemo(() => {
