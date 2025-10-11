@@ -1,0 +1,1 @@
+DELETE FROM expenses WHERE id = 'a62a686f-efa8-4414-9c8c-6a129cfb1708';
