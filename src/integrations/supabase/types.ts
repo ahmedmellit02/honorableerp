@@ -228,7 +228,7 @@ export type Database = {
           is_active: boolean
           name: string
           price_per_night: number | null
-          room_types: number[] | null
+          room_types: Json | null
           star_rating: number | null
           updated_at: string
         }
@@ -245,7 +245,7 @@ export type Database = {
           is_active?: boolean
           name: string
           price_per_night?: number | null
-          room_types?: number[] | null
+          room_types?: Json | null
           star_rating?: number | null
           updated_at?: string
         }
@@ -262,7 +262,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           price_per_night?: number | null
-          room_types?: number[] | null
+          room_types?: Json | null
           star_rating?: number | null
           updated_at?: string
         }

@@ -18,7 +18,7 @@ export function AddHotelModal({ open, onOpenChange }: AddHotelModalProps) {
   
   const [formData, setFormData] = useState({
     name: "",
-    room_types: []
+    room_types: [] as { capacity: number; price: number | null }[]
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,37 +85,61 @@ export function AddHotelModal({ open, onOpenChange }: AddHotelModalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>Types de Chambres *</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[2, 3, 4, 5].map((capacity) => (
-                <div key={capacity} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id={`room-${capacity}`}
-                    checked={formData.room_types.includes(capacity)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setFormData(prev => ({
-                          ...prev,
-                          room_types: [...prev.room_types, capacity].sort()
-                        }));
-                      } else {
-                        setFormData(prev => ({
-                          ...prev,
-                          room_types: prev.room_types.filter(t => t !== capacity)
-                        }));
-                      }
-                    }}
-                    className="rounded border-gray-300"
-                  />
-                  <Label htmlFor={`room-${capacity}`} className="text-sm font-normal">
-                    Chambre {capacity} Personnes
-                  </Label>
-                </div>
-              ))}
+            <Label>Types de Chambres et Prix *</Label>
+            <div className="space-y-3">
+              {[2, 3, 4, 5].map((capacity) => {
+                const roomType = formData.room_types.find(rt => rt.capacity === capacity);
+                const isChecked = !!roomType;
+                
+                return (
+                  <div key={capacity} className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id={`room-${capacity}`}
+                      checked={isChecked}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData(prev => ({
+                            ...prev,
+                            room_types: [...prev.room_types, { capacity, price: null }].sort((a, b) => a.capacity - b.capacity)
+                          }));
+                        } else {
+                          setFormData(prev => ({
+                            ...prev,
+                            room_types: prev.room_types.filter(t => t.capacity !== capacity)
+                          }));
+                        }
+                      }}
+                      className="rounded border-gray-300"
+                    />
+                    <Label htmlFor={`room-${capacity}`} className="text-sm font-normal min-w-[140px]">
+                      Chambre {capacity} Personnes
+                    </Label>
+                    {isChecked && (
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="Prix par nuit (MAD)"
+                        value={roomType?.price || ""}
+                        onChange={(e) => {
+                          const price = e.target.value ? parseFloat(e.target.value) : null;
+                          setFormData(prev => ({
+                            ...prev,
+                            room_types: prev.room_types.map(rt => 
+                              rt.capacity === capacity ? { ...rt, price } : rt
+                            )
+                          }));
+                        }}
+                        className="max-w-[200px]"
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
             <p className="text-xs text-muted-foreground">
-              Sélectionnez les types de chambres disponibles dans cet hôtel
+              Sélectionnez les types de chambres et spécifiez le prix par nuit pour chacune
             </p>
           </div>
 

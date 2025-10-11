@@ -29,8 +29,12 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
     departure_airport: "",
     arrival_airport: "",
     hotel_id: "",
+    room_type_capacity: "",
     price_per_person: ""
   });
+
+  const selectedHotel = hotels.find(h => h.id === formData.hotel_id);
+  const availableRoomTypes = selectedHotel?.room_types || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,6 +105,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
         departure_airport: "",
         arrival_airport: "",
         hotel_id: "",
+        room_type_capacity: "",
         price_per_person: ""
       });
       
@@ -231,43 +236,76 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="price_per_person">Prix par Personne (MAD) *</Label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="price_per_person"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.price_per_person}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price_per_person: e.target.value }))}
-                  placeholder="15000"
-                  required
-                  className="pl-10"
-                />
-              </div>
+          <div className="space-y-2">
+            <Label htmlFor="hotel_id">Hôtel</Label>
+            <div className="relative">
+              <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+              <Select value={formData.hotel_id} onValueChange={(value) => setFormData(prev => ({ ...prev, hotel_id: value, room_type_capacity: "", price_per_person: "" }))}>
+                <SelectTrigger className="pl-10">
+                  <SelectValue placeholder="Sélectionner un hôtel" />
+                </SelectTrigger>
+                <SelectContent>
+                  {hotels.map((hotel) => (
+                    <SelectItem key={hotel.id} value={hotel.id}>
+                      {hotel.name.toUpperCase()} {hotel.city ? `- ${hotel.city}` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+          </div>
 
+          {formData.hotel_id && availableRoomTypes.length > 0 && (
             <div className="space-y-2">
-              <Label htmlFor="hotel_id">Hôtel</Label>
-              <div className="relative">
-                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-                <Select value={formData.hotel_id} onValueChange={(value) => setFormData(prev => ({ ...prev, hotel_id: value }))}>
-                  <SelectTrigger className="pl-10">
-                    <SelectValue placeholder="Sélectionner un hôtel" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {hotels.map((hotel) => (
-                      <SelectItem key={hotel.id} value={hotel.id}>
-                        {hotel.name.toUpperCase()} - {hotel.city}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Label htmlFor="room_type">Type de Chambre *</Label>
+              <Select 
+                value={formData.room_type_capacity} 
+                onValueChange={(value) => {
+                  const roomType = availableRoomTypes.find(rt => rt.capacity.toString() === value);
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    room_type_capacity: value,
+                    price_per_person: roomType?.price?.toString() || ""
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner un type de chambre" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableRoomTypes.map((roomType) => (
+                    <SelectItem key={roomType.capacity} value={roomType.capacity.toString()}>
+                      Chambre {roomType.capacity} Personnes 
+                      {roomType.price ? ` - ${roomType.price.toLocaleString()} MAD/nuit` : ' - Prix non défini'}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Le prix sera automatiquement rempli selon le type de chambre
+              </p>
             </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="price_per_person">Prix par Personne (MAD) *</Label>
+            <div className="relative">
+              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="price_per_person"
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.price_per_person}
+                onChange={(e) => setFormData(prev => ({ ...prev, price_per_person: e.target.value }))}
+                placeholder="15000"
+                required
+                className="pl-10"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Ce prix est basé sur le type de chambre sélectionné
+            </p>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">
