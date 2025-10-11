@@ -1,10 +1,12 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreatePelerin, usePelerins } from "@/hooks/usePelerins";
+import { useOmraPrograms } from "@/hooks/useOmraPrograms";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { X, Plus } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -33,6 +35,10 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
   const { toast } = useToast();
   const createPelerin = useCreatePelerin();
   const { data: pelerins } = usePelerins(programId);
+  const { data: programs } = useOmraPrograms();
+  const [allPelerins, setAllPelerins] = useState<any[]>([]);
+
+  const currentProgram = programs?.find(p => p.id === programId);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,16 +51,47 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
     },
   });
 
+  // Fetch all pelerins across all programs
+  useEffect(() => {
+    const fetchAllPelerins = async () => {
+      const { data, error } = await supabase
+        .from('pelerins')
+        .select('*, omra_programs!inner(hotels)');
+      
+      if (!error && data) {
+        setAllPelerins(data);
+      }
+    };
+
+    if (isOpen) {
+      fetchAllPelerins();
+    }
+  }, [isOpen]);
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "contacts",
   });
 
-  // Filter pelerins in the same program for roommate selection
+  // Filter pelerins by matching hotels across all programs
   const availableRoommates = useMemo(() => {
-    if (!pelerins) return [];
-    return pelerins;
-  }, [pelerins]);
+    if (!currentProgram || !allPelerins || allPelerins.length === 0) return [];
+    
+    const currentProgramHotels = currentProgram.hotels || [];
+    if (currentProgramHotels.length === 0) return [];
+
+    // Filter pelerins whose programs share at least one hotel with current program
+    return allPelerins.filter(pelerin => {
+      const pelerinProgramHotels = pelerin.omra_programs?.hotels || [];
+      
+      // Check if there's any hotel overlap
+      return pelerinProgramHotels.some((pelerinHotel: any) =>
+        currentProgramHotels.some((currentHotel: any) => 
+          currentHotel.id === pelerinHotel.id
+        )
+      );
+    });
+  }, [currentProgram, allPelerins]);
 
   useEffect(() => {
     if (!isOpen) {
