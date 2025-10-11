@@ -1,0 +1,1 @@
+UPDATE balance_records SET amount = 10000 WHERE id = '1f99897e-d95b-473b-867d-3aa04bbb47be';
