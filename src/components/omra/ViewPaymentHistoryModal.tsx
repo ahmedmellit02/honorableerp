@@ -30,6 +30,7 @@ interface ViewPaymentHistoryModalProps {
   pelerinName: string;
   pelerinAddress?: string;
   programTitle: string;
+  programPrice: number;
   advancePayment: number;
   advanceCashedInByCashier: string | null;
   advanceCashedInByManager: string | null;
@@ -42,6 +43,7 @@ export function ViewPaymentHistoryModal({
   pelerinName,
   pelerinAddress,
   programTitle,
+  programPrice,
   advancePayment,
   advanceCashedInByCashier,
   advanceCashedInByManager,
@@ -62,6 +64,7 @@ export function ViewPaymentHistoryModal({
       pelerinName,
       pelerinAddress,
       programTitle,
+      programPrice,
       agencyInfo: {
         name: "Honorables Voyages",
         address: "Hay Oued Eddahab, Av. Ibn Haitam ,l'angle Rue El Rihan n°62, Salé 11090",
