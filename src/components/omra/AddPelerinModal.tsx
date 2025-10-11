@@ -84,10 +84,10 @@ export function AddPelerinModal({ isOpen, onClose, programId }: AddPelerinModalP
     return allPelerins.filter(pelerin => {
       const pelerinProgramHotels = pelerin.omra_programs?.hotels || [];
       
-      // Check if there's any hotel overlap
-      return pelerinProgramHotels.some((pelerinHotel: any) =>
-        currentProgramHotels.some((currentHotel: any) => 
-          currentHotel.id === pelerinHotel.id
+      // Check if there's any hotel overlap - compare hotel ID strings directly
+      return pelerinProgramHotels.some((pelerinHotel: string) =>
+        currentProgramHotels.some((currentHotel: string) => 
+          currentHotel === pelerinHotel
         )
       );
     });
