@@ -335,6 +335,7 @@ export type Database = {
           max_participants: number | null
           price_per_person: number
           return_date: string
+          room_type_capacity: number | null
           status: string
           title: string
           updated_at: string
@@ -359,6 +360,7 @@ export type Database = {
           max_participants?: number | null
           price_per_person: number
           return_date: string
+          room_type_capacity?: number | null
           status?: string
           title: string
           updated_at?: string
@@ -383,6 +385,7 @@ export type Database = {
           max_participants?: number | null
           price_per_person?: number
           return_date?: string
+          room_type_capacity?: number | null
           status?: string
           title?: string
           updated_at?: string
