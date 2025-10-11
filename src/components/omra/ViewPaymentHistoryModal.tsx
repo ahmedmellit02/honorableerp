@@ -92,8 +92,18 @@ export function ViewPaymentHistoryModal({
                     <TableCell className="text-right font-medium">
                       {advancePayment.toLocaleString('fr-MA')} MAD
                     </TableCell>
-                    <TableCell className="text-center">-</TableCell>
-                    <TableCell className="text-center">-</TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
+                        <CheckCircle className="h-3 w-3" />
+                        Encaissé
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
+                        <CheckCircle className="h-3 w-3" />
+                        Encaissé
+                      </Badge>
+                    </TableCell>
                   </TableRow>
                 )}
                 {!payments || payments.length === 0 ? (
