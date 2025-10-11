@@ -26,6 +26,7 @@ interface ViewPaymentHistoryModalProps {
   onClose: () => void;
   pelerinId: string;
   pelerinName: string;
+  advancePayment: number;
 }
 
 export function ViewPaymentHistoryModal({
@@ -33,13 +34,14 @@ export function ViewPaymentHistoryModal({
   onClose,
   pelerinId,
   pelerinName,
+  advancePayment,
 }: ViewPaymentHistoryModalProps) {
   const { data: payments, isLoading } = usePelerinPayments(pelerinId);
   const { userRole } = useSimpleRole();
   const cashInCashierMutation = useCashInPaymentCashier();
   const cashInManagerMutation = useCashInPaymentManager();
 
-  const totalPaid = payments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0;
+  const totalPaid = (payments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0) + advancePayment;
 
   const handleCashInCashier = async (paymentId: string) => {
     await cashInCashierMutation.mutateAsync(paymentId);
@@ -79,12 +81,29 @@ export function ViewPaymentHistoryModal({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {!payments || payments.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                      Aucun paiement enregistré
+                {advancePayment > 0 && (
+                  <TableRow className="bg-muted/30">
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span>Avance initiale</span>
+                        <Badge variant="secondary" className="text-xs">Initial</Badge>
+                      </div>
                     </TableCell>
+                    <TableCell className="text-right font-medium">
+                      {advancePayment.toLocaleString('fr-MA')} MAD
+                    </TableCell>
+                    <TableCell className="text-center">-</TableCell>
+                    <TableCell className="text-center">-</TableCell>
                   </TableRow>
+                )}
+                {!payments || payments.length === 0 ? (
+                  advancePayment === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                        Aucun paiement enregistré
+                      </TableCell>
+                    </TableRow>
+                  ) : null
                 ) : (
                   payments.map((payment) => (
                     <TableRow key={payment.id}>

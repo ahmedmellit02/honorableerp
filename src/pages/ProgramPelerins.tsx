@@ -26,6 +26,7 @@ export default function ProgramPelerins() {
   const [selectedPelerinForHistory, setSelectedPelerinForHistory] = useState<{
     id: string;
     name: string;
+    advancePayment: number;
   } | null>(null);
   
   const { data: programs } = useOmraPrograms();
@@ -156,7 +157,11 @@ export default function ProgramPelerins() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setSelectedPelerinForHistory({ id: pelerin.id, name: pelerin.name })}
+                        onClick={() => setSelectedPelerinForHistory({ 
+                          id: pelerin.id, 
+                          name: pelerin.name,
+                          advancePayment: pelerin.advance_payment || 0
+                        })}
                       >
                         <Receipt className="h-4 w-4 mr-2" />
                         Historique
@@ -189,6 +194,7 @@ export default function ProgramPelerins() {
           onClose={() => setSelectedPelerinForHistory(null)}
           pelerinId={selectedPelerinForHistory.id}
           pelerinName={selectedPelerinForHistory.name}
+          advancePayment={selectedPelerinForHistory.advancePayment}
         />
       )}
     </div>
