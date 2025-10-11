@@ -94,7 +94,7 @@ export function EditHotelModal({ isOpen, onClose, hotel, onSave }: EditHotelModa
           </div>
 
           <div className="space-y-2">
-            <Label>Types de Chambres et Prix *</Label>
+            <Label>Types de Chambres *</Label>
             <div className="space-y-3">
               {[2, 3, 4, 5].map((capacity) => {
                 const roomType = formData.room_types.find(rt => rt.capacity === capacity);
@@ -121,34 +121,15 @@ export function EditHotelModal({ isOpen, onClose, hotel, onSave }: EditHotelModa
                       }}
                       className="rounded border-gray-300"
                     />
-                    <Label htmlFor={`room-${capacity}`} className="text-sm font-normal min-w-[140px]">
+                    <Label htmlFor={`room-${capacity}`} className="text-sm font-normal">
                       Chambre {capacity} Personnes
                     </Label>
-                    {isChecked && (
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        placeholder="Prix par nuit (MAD)"
-                        value={roomType?.price || ""}
-                        onChange={(e) => {
-                          const price = e.target.value ? parseFloat(e.target.value) : null;
-                          setFormData(prev => ({
-                            ...prev,
-                            room_types: prev.room_types.map(rt => 
-                              rt.capacity === capacity ? { ...rt, price } : rt
-                            )
-                          }));
-                        }}
-                        className="max-w-[200px]"
-                      />
-                    )}
                   </div>
                 );
               })}
             </div>
             <p className="text-xs text-muted-foreground">
-              Sélectionnez les types de chambres et spécifiez le prix par nuit pour chacune
+              Sélectionnez les types de chambres disponibles
             </p>
           </div>
 
