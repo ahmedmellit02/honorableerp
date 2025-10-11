@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,18 +7,52 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, MapPin, Users, DollarSign, Search, Clock } from "lucide-react";
 import { useOmraPrograms, OmraProgram } from "@/hooks/useOmraPrograms";
 import { formatDate } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function OmraPrograms() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const { data: programs, isLoading, error } = useOmraPrograms();
 
-  const filteredPrograms = programs?.filter(program =>
-    program.status === 'published' && (
-      program.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      program.departure_city.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  ) || [];
+  // Fetch all pelerins
+  const { data: allPelerins } = useQuery({
+    queryKey: ['all-pelerins'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('pelerins')
+        .select('id, name, program_id');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Create a map of program IDs to pelerin names for efficient lookup
+  const programPelerinsMap = useMemo(() => {
+    const map = new Map<string, string[]>();
+    allPelerins?.forEach(pelerin => {
+      if (!map.has(pelerin.program_id)) {
+        map.set(pelerin.program_id, []);
+      }
+      map.get(pelerin.program_id)?.push(pelerin.name.toLowerCase());
+    });
+    return map;
+  }, [allPelerins]);
+
+  const filteredPrograms = programs?.filter(program => {
+    if (program.status !== 'published') return false;
+    
+    const searchLower = searchTerm.toLowerCase();
+    const titleMatch = program.title.toLowerCase().includes(searchLower);
+    const cityMatch = program.departure_city.toLowerCase().includes(searchLower);
+    
+    // Check if any pelerin name matches
+    const pelerinNames = programPelerinsMap.get(program.id) || [];
+    const pelerinMatch = pelerinNames.some(name => name.includes(searchLower));
+    
+    return titleMatch || cityMatch || pelerinMatch;
+  }) || [];
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -72,7 +106,7 @@ export default function OmraPrograms() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Rechercher par titre ou ville de départ..."
+              placeholder="Rechercher par titre, ville de départ ou nom de pèlerin..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
