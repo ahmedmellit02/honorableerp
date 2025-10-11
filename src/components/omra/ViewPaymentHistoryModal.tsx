@@ -20,13 +20,16 @@ import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { CheckCircle, Euro } from "lucide-react";
+import { CheckCircle, Euro, Download } from "lucide-react";
+import { generatePelerinPaymentPdf } from "@/lib/pdf/pelerinPaymentPdf";
 
 interface ViewPaymentHistoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   pelerinId: string;
   pelerinName: string;
+  pelerinAddress?: string;
+  programTitle: string;
   advancePayment: number;
   advanceCashedInByCashier: string | null;
   advanceCashedInByManager: string | null;
@@ -37,6 +40,8 @@ export function ViewPaymentHistoryModal({
   onClose,
   pelerinId,
   pelerinName,
+  pelerinAddress,
+  programTitle,
   advancePayment,
   advanceCashedInByCashier,
   advanceCashedInByManager,
@@ -49,6 +54,22 @@ export function ViewPaymentHistoryModal({
   const cashInAdvanceManagerMutation = useCashInAdvanceManager();
 
   const totalPaid = (payments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0) + advancePayment;
+
+  const handleDownloadPdf = () => {
+    if (!payments) return;
+
+    generatePelerinPaymentPdf(payments, advancePayment, {
+      pelerinName,
+      pelerinAddress,
+      programTitle,
+      agencyInfo: {
+        name: "Honorables Voyages",
+        address: "Hay Oued Eddahab, Av. Ibn Haitam ,l'angle Rue El Rihan n°62, Salé 11090",
+        phone: "+212 661-210117",
+        email: "honorablesvoyages@gmail.com"
+      }
+    });
+  };
 
   const handleCashInPaymentCashier = async (paymentId: string) => {
     await cashInPaymentCashierMutation.mutateAsync(paymentId);
@@ -70,7 +91,19 @@ export function ViewPaymentHistoryModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Historique des paiements - {pelerinName}</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle>Historique des paiements - {pelerinName}</DialogTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadPdf}
+              disabled={isLoading || !payments || payments.length === 0 && advancePayment === 0}
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Télécharger PDF
+            </Button>
+          </div>
         </DialogHeader>
 
         {isLoading ? (

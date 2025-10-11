@@ -26,6 +26,7 @@ export default function ProgramPelerins() {
   const [selectedPelerinForHistory, setSelectedPelerinForHistory] = useState<{
     id: string;
     name: string;
+    address?: string;
     advancePayment: number;
   } | null>(null);
   
@@ -160,6 +161,7 @@ export default function ProgramPelerins() {
                         onClick={() => setSelectedPelerinForHistory({ 
                           id: pelerin.id, 
                           name: pelerin.name,
+                          address: pelerin.address || undefined,
                           advancePayment: pelerin.advance_payment || 0
                         })}
                       >
@@ -194,6 +196,8 @@ export default function ProgramPelerins() {
           onClose={() => setSelectedPelerinForHistory(null)}
           pelerinId={selectedPelerinForHistory.id}
           pelerinName={selectedPelerinForHistory.name}
+          pelerinAddress={selectedPelerinForHistory.address}
+          programTitle={program?.title || "Programme"}
           advancePayment={selectedPelerinForHistory.advancePayment}
           advanceCashedInByCashier={pelerins?.find(p => p.id === selectedPelerinForHistory.id)?.advance_cashed_in_by_cashier || null}
           advanceCashedInByManager={pelerins?.find(p => p.id === selectedPelerinForHistory.id)?.advance_cashed_in_by_manager || null}
