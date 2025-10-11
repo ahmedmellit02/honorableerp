@@ -446,6 +446,10 @@ export type Database = {
       pelerins: {
         Row: {
           address: string | null
+          advance_cashed_in_at_cashier: string | null
+          advance_cashed_in_at_manager: string | null
+          advance_cashed_in_by_cashier: string | null
+          advance_cashed_in_by_manager: string | null
           advance_payment: number | null
           contacts: Json | null
           created_at: string
@@ -457,6 +461,10 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          advance_cashed_in_at_cashier?: string | null
+          advance_cashed_in_at_manager?: string | null
+          advance_cashed_in_by_cashier?: string | null
+          advance_cashed_in_by_manager?: string | null
           advance_payment?: number | null
           contacts?: Json | null
           created_at?: string
@@ -468,6 +476,10 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          advance_cashed_in_at_cashier?: string | null
+          advance_cashed_in_at_manager?: string | null
+          advance_cashed_in_by_cashier?: string | null
+          advance_cashed_in_by_manager?: string | null
           advance_payment?: number | null
           contacts?: Json | null
           created_at?: string

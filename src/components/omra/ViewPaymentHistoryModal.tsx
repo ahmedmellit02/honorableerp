@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePelerinPayments, useCashInPaymentCashier, useCashInPaymentManager } from "@/hooks/usePelerinPayments";
+import { useCashInAdvanceCashier, useCashInAdvanceManager } from "@/hooks/usePelerins";
 import { useSimpleRole } from "@/hooks/useSimpleRole";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
@@ -27,6 +28,8 @@ interface ViewPaymentHistoryModalProps {
   pelerinId: string;
   pelerinName: string;
   advancePayment: number;
+  advanceCashedInByCashier: string | null;
+  advanceCashedInByManager: string | null;
 }
 
 export function ViewPaymentHistoryModal({
@@ -35,20 +38,32 @@ export function ViewPaymentHistoryModal({
   pelerinId,
   pelerinName,
   advancePayment,
+  advanceCashedInByCashier,
+  advanceCashedInByManager,
 }: ViewPaymentHistoryModalProps) {
   const { data: payments, isLoading } = usePelerinPayments(pelerinId);
   const { userRole } = useSimpleRole();
-  const cashInCashierMutation = useCashInPaymentCashier();
-  const cashInManagerMutation = useCashInPaymentManager();
+  const cashInPaymentCashierMutation = useCashInPaymentCashier();
+  const cashInPaymentManagerMutation = useCashInPaymentManager();
+  const cashInAdvanceCashierMutation = useCashInAdvanceCashier();
+  const cashInAdvanceManagerMutation = useCashInAdvanceManager();
 
   const totalPaid = (payments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0) + advancePayment;
 
-  const handleCashInCashier = async (paymentId: string) => {
-    await cashInCashierMutation.mutateAsync(paymentId);
+  const handleCashInPaymentCashier = async (paymentId: string) => {
+    await cashInPaymentCashierMutation.mutateAsync(paymentId);
   };
 
-  const handleCashInManager = async (paymentId: string) => {
-    await cashInManagerMutation.mutateAsync(paymentId);
+  const handleCashInPaymentManager = async (paymentId: string) => {
+    await cashInPaymentManagerMutation.mutateAsync(paymentId);
+  };
+
+  const handleCashInAdvanceCashier = async () => {
+    await cashInAdvanceCashierMutation.mutateAsync(pelerinId);
+  };
+
+  const handleCashInAdvanceManager = async () => {
+    await cashInAdvanceManagerMutation.mutateAsync(pelerinId);
   };
 
   return (
@@ -92,17 +107,57 @@ export function ViewPaymentHistoryModal({
                     <TableCell className="text-right font-medium">
                       {advancePayment.toLocaleString('fr-MA')} MAD
                     </TableCell>
+                    
+                    {/* Cashier column for advance */}
                     <TableCell className="text-center">
-                      <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
-                        <CheckCircle className="h-3 w-3" />
-                        Encaissé
-                      </Badge>
+                      {advanceCashedInByCashier ? (
+                        <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
+                          <CheckCircle className="h-3 w-3" />
+                          Encaissé
+                        </Badge>
+                      ) : userRole === 'cashier' ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleCashInAdvanceCashier}
+                          disabled={cashInAdvanceCashierMutation.isPending}
+                          className="text-xs hover:bg-success hover:text-white hover:border-success"
+                        >
+                          <Euro className="h-3 w-3 mr-1" />
+                          Encaisser
+                        </Button>
+                      ) : (
+                        <Badge variant="outline" className="flex items-center gap-1 text-destructive border-destructive w-fit mx-auto">
+                          <Euro className="h-3 w-3" />
+                          Non encaissé
+                        </Badge>
+                      )}
                     </TableCell>
+
+                    {/* Manager column for advance */}
                     <TableCell className="text-center">
-                      <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
-                        <CheckCircle className="h-3 w-3" />
-                        Encaissé
-                      </Badge>
+                      {advanceCashedInByManager ? (
+                        <Badge variant="outline" className="flex items-center gap-1 text-success border-success w-fit mx-auto">
+                          <CheckCircle className="h-3 w-3" />
+                          Encaissé
+                        </Badge>
+                      ) : userRole === 'manager' ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleCashInAdvanceManager}
+                          disabled={cashInAdvanceManagerMutation.isPending}
+                          className="text-xs hover:bg-success hover:text-white hover:border-success"
+                        >
+                          <Euro className="h-3 w-3 mr-1" />
+                          Encaisser
+                        </Button>
+                      ) : (
+                        <Badge variant="outline" className="flex items-center gap-1 text-destructive border-destructive w-fit mx-auto">
+                          <Euro className="h-3 w-3" />
+                          Non encaissé
+                        </Badge>
+                      )}
                     </TableCell>
                   </TableRow>
                 )}
@@ -135,8 +190,8 @@ export function ViewPaymentHistoryModal({
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleCashInCashier(payment.id)}
-                            disabled={cashInCashierMutation.isPending}
+                            onClick={() => handleCashInPaymentCashier(payment.id)}
+                            disabled={cashInPaymentCashierMutation.isPending}
                             className="text-xs hover:bg-success hover:text-white hover:border-success"
                           >
                             <Euro className="h-3 w-3 mr-1" />
@@ -161,8 +216,8 @@ export function ViewPaymentHistoryModal({
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleCashInManager(payment.id)}
-                            disabled={cashInManagerMutation.isPending}
+                            onClick={() => handleCashInPaymentManager(payment.id)}
+                            disabled={cashInPaymentManagerMutation.isPending}
                             className="text-xs hover:bg-success hover:text-white hover:border-success"
                           >
                             <Euro className="h-3 w-3 mr-1" />

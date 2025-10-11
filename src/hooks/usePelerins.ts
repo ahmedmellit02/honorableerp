@@ -8,6 +8,10 @@ export interface Pelerin {
   address: string | null;
   contacts: string[];
   advance_payment: number;
+  advance_cashed_in_by_cashier: string | null;
+  advance_cashed_in_at_cashier: string | null;
+  advance_cashed_in_by_manager: string | null;
+  advance_cashed_in_at_manager: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -108,6 +112,56 @@ export function useDeletePelerin() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['pelerins', data.programId] });
+    },
+  });
+}
+
+export function useCashInAdvanceCashier() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (pelerinId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('pelerins')
+        .update({
+          advance_cashed_in_by_cashier: user.id,
+          advance_cashed_in_at_cashier: new Date().toISOString(),
+        })
+        .eq('id', pelerinId);
+
+      if (error) throw error;
+      return pelerinId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pelerins'] });
+    },
+  });
+}
+
+export function useCashInAdvanceManager() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (pelerinId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('pelerins')
+        .update({
+          advance_cashed_in_by_manager: user.id,
+          advance_cashed_in_at_manager: new Date().toISOString(),
+        })
+        .eq('id', pelerinId);
+
+      if (error) throw error;
+      return pelerinId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pelerins'] });
     },
   });
 }

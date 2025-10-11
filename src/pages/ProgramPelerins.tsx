@@ -195,6 +195,8 @@ export default function ProgramPelerins() {
           pelerinId={selectedPelerinForHistory.id}
           pelerinName={selectedPelerinForHistory.name}
           advancePayment={selectedPelerinForHistory.advancePayment}
+          advanceCashedInByCashier={pelerins?.find(p => p.id === selectedPelerinForHistory.id)?.advance_cashed_in_by_cashier || null}
+          advanceCashedInByManager={pelerins?.find(p => p.id === selectedPelerinForHistory.id)?.advance_cashed_in_by_manager || null}
         />
       )}
     </div>
