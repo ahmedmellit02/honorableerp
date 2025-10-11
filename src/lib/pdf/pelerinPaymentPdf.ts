@@ -11,7 +11,7 @@ export interface PelerinPaymentData {
 
 export interface PelerinPdfOptions {
   pelerinName: string;
-  pelerinAddress?: string;
+  pelerinContacts?: string[];
   programTitle: string;
   programPrice: number;
   agencyInfo: {
@@ -65,10 +65,10 @@ export const generatePelerinPaymentPdf = (
   
   // Pelerin info
   doc.text(`Pèlerin: ${options.pelerinName}`, 14, yPos + 25);
-  if (options.pelerinAddress) {
-    doc.text(`Adresse: ${options.pelerinAddress}`, 14, yPos + 30);
+  if (options.pelerinContacts && options.pelerinContacts.length > 0) {
+    doc.text(`Téléphone: ${options.pelerinContacts.join(', ')}`, 14, yPos + 30);
   }
-  const programLineY = yPos + (options.pelerinAddress ? 35 : 30);
+  const programLineY = yPos + (options.pelerinContacts && options.pelerinContacts.length > 0 ? 35 : 30);
   doc.text(`Programme: ${options.programTitle}`, 14, programLineY);
   doc.text(`Prix du programme: ${options.programPrice.toLocaleString('fr-MA')} MAD`, 14, programLineY + 5);
   doc.text(`Date d'émission: ${format(new Date(), 'dd/MM/yyyy')}`, 140, yPos + 25);
@@ -99,7 +99,7 @@ export const generatePelerinPaymentPdf = (
   autoTable(doc, {
     head: [['Date', 'Montant']],
     body: tableData,
-    startY: yPos + (options.pelerinAddress ? 50 : 45),
+    startY: yPos + (options.pelerinContacts && options.pelerinContacts.length > 0 ? 50 : 45),
     styles: {
       fontSize: 10,
       cellPadding: 4,

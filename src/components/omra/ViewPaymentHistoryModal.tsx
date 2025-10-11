@@ -28,7 +28,7 @@ interface ViewPaymentHistoryModalProps {
   onClose: () => void;
   pelerinId: string;
   pelerinName: string;
-  pelerinAddress?: string;
+  pelerinContacts?: string[];
   programTitle: string;
   programPrice: number;
   advancePayment: number;
@@ -41,7 +41,7 @@ export function ViewPaymentHistoryModal({
   onClose,
   pelerinId,
   pelerinName,
-  pelerinAddress,
+  pelerinContacts,
   programTitle,
   programPrice,
   advancePayment,
@@ -62,7 +62,7 @@ export function ViewPaymentHistoryModal({
 
     generatePelerinPaymentPdf(payments, advancePayment, {
       pelerinName,
-      pelerinAddress,
+      pelerinContacts,
       programTitle,
       programPrice,
       agencyInfo: {
