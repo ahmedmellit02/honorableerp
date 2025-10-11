@@ -87,7 +87,7 @@ export function AddHotelModal({ open, onOpenChange }: AddHotelModalProps) {
           <div className="space-y-2">
             <Label>Types de Chambres et Prix *</Label>
             <div className="space-y-3">
-              {[2, 3, 4, 5].map((capacity) => {
+              {[2, 3, 4, 5, 6, 7].map((capacity) => {
                 const roomType = formData.room_types.find(rt => rt.capacity === capacity);
                 const isChecked = !!roomType;
                 
