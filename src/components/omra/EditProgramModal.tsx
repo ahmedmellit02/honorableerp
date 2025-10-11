@@ -31,6 +31,7 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
     arrival_airport: "",
     hotel_id: "",
     price_per_person: "",
+    room_type_capacity: "",
     status: "draft"
   });
 
@@ -46,6 +47,7 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
         arrival_airport: program.arrival_airport || "",
         hotel_id: program.hotels && program.hotels.length > 0 ? program.hotels[0] : "",
         price_per_person: program.price_per_person?.toString() || "",
+        room_type_capacity: program.room_type_capacity?.toString() || "",
         status: program.status || "draft"
       });
     }
@@ -93,6 +95,7 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
         title: formData.title,
         duration_days: parseInt(formData.duration_days),
         price_per_person: parseFloat(formData.price_per_person),
+        room_type_capacity: formData.room_type_capacity ? parseInt(formData.room_type_capacity) : undefined,
         departure_date: formData.departure_date,
         return_date: formData.return_date,
         departure_city: program.departure_city,
@@ -233,7 +236,7 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="price_per_person">Prix par Personne (MAD) *</Label>
               <div className="relative">
@@ -250,6 +253,22 @@ export function EditProgramModal({ open, onOpenChange, program }: EditProgramMod
                   className="pl-10"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="room_type_capacity">Capacité Chambre</Label>
+              <Input
+                id="room_type_capacity"
+                type="number"
+                min="1"
+                max="10"
+                value={formData.room_type_capacity}
+                onChange={(e) => setFormData(prev => ({ ...prev, room_type_capacity: e.target.value }))}
+                placeholder="2"
+              />
+              <p className="text-xs text-muted-foreground">
+                Nombre de personnes par chambre
+              </p>
             </div>
 
             <div className="space-y-2">
