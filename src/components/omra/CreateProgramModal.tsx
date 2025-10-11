@@ -276,8 +276,7 @@ export function CreateProgramModal({ open, onOpenChange }: CreateProgramModalPro
                 <SelectContent>
                   {availableRoomTypes.map((roomType) => (
                     <SelectItem key={roomType.capacity} value={roomType.capacity.toString()}>
-                      Chambre {roomType.capacity} Personnes 
-                      {roomType.price ? ` - ${roomType.price.toLocaleString()} MAD/nuit` : ' - Prix non défini'}
+                      Chambre {roomType.capacity} Personnes
                     </SelectItem>
                   ))}
                 </SelectContent>
